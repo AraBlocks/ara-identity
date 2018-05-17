@@ -1,7 +1,9 @@
 'use strict'
 
 const { resolve } = require('./resolve')
+const ethereum = require('./ethereum')
 
 module.exports = {
-  resolve
+  ethereum,
+  resolve,
 }
