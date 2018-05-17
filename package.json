@@ -19,6 +19,7 @@
     "did-document": "^0.1.0",
     "did-document-public-key": "^0.1.2",
     "did-uri": "^0.2.4",
+    "randombytes": "^2.0.6",
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
