@@ -1,9 +1,11 @@
 'use strict'
 
 const { entropy } = require('./entropy')
-const { wallet } = require('./wallet')
+const account = require('./account')
+const wallet = require('./wallet')
 
 module.exports = {
+  account,
   entropy,
   wallet,
 }
