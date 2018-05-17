@@ -4,6 +4,7 @@
   "description": "Create and resolve decentralized identity based Ara identifiers.",
   "main": "index.js",
   "scripts": {
+    "truffle": "truffle develop",
     "test": "ava test"
   },
   "keywords": [
@@ -23,6 +24,7 @@
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
-    "ava": "^0.25.0"
+    "ava": "^0.25.0",
+    "truffle": "^4.1.8"
   }
 }
