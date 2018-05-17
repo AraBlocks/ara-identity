@@ -4,7 +4,7 @@
   "description": "Create and resolve decentralized identity based Ara identifiers.",
   "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "test": "ava test"
   },
   "keywords": [
     "ara",
@@ -16,7 +16,12 @@
   "author": "Joseph Werle <werle@littlstar.com>",
   "license": "MIT",
   "dependencies": {
+    "did-document": "^0.1.0",
+    "did-document-public-key": "^0.1.2",
     "did-uri": "^0.2.4",
     "web3": "^1.0.0-beta.34"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0"
   }
 }
