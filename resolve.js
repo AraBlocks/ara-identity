@@ -5,7 +5,7 @@ const { DID } = require('did-uri')
 const kDIDIdentifierLength = 64
 const kDIDMethod = 'ara'
 
-function resolve(uri) {
+async function resolve(uri) {
   const did = new DID(uri)
   if (kDIDMethod != did.method) {
     throw new TypeError(
