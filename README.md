@@ -44,4 +44,4 @@ $ npm test
 
 ## License
 
-MIT
+LGPLv3
