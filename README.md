@@ -44,4 +44,4 @@ $ npm test
 
 ## License
 
-LGPLv3
+LGPL-3.0
