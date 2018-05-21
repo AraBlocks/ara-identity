@@ -24,6 +24,36 @@ TODO
 
 TODO
 
+### `create(opts)`
+
+TODO
+
+### `ethereum`
+
+TODO
+
+#### `ethereum.account`
+
+TODO
+
+#### `ethereum.account.create(opts)`
+
+TODO
+
+#### `ethereum.account.load(opts)`
+
+TODO
+
+#### `ethereum.entropy([size])`
+
+TODO
+
+#### `ethereum.wallet`
+
+TODO
+
+#### `ethereum.wallet.load()`
+
 ## Tests
 
 ### Prerequisites
