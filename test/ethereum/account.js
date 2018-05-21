@@ -6,7 +6,7 @@ const Web3 = require('web3')
 
 const web3 = new Web3('http://127.0.0.1:9545')
 
-test("create({entropy})", async (t) => {
+test("ethereum.create({entropy})", async (t) => {
   await t.throws(create({web3, entropy: 0}), TypeError, "entropy too small")
   await t.throws(create({web3, entropy: 1}), TypeError, "entropy too small")
   await t.throws(create({web3, entropy: -1}), TypeError, "entropy too small")
