@@ -1,5 +1,7 @@
 'use strict'
 
+const isBuffer = require('is-buffer')
+
 /**
  * Converts a buffer to a hex string.
  * @public
@@ -35,7 +37,28 @@ function ethHexToBuffer(hex) {
   return null
 }
 
+/**
+ * Convert a value, however possible, to a buffer
+ * @public
+ * @param {Mixed} value
+ * @return {Buffer}
+ */
+function toBuffer(value) {
+  if (isBuffer(value)) {
+    return value
+  } else if (value && 'number' == typeof value) {
+    return Buffer.alloc(value)
+  } else if ('string' == typeof value) {
+    return ethHexToBuffer(value)
+  } else if (value) {
+    return Buffer.from(value)
+  } else {
+    return Buffer.alloc(0)
+  }
+}
+
 module.exports = {
   ethHexToBuffer,
+  toBuffer,
   toHex,
 }
