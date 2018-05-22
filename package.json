@@ -17,8 +17,10 @@
   "author": "Joseph Werle <werle@littlstar.com>",
   "license": "LGPL-3.0",
   "dependencies": {
+    "ara-context": "github:arablocks/ara-context",
     "ara-crypto": "github:arablocks/ara-crypto",
-    "did-document": "^0.1.0",
+    "cfsnet": "github:arablocks/cfsnet",
+    "did-document": "github:AraBlocks/did-document",
     "did-document-public-key": "^0.1.2",
     "did-uri": "^0.2.4",
     "ethereumjs-wallet": "^0.6.0",
@@ -27,6 +29,7 @@
     "keythereum": "^1.0.4",
     "pify": "^3.0.0",
     "protocol-buffers": "^4.0.4",
+    "random-access-memory": "^3.0.0",
     "randombytes": "^2.0.6",
     "web3": "^1.0.0-beta.34"
   },
