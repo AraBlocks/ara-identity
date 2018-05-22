@@ -10,17 +10,17 @@ var encodings = require('protocol-buffers-encodings')
 var varint = encodings.varint
 var skip = encodings.skip
 
-var Keystore = exports.Keystore = {
+var KeyStore = exports.KeyStore = {
   buffer: true,
   encodingLength: null,
   encode: null,
   decode: null
 }
 
-defineKeystore()
+defineKeyStore()
 
-function defineKeystore () {
-  var Crypto = Keystore.Crypto = {
+function defineKeyStore () {
+  var Crypto = KeyStore.Crypto = {
     buffer: true,
     encodingLength: null,
     encode: null,
@@ -396,9 +396,9 @@ function defineKeystore () {
     Crypto
   ]
 
-  Keystore.encodingLength = encodingLength
-  Keystore.encode = encode
-  Keystore.decode = decode
+  KeyStore.encodingLength = encodingLength
+  KeyStore.encode = encode
+  KeyStore.decode = decode
 
   function encodingLength (obj) {
     var length = 0

@@ -1,4 +1,4 @@
-message Keystore {
+message KeyStore {
   uint32 version = 1;
   string address = 2;
   string id = 3;
