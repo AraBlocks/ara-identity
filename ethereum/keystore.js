@@ -10,12 +10,13 @@ const kIVBytes = 16
 const kScryptParameters = {
   memory: 280000000,
   dklen: 32,
+  kdf: 'scrypt',
   n: 262144,
   r: 1,
   p: 8
 }
 
-const kKDFFunction = 'scrypt'
+const kKDFFunction = kScryptParameters.kdf
 const kKDFParameters = kScryptParameters
 
 /**
