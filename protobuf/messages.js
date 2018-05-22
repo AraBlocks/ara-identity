@@ -144,7 +144,7 @@ function defineKeystore () {
         }
         if (defined(obj.salt)) {
           var len = enc[1].encodingLength(obj.salt)
-          length += 2 + len
+          length += 1 + len
         }
         return length
       }
@@ -184,8 +184,7 @@ function defineKeystore () {
           offset += enc[1].encode.bytes
         }
         if (defined(obj.salt)) {
-          buf[offset++] = 202
-          buf[offset++] = 3
+          buf[offset++] = 58
           enc[1].encode(obj.salt, buf, offset)
           offset += enc[1].encode.bytes
         }
@@ -240,7 +239,7 @@ function defineKeystore () {
             obj.prf = enc[1].decode(buf, offset)
             offset += enc[1].decode.bytes
             break
-            case 57:
+            case 7:
             obj.salt = enc[1].decode(buf, offset)
             offset += enc[1].decode.bytes
             break
