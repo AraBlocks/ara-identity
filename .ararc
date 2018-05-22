@@ -1,0 +1,3 @@
+;; Ethereum conf
+[web3]
+provider = http://127.0.0.1:9545
