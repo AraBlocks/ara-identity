@@ -23,7 +23,7 @@ message Keystore {
       uint64 p = 4;
       uint64 c = 5;
       string prf = 6;
-      string salt = 57;
+      string salt = 7;
     }
   }
 }
