@@ -1,12 +1,11 @@
 'use strict'
 
 const { createCFS } = require('cfsnet/create')
+const { archive } = require('./archive')
 const { keyPair } = require('./key-pair')
-const archiver = require('./archiver')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
-const pify = require('pify')
 const ddo = require('./ddo')
 const did = require('./did')
 const ram = require('random-access-memory')
@@ -85,7 +84,7 @@ async function create(opts) {
   encryptionKey.fill(0)
 
   if (opts.archive) {
-    await archiver.archive({cfs}, opts.archive)
+    await archive({cfs}, opts.archive)
   }
 
   return {
