@@ -19,6 +19,8 @@
   "dependencies": {
     "ara-context": "github:arablocks/ara-context",
     "ara-crypto": "github:arablocks/ara-crypto",
+    "ara-identity-archiver": "github:arablocks/ara-identity-archiver",
+    "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration",
     "cfsnet": "github:arablocks/cfsnet",
     "did-document": "github:AraBlocks/did-document",
     "did-document-public-key": "^0.1.2",
@@ -27,10 +29,13 @@
     "is-browser": "^2.0.1",
     "is-buffer": "^2.0.2",
     "keythereum": "^1.0.4",
+    "length-prefixed-message": "^3.0.3",
     "pify": "^3.0.0",
     "protocol-buffers": "^4.0.4",
+    "pump": "^3.0.0",
     "random-access-memory": "^3.0.0",
     "randombytes": "^2.0.6",
+    "through2": "^2.0.3",
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
