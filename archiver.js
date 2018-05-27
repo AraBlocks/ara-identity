@@ -10,7 +10,8 @@ const lpm = require('length-prefixed-message')
 const fs = require('fs')
 
 /**
-*/
+ *
+ */
 async function archive(identity, opts) {
   if (null == identity || 'object' != typeof identity) {
     throw new TypeError("ara-identity.archiver.archive: Expecting identity object.")
@@ -21,7 +22,7 @@ async function archive(identity, opts) {
   }
 
   // @TODO(jwerle): Remove this
-  const keystore = JSON.parse(await pify(fs.readFile)('keystore'))
+  const keystore = JSON.parse(await pify(fs.readFile)('keystore.pub'))
   const key = Buffer.alloc(16).fill('hello')
 
 
