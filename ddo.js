@@ -19,7 +19,7 @@ function create(opts) {
     throw new TypeError("ara-identifier.ddo.create: Expecting identifier.")
   }
 
-  return new DIDDocument({id})
+  return new DIDDocument(opts)
 }
 
 module.exports = {
