@@ -7,7 +7,6 @@ const crypto = require('ara-crypto')
 const pump = require('pump')
 const pify = require('pify')
 const lpm = require('length-prefixed-message')
-const fs = require('fs')
 
 /**
  *
@@ -21,27 +20,24 @@ async function archive(identity, opts) {
     throw new TypeError("ara-opts.archiver.archive: Expecting options object.")
   }
 
-  // @TODO(jwerle): Remove this
-  const keystore = JSON.parse(await pify(fs.readFile)('keystore.pub'))
-  const key = Buffer.alloc(16).fill('hello')
-
-
   const { cfs } = identity
-  const { discoveryKey, client, remote } = secrets.decrypt({keystore}, {key})
+  const { key, keystore } = opts
+  const keys = secrets.decrypt({keystore}, {key})
   const network = await createNetwork({
-    network: {key: discoveryKey},
+    discoveryKey: keys.discoveryKey,
+    network: keys.network,
+    remote: keys.remote,
+    client: keys.client,
     onstream,
-    remote, client,
   })
 
   network.swarm.setMaxListeners(Infinity)
   network.swarm.listen(0, () => {
-    network.swarm.join(discoveryKey)
+    network.swarm.join(keys.discoveryKey)
   })
 
   // @TODO(jwerle): Remove this
   await new Promise((resolve) => {
-    console.log('close');
     network.swarm.once('close', resolve)
   })
 
