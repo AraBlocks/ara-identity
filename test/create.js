@@ -6,5 +6,8 @@ const test = require('ava')
 
 test("create(opts)", async (t) => {
   // TODO(jwerle): More tests
-  t.true('object' == typeof await create({context, password: 'password'}))
+  t.true('object' == typeof await create({
+    context, password: 'password',
+    archive: { key: Buffer.from('hello') }
+  }))
 })
