@@ -2,9 +2,11 @@
 
 const { createCFS } = require('cfsnet/create')
 const { keyPair } = require('./key-pair')
+const archiver = require('./archiver')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
+const pify = require('pify')
 const ddo = require('./ddo')
 const did = require('./did')
 const ram = require('random-access-memory')
@@ -12,6 +14,9 @@ const ram = require('random-access-memory')
 /**
  * Creates a new ARA identity.
  * @public
+ * @param {Object} opts
+ * @return {Object}
+ * @throws TypeError
  */
 async function create(opts) {
   if (null == opts || 'object' != typeof opts) {
@@ -51,7 +56,7 @@ async function create(opts) {
     secretKey: secretKey,
     storage: ram,
     key: publicKey,
-    id: ddo.identifier,
+    id: didUri.identifier,
   })
 
   const encryptionIV = crypto.randomBytes(16)
@@ -79,10 +84,12 @@ async function create(opts) {
   encryptionIV.fill(0)
   encryptionKey.fill(0)
 
-  // TODO(jwerle): We need to broadcast CREATE for new identity
+  if (opts.archive) {
+    await archiver.archive({cfs}, opts.archive)
+  }
 
   return {
-    publicKey, secretKey, account, wallet,
+    publicKey, secretKey, account, wallet, cfs,
     ddo: didDocument,
     did: didUri,
   }
