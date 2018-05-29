@@ -21,7 +21,7 @@ async function archive(identity, opts) {
 
   Object.assign(opts, { onidentifier, onstream, onkey })
 
-  return await archiver.sync(opts)
+  return await archiver.sync.connect(opts)
 
   function onidentifier(connection, info) {
     return identity.cfs.identifier
