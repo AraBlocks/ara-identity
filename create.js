@@ -38,7 +38,6 @@ async function create(opts) {
 
   const { context, password } = opts
   const { web3 } = context
-  const { publicKey, secretKey } = keyPair()
 
   const { salt, iv } = await ethereum.keystore.create()
   const account = await ethereum.account.create({web3})
@@ -47,6 +46,8 @@ async function create(opts) {
     password, salt, iv,
     privateKey: wallet.getPrivateKey(),
   })
+
+  const { publicKey, secretKey } = keyPair(wallet.getPrivateKey())
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({id: didUri})
@@ -68,8 +69,13 @@ async function create(opts) {
 
   const files = {
     'ddo.json': JSON.stringify(didDocument),
-    'keystore': JSON.stringify(encryptedKeystore)
+    'keystore/eth': JSON.stringify(encryptedKeystore)
   }
+
+  const buffer = protobuf.messages.Identity.encode({
+    key: publicKey,
+    files: files
+  })
 
   const dec = crypto.decrypt(encryptedKeystore, {
     key: encryptionKey,
@@ -88,7 +94,7 @@ async function create(opts) {
   }
 
   return {
-    publicKey, secretKey, account, wallet, cfs,
+    publicKey, secretKey, account, wallet, buffer, cfs,
     ddo: didDocument,
     did: didUri,
   }
