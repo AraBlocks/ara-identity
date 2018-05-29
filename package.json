@@ -29,13 +29,11 @@
     "is-browser": "^2.0.1",
     "is-buffer": "^2.0.2",
     "keythereum": "^1.0.4",
-    "length-prefixed-message": "^3.0.3",
     "pify": "^3.0.0",
     "protocol-buffers": "^4.0.4",
-    "pump": "^3.0.0",
+    "protocol-buffers-encodings": "^1.1.0",
     "random-access-memory": "^3.0.0",
     "randombytes": "^2.0.6",
-    "through2": "^2.0.3",
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
