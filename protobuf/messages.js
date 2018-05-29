@@ -17,7 +17,15 @@ var KeyStore = exports.KeyStore = {
   decode: null
 }
 
+var Identity = exports.Identity = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
 defineKeyStore()
+defineIdentity()
 
 function defineKeyStore () {
   var Crypto = KeyStore.Crypto = {
@@ -489,6 +497,85 @@ function defineKeyStore () {
         offset += varint.decode.bytes
         obj.crypto = enc[2].decode(buf, offset, offset + len)
         offset += enc[2].decode.bytes
+        break
+        default:
+        offset = skip(prefix & 7, buf, offset)
+      }
+    }
+  }
+}
+
+function defineIdentity () {
+  var enc = [
+    encodings.bytes
+  ]
+
+  Identity.encodingLength = encodingLength
+  Identity.encode = encode
+  Identity.decode = decode
+
+  function encodingLength (obj) {
+    var length = 0
+    if (defined(obj.key)) {
+      var len = enc[0].encodingLength(obj.key)
+      length += 1 + len
+    }
+    if (defined(obj.secrets)) {
+      for (var i = 0; i < obj.secrets.length; i++) {
+        if (!defined(obj.secrets[i])) continue
+        var len = enc[0].encodingLength(obj.secrets[i])
+        length += 1 + len
+      }
+    }
+    return length
+  }
+
+  function encode (obj, buf, offset) {
+    if (!offset) offset = 0
+    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+    var oldOffset = offset
+    if (defined(obj.key)) {
+      buf[offset++] = 10
+      enc[0].encode(obj.key, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.secrets)) {
+      for (var i = 0; i < obj.secrets.length; i++) {
+        if (!defined(obj.secrets[i])) continue
+        buf[offset++] = 18
+        enc[0].encode(obj.secrets[i], buf, offset)
+        offset += enc[0].encode.bytes
+      }
+    }
+    encode.bytes = offset - oldOffset
+    return buf
+  }
+
+  function decode (buf, offset, end) {
+    if (!offset) offset = 0
+    if (!end) end = buf.length
+    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+    var oldOffset = offset
+    var obj = {
+      key: null,
+      secrets: []
+    }
+    while (true) {
+      if (end <= offset) {
+        decode.bytes = offset - oldOffset
+        return obj
+      }
+      var prefix = varint.decode(buf, offset)
+      offset += varint.decode.bytes
+      var tag = prefix >> 3
+      switch (tag) {
+        case 1:
+        obj.key = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 2:
+        obj.secrets.push(enc[0].decode(buf, offset))
+        offset += enc[0].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)

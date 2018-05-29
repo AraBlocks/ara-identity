@@ -27,3 +27,13 @@ message KeyStore {
     }
   }
 }
+
+message Identity {
+   bytes key = 1;
+   repeated File files = 2;
+
+  message File {
+    string path = 1;
+    bytes buffer = 2;
+  }
+}
