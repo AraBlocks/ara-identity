@@ -506,8 +506,92 @@ function defineKeyStore () {
 }
 
 function defineIdentity () {
+  var File = Identity.File = {
+    buffer: true,
+    encodingLength: null,
+    encode: null,
+    decode: null
+  }
+
+  defineFile()
+
+  function defineFile () {
+    var enc = [
+      encodings.string,
+      encodings.bytes
+    ]
+
+    File.encodingLength = encodingLength
+    File.encode = encode
+    File.decode = decode
+
+    function encodingLength (obj) {
+      var length = 0
+      if (defined(obj.path)) {
+        var len = enc[0].encodingLength(obj.path)
+        length += 1 + len
+      }
+      if (defined(obj.buffer)) {
+        var len = enc[1].encodingLength(obj.buffer)
+        length += 1 + len
+      }
+      return length
+    }
+
+    function encode (obj, buf, offset) {
+      if (!offset) offset = 0
+      if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+      var oldOffset = offset
+      if (defined(obj.path)) {
+        buf[offset++] = 10
+        enc[0].encode(obj.path, buf, offset)
+        offset += enc[0].encode.bytes
+      }
+      if (defined(obj.buffer)) {
+        buf[offset++] = 18
+        enc[1].encode(obj.buffer, buf, offset)
+        offset += enc[1].encode.bytes
+      }
+      encode.bytes = offset - oldOffset
+      return buf
+    }
+
+    function decode (buf, offset, end) {
+      if (!offset) offset = 0
+      if (!end) end = buf.length
+      if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+      var oldOffset = offset
+      var obj = {
+        path: "",
+        buffer: null
+      }
+      while (true) {
+        if (end <= offset) {
+          decode.bytes = offset - oldOffset
+          return obj
+        }
+        var prefix = varint.decode(buf, offset)
+        offset += varint.decode.bytes
+        var tag = prefix >> 3
+        switch (tag) {
+          case 1:
+          obj.path = enc[0].decode(buf, offset)
+          offset += enc[0].decode.bytes
+          break
+          case 2:
+          obj.buffer = enc[1].decode(buf, offset)
+          offset += enc[1].decode.bytes
+          break
+          default:
+          offset = skip(prefix & 7, buf, offset)
+        }
+      }
+    }
+  }
+
   var enc = [
-    encodings.bytes
+    encodings.bytes,
+    File
   ]
 
   Identity.encodingLength = encodingLength
@@ -520,10 +604,11 @@ function defineIdentity () {
       var len = enc[0].encodingLength(obj.key)
       length += 1 + len
     }
-    if (defined(obj.secrets)) {
-      for (var i = 0; i < obj.secrets.length; i++) {
-        if (!defined(obj.secrets[i])) continue
-        var len = enc[0].encodingLength(obj.secrets[i])
+    if (defined(obj.files)) {
+      for (var i = 0; i < obj.files.length; i++) {
+        if (!defined(obj.files[i])) continue
+        var len = enc[1].encodingLength(obj.files[i])
+        length += varint.encodingLength(len)
         length += 1 + len
       }
     }
@@ -539,12 +624,14 @@ function defineIdentity () {
       enc[0].encode(obj.key, buf, offset)
       offset += enc[0].encode.bytes
     }
-    if (defined(obj.secrets)) {
-      for (var i = 0; i < obj.secrets.length; i++) {
-        if (!defined(obj.secrets[i])) continue
+    if (defined(obj.files)) {
+      for (var i = 0; i < obj.files.length; i++) {
+        if (!defined(obj.files[i])) continue
         buf[offset++] = 18
-        enc[0].encode(obj.secrets[i], buf, offset)
-        offset += enc[0].encode.bytes
+        varint.encode(enc[1].encodingLength(obj.files[i]), buf, offset)
+        offset += varint.encode.bytes
+        enc[1].encode(obj.files[i], buf, offset)
+        offset += enc[1].encode.bytes
       }
     }
     encode.bytes = offset - oldOffset
@@ -558,7 +645,7 @@ function defineIdentity () {
     var oldOffset = offset
     var obj = {
       key: null,
-      secrets: []
+      files: []
     }
     while (true) {
       if (end <= offset) {
@@ -574,8 +661,10 @@ function defineIdentity () {
         offset += enc[0].decode.bytes
         break
         case 2:
-        obj.secrets.push(enc[0].decode(buf, offset))
-        offset += enc[0].decode.bytes
+        var len = varint.decode(buf, offset)
+        offset += varint.decode.bytes
+        obj.files.push(enc[1].decode(buf, offset, offset + len))
+        offset += enc[1].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)
