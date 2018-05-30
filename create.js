@@ -67,12 +67,22 @@ async function create(opts) {
     iv: encryptionIV,
   })
 
-  const files = [
-    {path: 'ddo.json', buffer: JSON.stringify(didDocument)},
-    {path: 'keystore/eth', buffer: JSON.stringify(encryptedKeystore)},
-  ]
+  const files = [{
+    path: 'ddo.json',
+    buffer: Buffer.from(JSON.stringify(didDocument))
+  }, {
+    path: 'keystore/eth',
+    buffer: Buffer.from(JSON.stringify(encryptedKeystore))
+  }]
 
-  const buffer = protobuf.messages.Identity.encode({ key: publicKey, files })
+  const buffer = protobuf.messages.Identity.encode({
+    key: publicKey,
+    // convert file contents and path to hex
+    files: files.map(({path, buffer}) => ({
+      path: Buffer.from(path).toString('hex'),
+      buffer: Buffer.from(buffer.toString('hex'))
+    }))
+  })
 
   for (const file of files) {
     await cfs.writeFile(file.path, file.buffer)
