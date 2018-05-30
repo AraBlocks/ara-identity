@@ -86,7 +86,7 @@ async function create(opts) {
     // ISO timestamp
     created: (new Date()).toISOString(),
     creator: didUri.did + '#keys-1',
-    signature: crypto.sign(publicKey, secretKey)
+    signature: crypto.sign(publicKey, secretKey).toString('hex')
   })
 
   const files = [{
