@@ -1,3 +1,9 @@
 ;; Ethereum conf
 [web3]
-provider = http://127.0.0.1:9545
+;provider = http://127.0.0.1:9545 ;; truffle
+provider = http://127.0.0.1:8545 ;; geth
+
+;; Identity network configuration
+[network.identity]
+key = test
+keystore = keystore.pub
