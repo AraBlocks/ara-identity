@@ -1,0 +1,134 @@
+#!/usr/bin/env node
+
+const { info, warn, error } = require('ara-console')
+const { basename, resolve } = require('path')
+const { create } = require('../create')
+const inquirer = require('inquirer')
+const context = require('ara-context')()
+const program = require('yargs')
+const debug = require('debug')('ara:identity')
+const pify = require('pify')
+const rc = require('ara-runtime-configuration')()
+const fs = require('fs')
+
+const conf = rc.network && rc.network.identity ? rc.network.identity : {}
+const noop = () => void 0
+const $0 = basename(process.argv[1] || package.name)
+
+const { argv } = program
+  .usage("$0 [-hDV] [...options] <command> [...options]")
+  .option('force', {
+    alias: 'f',
+    type: 'boolean',
+    describe: "Force actions without prompt",
+  })
+  .option('debug', {
+    type: 'boolean',
+    alias: 'D',
+    describe: "Enable debug output",
+  })
+  .option('help', {
+    alias: 'h',
+    describe: "Show this help message"
+  })
+  .option('version', {
+    alias: 'V',
+    describe: "Show program version"
+  })
+  .option('keystore', {
+    alias: 'K',
+    type: 'string',
+    describe: "Network keystore file path",
+    default: conf.keystore,
+  })
+  .option('key', {
+    alias: 'k',
+    type: 'string',
+    describe: "Network key name",
+    default: conf.key,
+  })
+  .option('output', {
+    alias: 'o',
+    type: 'string',
+    describe: "Output file name",
+    default: 'identity',
+  })
+  .command('create', "Create an identity", noop, oncreate)
+  .command('resolve', "Resolve an identity", noop, onresolve)
+
+process.on('unhandledRejection', onfatal)
+process.on('uncaughtException', onfatal)
+
+void async function main() {
+  if (program.argv.debug) {
+    require('debug').enable('ara:identity*')
+  }
+}()
+
+async function oncreate(argv) {
+  if (null == argv.key) {
+    onfatal(new Error("Expecting network key."))
+  }
+
+  if (null == argv.keystore) {
+    onfatal(new Error("Expecting network keystore file."))
+  }
+
+  const output = resolve(process.cwd(), argv.output)
+  try {
+    await pify(fs.access)(output)
+    if (true !== argv.force) {
+      const { overwrite } = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'overwrite',
+        message: `Overwrite file (${output})?`,
+        default: false,
+      }])
+
+      if (true !== overwrite) {
+        return process.exit(1)
+      }
+    }
+  } catch (err) { }
+
+  const stream = fs.createWriteStream(output)
+  const key = Buffer.allocUnsafe(16).fill(argv.key)
+  const keystorePath = resolve(process.cwd(), argv.keystore)
+
+  try { await pify(fs.access)(keystorePath) }
+  catch (err) {
+    debug(err)
+    onfatal(new Error(`Couldn't file keystore file: ${keystorePath}`))
+  }
+
+  warn("Reading keystore '%s'.", keystorePath)
+
+  const secrets = await pify(fs.readFile)(keystorePath)
+  const { keystore } = JSON.parse(secrets)
+
+  const { password } = await inquirer.prompt([
+    { type: 'password',
+      name: 'password',
+      message:
+      "Your identity's Ethereum keystore will be secured by a passphrase. " +
+      "Please provide a passphrase. Do not forget this as it will never be shown to you.\n"+
+      "Passphrase:" }
+  ])
+
+  warn("Creating new identity for network '%s'.", argv.key)
+  const identity = await create({
+    context, password, archive: { keystore, key },
+  })
+
+  warn("New identity: %s", identity.did)
+  stream.write(identity.buffer)
+}
+
+async function onresolve(argv) {
+}
+
+function onfatal(err) {
+  debug(err)
+  error("fatal:", err.message)
+  process.exit(1)
+}
