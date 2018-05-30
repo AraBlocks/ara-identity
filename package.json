@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Create and resolve decentralized identity based Ara identifiers.",
   "main": "index.js",
+  "bin": {
+    "ara-identity": "bin/ara-identity",
+    "aid": "bin/ara-identity"
+  },
   "scripts": {
     "truffle": "truffle develop",
     "test": "ava test"
@@ -17,6 +21,7 @@
   "author": "Joseph Werle <werle@littlstar.com>",
   "license": "LGPL-3.0",
   "dependencies": {
+    "ara-console": "github:arablocks/ara-console",
     "ara-context": "github:arablocks/ara-context",
     "ara-crypto": "github:arablocks/ara-crypto",
     "ara-identity-archiver": "github:arablocks/ara-identity-archiver",
@@ -26,6 +31,7 @@
     "did-document-public-key": "^0.1.2",
     "did-uri": "^0.2.4",
     "ethereumjs-wallet": "^0.6.0",
+    "inquirer": "^5.2.0",
     "is-browser": "^2.0.1",
     "is-buffer": "^2.0.2",
     "keythereum": "^1.0.4",
@@ -34,7 +40,8 @@
     "protocol-buffers-encodings": "^1.1.0",
     "random-access-memory": "^3.0.0",
     "randombytes": "^2.0.6",
-    "web3": "^1.0.0-beta.34"
+    "web3": "^1.0.0-beta.34",
+    "yargs": "^11.0.0"
   },
   "devDependencies": {
     "ava": "^0.25.0",
