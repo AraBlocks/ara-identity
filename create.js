@@ -1,5 +1,7 @@
 'use strict'
 
+const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
+const { PublicKey } = require('did-document/public-key')
 const { createCFS } = require('cfsnet/create')
 const { archive } = require('./archive')
 const { keyPair } = require('./key-pair')
@@ -65,6 +67,26 @@ async function create(opts) {
   const encryptedKeystore = crypto.encrypt(encodedKeystore, {
     key: encryptionKey,
     iv: encryptionIV,
+  })
+
+  didDocument.addPublicKey(new PublicKey({
+    id: didUri.did + '#keys-1',
+    type: kEd25519VerificationKey2018,
+    owner: didUri.did,
+
+    // public key variants
+    publicKeyHex: publicKey.toString('hex'),
+    publicKeyBase64: crypto.base64.encode(publicKey).toString(),
+    publicKeyBase58: crypto.base58.encode(publicKey).toString(),
+  }))
+
+  didDocument.proof({
+    // from ld-cryptosuite-registry'
+    type: kEd25519VerificationKey2018,
+    // ISO timestamp
+    created: (new Date()).toISOString(),
+    creator: didUri.did + '#keys-1',
+    signature: crypto.sign(publicKey, secretKey)
   })
 
   const files = [{
