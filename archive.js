@@ -19,20 +19,24 @@ async function archive(identity, opts) {
     throw new TypeError("ara-opts.archiver.archive: Expecting options object.")
   }
 
-  Object.assign(opts, { onidentifier, onstream, onkey })
+  Object.assign(opts, { onidentifier, onstream, onkey, onend })
 
-  return await archiver.sync.connect(opts)
+  const { network } = await archiver.sync.connect(opts)
 
   function onidentifier(connection, info) {
     return identity.cfs.identifier
   }
 
   function onstream(connection, info) {
-    return identity.cfs.replicate({upload: true, download: false})
+    return identity.cfs.replicate({ live: false })
   }
 
   function onkey(connection, info) {
     return identity.cfs.key
+  }
+
+  function onend(connection, info) {
+    network.swarm.destroy()
   }
 }
 
