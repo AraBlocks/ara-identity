@@ -5,6 +5,7 @@ const { PublicKey } = require('did-document/public-key')
 const { createCFS } = require('cfsnet/create')
 const { archive } = require('./archive')
 const { keyPair } = require('./key-pair')
+const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
@@ -58,7 +59,7 @@ async function create(opts) {
     secretKey: secretKey,
     storage: ram,
     key: publicKey,
-    id: didUri.identifier,
+    id: toHex(publicKey),
   })
 
   const encryptionIV = crypto.randomBytes(16)
@@ -75,7 +76,7 @@ async function create(opts) {
     owner: didUri.did,
 
     // public key variants
-    publicKeyHex: publicKey.toString('hex'),
+    publicKeyHex: toHex(publicKey),
     publicKeyBase64: crypto.base64.encode(publicKey).toString(),
     publicKeyBase58: crypto.base58.encode(publicKey).toString(),
   }))
@@ -86,7 +87,7 @@ async function create(opts) {
     // ISO timestamp
     created: (new Date()).toISOString(),
     creator: didUri.did + '#keys-1',
-    signature: crypto.sign(publicKey, secretKey).toString('hex')
+    signature: toHex(crypto.sign(publicKey, secretKey))
   })
 
   const files = [{
@@ -99,11 +100,7 @@ async function create(opts) {
 
   const buffer = protobuf.messages.Identity.encode({
     key: publicKey,
-    // convert file contents and path to hex
-    files: files.map(({path, buffer}) => ({
-      path: Buffer.from(path).toString('hex'),
-      buffer: Buffer.from(buffer.toString('hex'))
-    }))
+    files: files,
   })
 
   for (const file of files) {
