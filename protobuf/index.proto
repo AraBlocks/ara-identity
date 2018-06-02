@@ -29,8 +29,14 @@ message KeyStore {
 }
 
 message Identity {
-   bytes key = 1;
-   repeated File files = 2;
+  string did = 1;
+  bytes key = 2;
+  Proof proof = 3;
+  repeated File files = 4;
+
+  message Proof {
+    bytes signature = 1;
+  }
 
   message File {
     string path = 1;
