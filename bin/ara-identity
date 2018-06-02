@@ -2,12 +2,12 @@
 
 const { info, warn, error } = require('ara-console')
 const { basename, resolve } = require('path')
-const { create } = require('../create')
 const inquirer = require('inquirer')
 const context = require('ara-context')()
 const program = require('yargs')
 const debug = require('debug')('ara:identity')
 const pify = require('pify')
+const aid = require('../')
 const rc = require('ara-runtime-configuration')()
 const fs = require('fs')
 
@@ -35,11 +35,11 @@ const { argv } = program
     alias: 'V',
     describe: "Show program version"
   })
-  .option('keystore', {
+  .option('keys', {
     alias: 'K',
     type: 'string',
-    describe: "Network keystore file path",
-    default: conf.keystore,
+    describe: "Directory containing keystores",
+    default: conf.keys,
   })
   .option('key', {
     alias: 'k',
@@ -54,7 +54,14 @@ const { argv } = program
     default: 'identity',
   })
   .command('create', "Create an identity", noop, oncreate)
-  .command('resolve', "Resolve an identity", noop, onresolve)
+  .command('resolve [did]', "Resolve an identity",
+    (program) => {
+      program.positional('did', {
+        type: 'string',
+        describe: "An ARA decentralized identity (did) URI"
+      })
+    }, onresolve)
+  .command('stat', "Show stats about an identity file", noop, onstat)
 
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
@@ -70,8 +77,8 @@ async function oncreate(argv) {
     onfatal(new Error("Expecting network key."))
   }
 
-  if (null == argv.keystore) {
-    onfatal(new Error("Expecting network keystore file."))
+  if (null == argv.keys) {
+    onfatal(new Error("Expecting network keystore file path."))
   }
 
   const output = resolve(process.cwd(), argv.output)
@@ -91,9 +98,10 @@ async function oncreate(argv) {
     }
   } catch (err) { }
 
+  const key = argv.key
   const stream = fs.createWriteStream(output)
-  const key = Buffer.allocUnsafe(16).fill(argv.key)
-  const keystorePath = resolve(process.cwd(), argv.keystore)
+  const keystorePath = resolve(
+    process.cwd(), argv.keys, 'archiver', 'keystore.pub')
 
   try { await pify(fs.access)(keystorePath) }
   catch (err) {
@@ -103,28 +111,65 @@ async function oncreate(argv) {
 
   warn("Reading keystore '%s'.", keystorePath)
 
-  const secrets = await pify(fs.readFile)(keystorePath)
-  const { keystore } = JSON.parse(secrets)
-
   const { password } = await inquirer.prompt([
     { type: 'password',
       name: 'password',
       message:
       "Your identity's Ethereum keystore will be secured by a passphrase. " +
-      "Please provide a passphrase. Do not forget this as it will never be shown to you.\n"+
+      "Please provide a passphrase. Do not forget this as it will never be " +
+      "shown to you.\n"+
       "Passphrase:" }
   ])
 
   warn("Creating new identity for network '%s'.", argv.key)
-  const identity = await create({
+  const secrets = await pify(fs.readFile)(keystorePath)
+  const { keystore } = JSON.parse(secrets)
+
+  const identity = await aid.create({
     context, password, archive: { keystore, key },
   })
 
-  warn("New identity: %s", identity.did)
+  info("New: %s", identity.did)
+  info("Try: ara resolve %s", identity.did)
   stream.write(identity.buffer)
 }
 
 async function onresolve(argv) {
+  if (null == argv.key) {
+    onfatal(new Error("Expecting network key."))
+  }
+
+  if (null == argv.keys) {
+    onfatal(new Error("Expecting network keystore file path."))
+  }
+
+  if (null == argv.did) {
+    onfatal(new Expecting("Expecting DID URI to resolve."))
+  }
+
+  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
+    onfatal(new Error("Expecting a did URI with an 'ara' method."))
+  }
+
+  if (0 != argv.did.indexOf('did:ara:')) {
+    argv.did = 'did:ara:' + argv.did
+  }
+
+  const keystorePath = resolve(process.cwd(), argv.keys, 'resolver', 'keystore.pub')
+
+  try {
+    const key = argv.key
+    const secrets = await pify(fs.readFile)(keystorePath)
+    const { keystore } = JSON.parse(secrets)
+    const identity = await aid.resolve(argv.did, { context, keystore, key })
+    console.log(JSON.stringify(identity))
+  } catch (err) {
+    onfatal(err)
+  }
+
+}
+
+async function onstat(argv) {
 }
 
 function onfatal(err) {
