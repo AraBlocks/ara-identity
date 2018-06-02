@@ -2,6 +2,7 @@
 
 const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { PublicKey } = require('did-document/public-key')
+const { normalize } = require('did-document/normalize')
 const { createCFS } = require('cfsnet/create')
 const { archive } = require('./archive')
 const { keyPair } = require('./key-pair')
@@ -71,7 +72,7 @@ async function create(opts) {
   })
 
   didDocument.addPublicKey(new PublicKey({
-    id: didUri.did + '#keys-1',
+    id: didUri.did + '#owner',
     type: kEd25519VerificationKey2018,
     owner: didUri.did,
 
@@ -81,13 +82,18 @@ async function create(opts) {
     publicKeyBase58: crypto.base58.encode(publicKey).toString(),
   }))
 
+
+  // sign the DDO for the proof
+  const digest = didDocument.digest(crypto.blake2b)
   didDocument.proof({
     // from ld-cryptosuite-registry'
     type: kEd25519VerificationKey2018,
+    nonce: crypto.randomBytes(32).toString('hex'),
+    domain: 'ara',
     // ISO timestamp
     created: (new Date()).toISOString(),
-    creator: didUri.did + '#keys-1',
-    signature: toHex(crypto.sign(publicKey, secretKey))
+    creator: didUri.did + '#owner',
+    signatureValue: toHex(crypto.sign(digest, secretKey))
   })
 
   const files = [{
@@ -98,14 +104,29 @@ async function create(opts) {
     buffer: Buffer.from(JSON.stringify(encryptedKeystore))
   }]
 
-  const buffer = protobuf.messages.Identity.encode({
+  // the intermediate value are the identity fields with
+  // the proof field missing
+  const intermediate = protobuf.messages.Identity.encode({
+    did: didUri.did,
     key: publicKey,
     files: files,
+  })
+
+  const buffer = protobuf.messages.Identity.encode({
+    did: didUri.did,
+    key: publicKey,
+    files: files,
+
+    // sign intermediate to get identity signature
+    proof: { signature: crypto.sign(intermediate, secretKey) }
   })
 
   for (const file of files) {
     await cfs.writeFile(file.path, file.buffer)
   }
+
+  // write identity file
+  await cfs.writeFile('identity', buffer)
 
   encryptionIV.fill(0)
   encryptionKey.fill(0)
