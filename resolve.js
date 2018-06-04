@@ -56,7 +56,7 @@ async function findResolution(did, opts) {
   const resolvers = []
 
   return pify((done) => {
-    let timeout = setTimeout(doResolution, 100)
+    let timeout = setTimeout(doResolution, 1000)
 
     channel.on('peer', onpeer)
     channel.join(keys.discoveryKey)
