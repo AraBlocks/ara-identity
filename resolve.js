@@ -14,6 +14,7 @@ const fs = require('fs')
 const rc = require('./rc')()
 
 const kDIDIdentifierLength = 64
+const kResolutionTimeout = 5000 // in milliseconds
 const kDIDMethod = 'ara'
 const kMaxMeers = 8
 
@@ -46,23 +47,27 @@ async function resolve(uri, opts) {
       }
     } catch (err) { debug(err) }
   }
+
   return await findResolution(did, opts)
 }
 
 async function findResolution(did, opts) {
-  const channel = createChannel()
   const { key, keystore } = opts
-  const keys = secrets.decrypt({keystore}, {key})
   const resolvers = []
+  const channel = createChannel()
+  const keys = secrets.decrypt({keystore}, {key})
+  let timeout = null
+
+  if (null == opts.timeout || 'number' != typeof opts.timeout) {
+    opts.timeout = kResolutionTimeout
+  }
 
   return pify((done) => {
-    let timeout = setTimeout(doResolution, 5000)
-
     channel.on('peer', onpeer)
     channel.join(keys.discoveryKey)
+    timeout = setTimeout(doResolution, opts.timeout)
 
     function onpeer(id, peer, type) {
-      clearTimeout(timeout)
       if (resolvers.push({id, peer, type}) < kMaxMeers) {
         doResolution()
       } else {
@@ -71,8 +76,9 @@ async function findResolution(did, opts) {
     }
 
     async function doResolution() {
+      clearTimeout(timeout)
+      timeout = setTimeout(doResolution, opts.timeout)
       if (resolvers.length) {
-        clearTimeout(timeout)
         const { peer } = resolvers.shift()
         const { host, port } = peer
         const uri = `http://${host}:${port}/1.0/identifiers/${did.did}`
