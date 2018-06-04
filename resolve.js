@@ -2,9 +2,16 @@
 
 const { createChannel } = require('ara-network/channel')
 const secrets = require('ara-network/secrets')
+const { toHex } = require('./util')
+const protobuf = require('./protobuf')
 const { DID } = require('did-uri')
+const crypto = require('ara-crypto')
+const debug = require('debug')('ara:identity:resolve')
 const fetch = require('got')
+const path = require('path')
 const pify = require('pify')
+const fs = require('fs')
+const rc = require('./rc')()
 
 const kDIDIdentifierLength = 64
 const kDIDMethod = 'ara'
@@ -23,9 +30,23 @@ async function resolve(uri, opts) {
     throw new TypeError("resolve: Invalid DID identifier length.")
   }
 
-  const result = await findResolution(did, opts)
+  const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
+  const file = path.resolve(rc.network.identity.root, hash, 'identity')
 
-  return result
+  if (false !== opts.cache) {
+    try {
+      await pify(fs.access)(file)
+      const buffer = await pify(fs.readFile)(file)
+      const identity = protobuf.messages.Identity.decode(buffer)
+      for (const k in identity.files) {
+        const { path, buffer } = identity.files[k]
+        if ('ddo.json' == path) {
+          return JSON.parse(buffer)
+        }
+      }
+    } catch (err) { debug(err) }
+  }
+  return await findResolution(did, opts)
 }
 
 async function findResolution(did, opts) {
@@ -35,7 +56,7 @@ async function findResolution(did, opts) {
   const resolvers = []
 
   return pify((done) => {
-    let timeout = setTimeout(doResolution, 250)
+    let timeout = setTimeout(doResolution, 100)
 
     channel.on('peer', onpeer)
     channel.join(keys.discoveryKey)
@@ -43,7 +64,7 @@ async function findResolution(did, opts) {
     function onpeer(id, peer, type) {
       clearTimeout(timeout)
       if (resolvers.push({id, peer, type}) < kMaxMeers) {
-        timeout = setTimeout(doResolution)
+        doResolution()
       } else {
         cleanup()
       }
