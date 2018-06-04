@@ -1,5 +1,6 @@
 'use strict'
 
+const { archive } = require('./archive')
 const { resolve } = require('./resolve')
 const { create } = require('./create')
 const ethereum = require('./ethereum')
@@ -11,6 +12,7 @@ const did = require('./did')
 module.exports = {
   ethereum,
   keyPair,
+  archive,
   resolve,
   create,
   util,
