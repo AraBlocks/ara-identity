@@ -1,5 +1,6 @@
 'use strict'
 
+const { createServer } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { dirname } = require('path')
 const { toHex } = require('./util')
@@ -38,13 +39,34 @@ async function archive(identity, opts) {
     await cfs.writeFile(file.path, file.buffer)
   }
 
-  Object.assign(opts, { onidentifier, onstream, onkey, onend })
+  Object.assign(opts, { onidentifier, onkey, onend })
 
+  let timeout = null
   let retries = opts.retries || 3
   const result = { network: null }
-  let timeout = null
+
   await connect()
   clearTimeout(timeout)
+
+  await new Promise((resolve, reject) => {
+    const discovery = createServer({
+      stream() {
+        const stream = cfs.replicate({live: false})
+        stream.once('end', onend)
+        return stream
+      }
+    })
+
+    discovery.join(cfs.discoveryKey)
+    discovery.once('error', onend)
+
+    function onend(err) {
+      if (err && err instanceof Error) { reject(err) }
+      else { resolve() }
+      discovery.destroy()
+    }
+  })
+
   return result
 
   async function connect() {
@@ -70,10 +92,6 @@ async function archive(identity, opts) {
 
   function onidentifier(connection, info) {
     return cfs.identifier
-  }
-
-  function onstream(connection, info) {
-    return cfs.replicate({ live: false })
   }
 
   function onkey(connection, info) {
