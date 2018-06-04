@@ -16,7 +16,8 @@ function encrypt(keys, secretKey) {
 }
 
 function decrypt(doc, secretKey) {
-  const buffer = crypto.decrypt(doc, {secretKey})
+  const key = secretKey.slice(0, 16)
+  const buffer = crypto.decrypt(doc, {key})
   const keys = protobuf.messages.Keys.decode(buffer)
   return keys
 }
