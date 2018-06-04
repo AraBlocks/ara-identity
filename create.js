@@ -3,16 +3,15 @@
 const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { PublicKey } = require('did-document/public-key')
 const { normalize } = require('did-document/normalize')
-const { createCFS } = require('cfsnet/create')
 const { archive } = require('./archive')
 const { keyPair } = require('./key-pair')
 const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
+const secrets = require('./secrets')
 const crypto = require('ara-crypto')
 const ddo = require('./ddo')
 const did = require('./did')
-const ram = require('random-access-memory')
 
 /**
  * Creates a new ARA identity.
@@ -40,31 +39,23 @@ async function create(opts) {
     throw new TypeError("ara-identity.create: Expecting password to be a string.")
   }
 
-  const { context, password } = opts
+  const { context } = opts
   const { web3 } = context
-
+  const password = crypto.blake2b(Buffer.from(opts.password))
   const { salt, iv } = await ethereum.keystore.create()
   const account = await ethereum.account.create({web3})
   const wallet = await ethereum.wallet.load({account})
-  const kstore = await ethereum.keystore.dump({
-    password, salt, iv,
+  const kstore = await ethereum.keystore.dump({ password, salt, iv,
     privateKey: wallet.getPrivateKey(),
   })
 
-  const { publicKey, secretKey } = keyPair(wallet.getPrivateKey())
+  const { publicKey, secretKey } = keyPair(password)
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({id: didUri})
 
-  const cfs = await createCFS({
-    secretKey: secretKey,
-    storage: ram,
-    key: publicKey,
-    id: toHex(publicKey),
-  })
-
   const encryptionIV = crypto.randomBytes(16)
-  const encryptionKey = secretKey.slice(0, 16)
+  const encryptionKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
   const encodedKeystore = protobuf.messages.KeyStore.encode(kstore)
   const encryptedKeystore = crypto.encrypt(encodedKeystore, {
     key: encryptionKey,
@@ -112,31 +103,30 @@ async function create(opts) {
     files: files,
   })
 
-  const buffer = protobuf.messages.Identity.encode({
-    did: didUri.did,
-    key: publicKey,
-    files: files,
+  files.push({
+    path: 'identity',
+    buffer: protobuf.messages.Identity.encode({
+      did: didUri.did,
+      key: publicKey,
+      files: files,
 
-    // sign intermediate to get identity signature
-    proof: { signature: crypto.sign(intermediate, secretKey) }
+      // sign intermediate to get identity signature
+      proof: { signature: crypto.sign(intermediate, secretKey) }
+    }),
   })
 
-  for (const file of files) {
-    await cfs.writeFile(file.path, file.buffer)
-  }
-
-  // write identity file
-  await cfs.writeFile('identity', buffer)
+  files.push({
+    path: 'keys',
+    buffer: Buffer.from(JSON.stringify(
+      secrets.encrypt( [{publicKey, secretKey}], password)
+    ))
+  })
 
   encryptionIV.fill(0)
   encryptionKey.fill(0)
 
-  if (opts.archive) {
-    await archive({cfs}, opts.archive)
-  }
-
   return {
-    publicKey, secretKey, account, wallet, buffer, cfs,
+    publicKey, secretKey, account, wallet, files,
     ddo: didDocument,
     did: didUri,
   }
