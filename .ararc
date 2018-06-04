@@ -5,5 +5,3 @@ provider = http://127.0.0.1:8545 ;; geth
 
 ;; Identity network configuration
 [network.identity]
-keys = keys/
-key = test
