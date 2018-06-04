@@ -66,9 +66,23 @@ const { argv } = program
         describe: "An ARA decentralized identity (did) URI"
       })
       .option('cache', {
+        alias: 'C',
+        type: 'boolean',
+        describe: "Enable or disable cache",
+      })
+      .option('no-cache', {
+        type: 'boolean',
+        describe: "Disable cache",
+      })
+      .option('cache', {
         alias: 'A',
         type: 'boolean',
         describe: "Skip identity cache",
+      })
+      .option('timeout', {
+        alias: 't',
+        type: 'number',
+        describe: "Resolution timeout",
       })
   }, onresolve)
   .command('archive [did]', "Archive identity in network", (program) => {
@@ -153,7 +167,8 @@ async function onresolve(argv) {
     if (doc.public) { keystore = doc.public.keystore }
     else if (doc.secret) { keystore = doc.public.keystore }
     const identity = await aid.resolve(argv.did, { context, keystore,
-      cache: argv.cache,
+      timeout: argv.timeout,
+      cache: argv['no-cache'] ? false : argv.cache ? true : false,
       key: argv.key,
     })
     console.log(JSON.stringify(identity))
