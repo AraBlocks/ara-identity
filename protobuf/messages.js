@@ -24,8 +24,24 @@ var Identity = exports.Identity = {
   decode: null
 }
 
+var Keys = exports.Keys = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
+var KeyPair = exports.KeyPair = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
 defineKeyStore()
 defineIdentity()
+defineKeys()
+defineKeyPair()
 
 function defineKeyStore () {
   var Crypto = KeyStore.Crypto = {
@@ -767,6 +783,164 @@ function defineIdentity () {
         offset += varint.decode.bytes
         obj.files.push(enc[3].decode(buf, offset, offset + len))
         offset += enc[3].decode.bytes
+        break
+        default:
+        offset = skip(prefix & 7, buf, offset)
+      }
+    }
+  }
+}
+
+function defineKeys () {
+  var enc = [
+    encodings.bytes,
+    KeyPair
+  ]
+
+  Keys.encodingLength = encodingLength
+  Keys.encode = encode
+  Keys.decode = decode
+
+  function encodingLength (obj) {
+    var length = 0
+    if (defined(obj.signature)) {
+      var len = enc[0].encodingLength(obj.signature)
+      length += 1 + len
+    }
+    if (defined(obj.keys)) {
+      for (var i = 0; i < obj.keys.length; i++) {
+        if (!defined(obj.keys[i])) continue
+        var len = enc[1].encodingLength(obj.keys[i])
+        length += varint.encodingLength(len)
+        length += 1 + len
+      }
+    }
+    return length
+  }
+
+  function encode (obj, buf, offset) {
+    if (!offset) offset = 0
+    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+    var oldOffset = offset
+    if (defined(obj.signature)) {
+      buf[offset++] = 10
+      enc[0].encode(obj.signature, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.keys)) {
+      for (var i = 0; i < obj.keys.length; i++) {
+        if (!defined(obj.keys[i])) continue
+        buf[offset++] = 18
+        varint.encode(enc[1].encodingLength(obj.keys[i]), buf, offset)
+        offset += varint.encode.bytes
+        enc[1].encode(obj.keys[i], buf, offset)
+        offset += enc[1].encode.bytes
+      }
+    }
+    encode.bytes = offset - oldOffset
+    return buf
+  }
+
+  function decode (buf, offset, end) {
+    if (!offset) offset = 0
+    if (!end) end = buf.length
+    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+    var oldOffset = offset
+    var obj = {
+      signature: null,
+      keys: []
+    }
+    while (true) {
+      if (end <= offset) {
+        decode.bytes = offset - oldOffset
+        return obj
+      }
+      var prefix = varint.decode(buf, offset)
+      offset += varint.decode.bytes
+      var tag = prefix >> 3
+      switch (tag) {
+        case 1:
+        obj.signature = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 2:
+        var len = varint.decode(buf, offset)
+        offset += varint.decode.bytes
+        obj.keys.push(enc[1].decode(buf, offset, offset + len))
+        offset += enc[1].decode.bytes
+        break
+        default:
+        offset = skip(prefix & 7, buf, offset)
+      }
+    }
+  }
+}
+
+function defineKeyPair () {
+  var enc = [
+    encodings.bytes
+  ]
+
+  KeyPair.encodingLength = encodingLength
+  KeyPair.encode = encode
+  KeyPair.decode = decode
+
+  function encodingLength (obj) {
+    var length = 0
+    if (defined(obj.publicKey)) {
+      var len = enc[0].encodingLength(obj.publicKey)
+      length += 1 + len
+    }
+    if (defined(obj.secretKey)) {
+      var len = enc[0].encodingLength(obj.secretKey)
+      length += 1 + len
+    }
+    return length
+  }
+
+  function encode (obj, buf, offset) {
+    if (!offset) offset = 0
+    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+    var oldOffset = offset
+    if (defined(obj.publicKey)) {
+      buf[offset++] = 10
+      enc[0].encode(obj.publicKey, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.secretKey)) {
+      buf[offset++] = 18
+      enc[0].encode(obj.secretKey, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    encode.bytes = offset - oldOffset
+    return buf
+  }
+
+  function decode (buf, offset, end) {
+    if (!offset) offset = 0
+    if (!end) end = buf.length
+    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+    var oldOffset = offset
+    var obj = {
+      publicKey: null,
+      secretKey: null
+    }
+    while (true) {
+      if (end <= offset) {
+        decode.bytes = offset - oldOffset
+        return obj
+      }
+      var prefix = varint.decode(buf, offset)
+      offset += varint.decode.bytes
+      var tag = prefix >> 3
+      switch (tag) {
+        case 1:
+        obj.publicKey = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 2:
+        obj.secretKey = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)

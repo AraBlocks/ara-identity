@@ -43,3 +43,13 @@ message Identity {
     bytes buffer = 2;
   }
 }
+
+message Keys {
+  bytes signature = 1;
+  repeated KeyPair keys = 2;
+}
+
+message KeyPair {
+  bytes publicKey = 1;
+  bytes secretKey = 2;
+}
