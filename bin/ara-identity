@@ -3,6 +3,7 @@
 const { info, warn, error } = require('ara-console')
 const { basename, resolve } = require('path')
 const identitySecrets = require('../secrets')
+const { createCFS } = require('cfsnet/create')
 const { toHex } = require('../util')
 const protobuf = require('../protobuf')
 const inquirer = require('inquirer')
@@ -33,24 +34,31 @@ const { argv } = program
     alias: 'D',
     describe: "Enable debug output",
   })
-  .option('help', {
-    alias: 'h',
-    describe: "Show this help message"
-  })
-  .option('version', {
-    alias: 'V',
-    describe: "Show program version"
-  })
   .option('force', {
     alias: 'f',
     type: 'boolean',
     describe: "Force actions without prompt",
+  })
+  .option('help', {
+    alias: 'h',
+    describe: "Show this help message"
   })
   .option('key', {
     alias: 'k',
     type: 'string',
     describe: "Network key name",
   })
+  .option('version', {
+    alias: 'V',
+    describe: "Show program version"
+  })
+  .command('archive [did]', "Archive identity in network", (program) => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: "An ARA decentralized identity (did) URI"
+      })
+  }, onarchive)
   .command('create', "Create an identity", (program) => {
     program
       .option('archive', {
@@ -59,7 +67,7 @@ const { argv } = program
         describe: "Archive identity into network",
       })
   }, oncreate)
-  .command('resolve [did]', "Resolve an identity", (program) => {
+  .command('import [did]', "Import an identity from the network", (program) => {
     program
       .positional('did', {
         type: 'string',
@@ -72,10 +80,25 @@ const { argv } = program
       })
       .option('no-cache', {
         type: 'boolean',
-        describe: "Disable cache",
+        describe: "Skip identity cache",
       })
+      .option('timeout', {
+        alias: 't',
+        type: 'number',
+        describe: "Resolution timeout",
+      })
+  }, onimport)
+  .command('keys [did]', "Output keys for an identity", (program) => {
+  }, onkeys)
+  .command('resolve [did]', "Resolve an identity", (program) => {
+    program
       .option('cache', {
-        alias: 'A',
+        alias: 'C',
+        type: 'boolean',
+        describe: "Enable or disable cache",
+      })
+      .option('no-cache', {
+        alias: 'nocache',
         type: 'boolean',
         describe: "Skip identity cache",
       })
@@ -85,13 +108,6 @@ const { argv } = program
         describe: "Resolution timeout",
       })
   }, onresolve)
-  .command('archive [did]', "Archive identity in network", (program) => {
-    program
-      .positional('did', {
-        type: 'string',
-        describe: "An ARA decentralized identity (did) URI"
-      })
-  }, onarchive)
 
 void async function main() {
   if (program.argv.debug) {
@@ -99,13 +115,83 @@ void async function main() {
   }
 }()
 
+async function onarchive(argv) {
+  if (null == argv.key) {
+    onfatal(new Error("Expecting network key."))
+  }
+
+  if (null == argv.did) {
+    onfatal(new Expecting("Expecting DID URI to resolve."))
+  }
+
+  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
+    onfatal(new Error("Expecting a did URI with an 'ara' method."))
+  }
+
+  if (0 != argv.did.indexOf('did:ara:')) {
+    argv.did = 'did:ara:' + argv.did
+  }
+
+  let { password } = await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    "Please provide a passphrase for your identity. This is needed to " +
+    "archive your identity.\n" +
+    "Passphrase:"
+  }])
+
+  if (!password) {
+    onfatal(new TypeError("Please provide a password to archive your identity."))
+  }
+
+  password = crypto.blake2b(Buffer.from(password))
+
+  const { identifier } = did.parse(argv.did)
+  const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
+  const path = resolve(rc.network.identity.root, hash)
+  const identity = protobuf.messages.Identity.decode(
+    await pify(fs.readFile)(resolve(path, 'identity'))
+  )
+
+  try {
+    const doc = await secrets.load(argv)
+    if (null == doc) {
+      throw new TypeError("Unknown network key")
+    }
+
+    const { keystore } = (doc.public || doc.secret)
+    const { key } = argv
+    const keys = JSON.parse(await pify(fs.readFile)(resolve(path, 'keys'), 'utf8'))
+    const keyPair = identitySecrets.decrypt(keys, password)
+    const { files } = identity
+    const { publicKey, secretKey } = keyPair.keys[0]
+
+    files.push({
+      path: 'identity',
+      buffer: protobuf.messages.Identity.encode(identity)
+    })
+
+    files.push({
+      path: 'keys',
+      buffer: JSON.stringify(keys)
+    })
+
+    warn("Archiving new identity for network '%s'.", key)
+    await aid.archive({ publicKey, secretKey, files }, { keystore, key })
+  } catch (err) {
+    error("Possible incorrect password.")
+    onfatal(err)
+  }
+}
+
 async function oncreate(argv) {
 
   const { password } = await inquirer.prompt([{
     type: 'password',
     name: 'password',
     message:
-    "Your identity's Ethereum keystore will be secured by a passphrase. " +
+    "Your identity's keystore will be secured by a passphrase. " +
     "Please provide a passphrase. Do not forget this as it will never be " +
     "shown to you.\n"+
     "Passphrase:"
@@ -144,41 +230,7 @@ async function oncreate(argv) {
   }
 }
 
-async function onresolve(argv) {
-  if (null == argv.key) {
-    onfatal(new Error("Expecting network key."))
-  }
-
-  if (null == argv.did) {
-    onfatal(new Expecting("Expecting DID URI to resolve."))
-  }
-
-  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
-    onfatal(new Error("Expecting a did URI with an 'ara' method."))
-  }
-
-  if (0 != argv.did.indexOf('did:ara:')) {
-    argv.did = 'did:ara:' + argv.did
-  }
-
-  try {
-    const doc = await secrets.load(argv)
-    let keystore = null
-    if (doc.public) { keystore = doc.public.keystore }
-    else if (doc.secret) { keystore = doc.public.keystore }
-    const identity = await aid.resolve(argv.did, { context, keystore,
-      timeout: argv.timeout,
-      cache: argv['no-cache'] ? false : argv.cache ? true : false,
-      key: argv.key,
-    })
-    console.log(JSON.stringify(identity))
-  } catch (err) {
-    onfatal(err)
-  }
-
-}
-
-async function onarchive(argv) {
+async function onimport(argv) {
   if (null == argv.key) {
     onfatal(new Error("Expecting network key."))
   }
@@ -199,48 +251,102 @@ async function onarchive(argv) {
     type: 'password',
     name: 'password',
     message:
-    "Your identity's Ethereum keystore will be secured by a passphrase. " +
-    "Please provide a passphrase. Do not forget this as it will never be " +
-    "shown to you.\n"+
+    "Do you own this identity? Please provide a password if you do.\n" +
     "Passphrase:"
   }])
 
-  password = crypto.blake2b(Buffer.from(password))
+  if (password) {
+    password = crypto.blake2b(Buffer.from(password))
+  }
+
+  try {
+    const doc = await secrets.load(argv)
+    let publicKey = null
+    let secretKey = null
+    let keystore = null
+
+    if (doc.public) { keystore = doc.public.keystore }
+    else if (doc.secret) { keystore = doc.public.keystore }
+
+    const identity = await aid.resolve(argv.did, { context, keystore,
+      timeout: argv.timeout,
+      cache: argv['no-cache'] ? false : argv.cache ? true : undefined,
+      key: argv.key,
+    })
+
+    if (password) {
+      const keyPair = crypto.keyPair(password)
+      publicKey = keyPair.publicKey
+      secret = keyPair.secretKey
+    } else {
+      publicKey = iden
+    }
+
+    const cfs = await createCFS({
+      secretKey: secretKey,
+      storage: ram,
+      shallow: true,
+      key: publicKey,
+      id: toHex(publicKey),
+    })
+
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onkeys(argv) {
+  if (null == argv.did) {
+    onfatal(new Expecting("Expecting DID URI to resolve."))
+  }
+
+  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
+    onfatal(new Error("Expecting a did URI with an 'ara' method."))
+  }
+
+  if (0 != argv.did.indexOf('did:ara:')) {
+    argv.did = 'did:ara:' + argv.did
+  }
 
   const { identifier } = did.parse(argv.did)
   const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
   const path = resolve(rc.network.identity.root, hash)
-  const identity = protobuf.messages.Identity.decode(
-    await pify(fs.readFile)(resolve(path, 'identity'))
-  )
+
+  try { await pify(fs.access)(resolve(path, 'keys')) }
+  catch (err) { onfatal(new Error(err.message)) }
+
+  const keys = await pify(fs.readFile)(resolve(path, 'keys', ), 'utf8')
+  console.log(keys);
+}
+
+async function onresolve(argv) {
+  if (null == argv.did) {
+    onfatal(new Expecting("Expecting DID URI to resolve."))
+  }
+
+  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
+    onfatal(new Error("Expecting a did URI with an 'ara' method."))
+  }
+
+  if (0 != argv.did.indexOf('did:ara:')) {
+    argv.did = 'did:ara:' + argv.did
+  }
 
   try {
-    const doc = await secrets.load(argv)
-    if (null == doc) {
-      throw new TypeError("Unknown network key")
+    let keystore = null
+    if (argv.key) {
+      const doc = await secrets.load(argv)
+      if (doc.public) { keystore = doc.public.keystore }
+      else if (doc.secret) { keystore = doc.public.keystore }
     }
 
-    const { keystore } = (doc.public || doc.secret)
-    const { key } = argv
-    const keys = JSON.parse(await pify(fs.readFile)(resolve(path, 'keys'), 'utf8'))
-    const keyPair = identitySecrets.decrypt(keys, password)
-    const { files } = identity
-    const { publicKey, secretKey } = keyPair.keys[0]
-
-    files.push({
-      path: 'identity',
-      buffer: protobuf.messages.Identity.encode(identity)
+    const identity = await aid.resolve(argv.did, { context, keystore,
+      timeout: argv.timeout,
+      cache: argv['no-cache'] ? false : argv.cache ? true : undefined,
+      key: argv.key,
     })
-
-    files.push({
-      path: 'keys',
-      buffer: JSON.stringify(keys)
-    })
-
-    warn("Archiving new identity for network '%s'.", key)
-    await aid.archive({ publicKey, secretKey, files }, { keystore, key })
+    console.log(JSON.stringify(identity))
   } catch (err) {
-    error("Possible incorrect password.")
     onfatal(err)
   }
 }
