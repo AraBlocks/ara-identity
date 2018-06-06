@@ -4,7 +4,6 @@ const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { PublicKey } = require('did-document/public-key')
 const { normalize } = require('did-document/normalize')
 const { archive } = require('./archive')
-const { keyPair } = require('./key-pair')
 const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
@@ -49,7 +48,7 @@ async function create(opts) {
     privateKey: wallet.getPrivateKey(),
   })
 
-  const { publicKey, secretKey } = keyPair(password)
+  const { publicKey, secretKey } = crypto.keyPair(password)
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({id: didUri})
