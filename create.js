@@ -7,10 +7,12 @@ const { archive } = require('./archive')
 const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
-const secrets = require('./secrets')
 const crypto = require('ara-crypto')
 const ddo = require('./ddo')
 const did = require('./did')
+const fs = require('fs')
+
+const kProtocolBufferSchema = fs.readFileSync(resolve(__dirname, 'protobuf/index.proto'))
 
 /**
  * Creates a new ARA identity.
@@ -53,12 +55,11 @@ async function create(opts) {
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({id: didUri})
 
-  const encryptionIV = crypto.randomBytes(16)
   const encryptionKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
   const encodedKeystore = protobuf.messages.KeyStore.encode(kstore)
   const encryptedKeystore = crypto.encrypt(encodedKeystore, {
     key: encryptionKey,
-    iv: encryptionIV,
+    iv: crypto.randomBytes(16),
   })
 
   didDocument.addPublicKey(new PublicKey({
@@ -117,11 +118,18 @@ async function create(opts) {
   files.push({
     path: 'keys',
     buffer: Buffer.from(JSON.stringify(
-      secrets.encrypt( [{publicKey, secretKey}], password)
+      crypto.encrypt(secretKey, {
+        iv: crypto.randomBytes(16),
+        key: password.slice(0, 16)
+      })
     ))
   })
 
-  encryptionIV.fill(0)
+  files.push({
+    path: 'schema.proto',
+    buffer: kProtocolBufferSchema,
+  })
+
   encryptionKey.fill(0)
 
   return {
@@ -133,4 +141,3 @@ async function create(opts) {
 
 module.exports = {
   create
-}
