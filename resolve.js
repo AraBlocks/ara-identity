@@ -48,7 +48,11 @@ async function resolve(uri, opts) {
     } catch (err) { debug(err) }
   }
 
-  return await findResolution(did, opts)
+  if (opts.keystore) {
+    return await findResolution(did, opts)
+  }
+
+  return null
 }
 
 async function findResolution(did, opts) {
