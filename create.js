@@ -12,8 +12,6 @@ const ddo = require('./ddo')
 const did = require('./did')
 const fs = require('fs')
 
-const kProtocolBufferSchema = fs.readFileSync(resolve(__dirname, 'protobuf/index.proto'))
-
 /**
  * Creates a new ARA identity.
  * @public
@@ -127,7 +125,7 @@ async function create(opts) {
 
   files.push({
     path: 'schema.proto',
-    buffer: kProtocolBufferSchema,
+    buffer: protobuf.kProtocolBufferSchema,
   })
 
   encryptionKey.fill(0)
