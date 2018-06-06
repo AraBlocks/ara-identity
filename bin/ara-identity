@@ -2,7 +2,6 @@
 
 const { info, warn, error } = require('ara-console')
 const { basename, resolve } = require('path')
-const identitySecrets = require('../secrets')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('../util')
 const protobuf = require('../protobuf')
@@ -28,7 +27,7 @@ process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
 
 const { argv } = program
-  .usage("$0 [-hDV] [...options] <command> [...options]")
+  .usage("usage: $0 [-hDV] [options] <command> [options]")
   .option('debug', {
     type: 'boolean',
     alias: 'D',
@@ -163,7 +162,7 @@ async function onarchive(argv) {
     const { keystore } = (doc.public || doc.secret)
     const { key } = argv
     const keys = JSON.parse(await pify(fs.readFile)(resolve(path, 'keys'), 'utf8'))
-    const keyPair = identitySecrets.decrypt(keys, password)
+    const keyPair = crypto.decrypt(keys, {key: password.slice(0, 16)})
     const { files } = identity
     const { publicKey, secretKey } = keyPair.keys[0]
 
