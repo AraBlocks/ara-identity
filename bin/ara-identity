@@ -76,6 +76,7 @@ const { argv } = program
         alias: 'C',
         type: 'boolean',
         describe: "Enable or disable cache",
+        default: true
       })
       .option('no-cache', {
         type: 'boolean',
@@ -95,6 +96,7 @@ const { argv } = program
         alias: 'C',
         type: 'boolean',
         describe: "Enable or disable cache",
+        default: true
       })
       .option('no-cache', {
         alias: 'nocache',
@@ -155,16 +157,16 @@ async function onarchive(argv) {
 
   try {
     const doc = await secrets.load(argv)
-    if (null == doc) {
-      throw new TypeError("Unknown network key")
+    if (null == doc || (null == doc.public && null == doc.secret)) {
+      onfatal(new TypeError("Unknown network key."))
     }
 
     const { keystore } = (doc.public || doc.secret)
     const { key } = argv
     const keys = JSON.parse(await pify(fs.readFile)(resolve(path, 'keys'), 'utf8'))
-    const keyPair = crypto.decrypt(keys, {key: password.slice(0, 16)})
+    const secretKey = crypto.decrypt(keys, {key: password.slice(0, 16)})
+    const publicKey = secretKey.slice(32)
     const { files } = identity
-    const { publicKey, secretKey } = keyPair.keys[0]
 
     files.push({
       path: 'identity',
@@ -174,6 +176,11 @@ async function onarchive(argv) {
     files.push({
       path: 'keys',
       buffer: JSON.stringify(keys)
+    })
+
+    files.push({
+      path: 'schema.proto',
+      buffer: protobuf.kProtocolBufferSchema,
     })
 
     warn("Archiving new identity for network '%s'.", key)
@@ -218,8 +225,8 @@ async function oncreate(argv) {
     }
 
     const doc = await secrets.load(argv)
-    if (null == doc) {
-      throw new TypeError("Unknown network key")
+    if (null == doc || (null == doc.public && null == doc.secret)) {
+      onfatal(new TypeError("Unknown network key."))
     }
 
     const { keystore } = (doc.public || doc.secret)
@@ -269,8 +276,11 @@ async function onimport(argv) {
 
     const identity = await aid.resolve(argv.did, { context, keystore,
       timeout: argv.timeout,
-      cache: argv['no-cache'] ? false : argv.cache ? true : undefined,
       key: argv.key,
+      cache: argv['no-cache']
+        ? false : argv.cache
+          ? true : false === argv.cache ?
+            false : undefined,
     })
 
     if (password) {
@@ -341,8 +351,11 @@ async function onresolve(argv) {
 
     const identity = await aid.resolve(argv.did, { context, keystore,
       timeout: argv.timeout,
-      cache: argv['no-cache'] ? false : argv.cache ? true : undefined,
       key: argv.key,
+      cache: argv['no-cache']
+        ? false : argv.cache
+          ? true : false === argv.cache ?
+            false : undefined,
     })
     console.log(JSON.stringify(identity))
   } catch (err) {
