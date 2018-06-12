@@ -1,6 +1,6 @@
 'use strict'
 
-const { createChannel } = require('ara-network/channel')
+const { createChannel } = require('ara-network/discovery/channel')
 const secrets = require('ara-network/secrets')
 const { toHex } = require('./util')
 const protobuf = require('./protobuf')
