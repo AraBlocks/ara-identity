@@ -1,6 +1,6 @@
 'use strict'
 
-const { createServer } = require('ara-network/discovery')
+const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { dirname } = require('path')
 const { toHex } = require('./util')
@@ -49,7 +49,7 @@ async function archive(identity, opts) {
   clearTimeout(timeout)
 
   await new Promise((resolve, reject) => {
-    const discovery = createServer({
+    const discovery = createSwarm({
       stream() {
         const stream = cfs.replicate({live: false})
         stream.once('end', onend)

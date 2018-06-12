@@ -2,7 +2,7 @@
 
 const { basename, dirname, resolve } = require('path')
 const { info, warn, error } = require('ara-console')
-const { createServer } = require('ara-network/discovery')
+const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('../util')
 const protobuf = require('../protobuf')
@@ -298,7 +298,7 @@ async function onimport(argv) {
     const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
     const output = resolve(rc.network.identity.root, hash)
 
-    const discovery = createServer({
+    const discovery = createSwarm({
       dns: { loopback: true, multicast: true },
       stream() {
         const stream = cfs.replicate({live: false})
