@@ -3,6 +3,7 @@
 const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { PublicKey } = require('did-document/public-key')
 const { normalize } = require('did-document/normalize')
+const { Authentication } = require('did-document')
 const { archive } = require('./archive')
 const { toHex } = require('./util')
 const ethereum = require('./ethereum')
@@ -71,6 +72,11 @@ async function create(opts) {
     publicKeyBase58: crypto.base58.encode(publicKey).toString(),
   }))
 
+  // add default authentication to ddo if available
+  if (opts.did && opts.did.authentication) {
+    const { type, publicKey } = opts.did.authentication
+    didDocument.addAuthentication(new Authentication(type, { publicKey }))
+  }
 
   // sign the DDO for the proof
   const digest = didDocument.digest(crypto.blake2b)
