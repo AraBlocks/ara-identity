@@ -196,7 +196,7 @@ async function onarchive(argv) {
 
 async function oncreate(argv) {
 
-  const { password } = await inquirer.prompt([{
+  let { password } = await inquirer.prompt([{
     type: 'password',
     name: 'password',
     message:
@@ -205,6 +205,9 @@ async function oncreate(argv) {
     "shown to you.\n"+
     "Passphrase:"
   }])
+
+  // there is probably a better way to do this, but something like this should be done:
+  password = password + crypto.randomBytes(32).toString()
 
   const identity = await aid.create({ context, password })
 
