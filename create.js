@@ -73,12 +73,10 @@ async function create(opts) {
   }))
 
   // add default authentication to ddo if available
-  /* eslint-disable no-shadow */
   if (opts.did && opts.did.authentication) {
-    const { type, publicKey } = opts.did.authentication
-    didDocument.addAuthentication(new Authentication(type, { publicKey }))
+    const { authenticationType, authenticationKey } = opts.did.authentication
+    didDocument.addAuthentication(new Authentication(authenticationType, { authenticationKey }))
   }
-  /* eslint-enable no-shadow */
 
   // sign the DDO for the proof
   const digest = didDocument.digest(crypto.blake2b)
