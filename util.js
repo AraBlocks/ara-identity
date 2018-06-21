@@ -1,4 +1,4 @@
-'use strict'
+
 
 const isBuffer = require('is-buffer')
 
@@ -13,9 +13,8 @@ function toHex(value) {
     return value.toString('hex')
   } else if (value) {
     return toHex(Buffer.from(value))
-  } else {
-    return toHex(Buffer.from(0))
   }
+  return toHex(Buffer.from(0))
 }
 
 /**
@@ -27,12 +26,11 @@ function toHex(value) {
  * @return {Buffer|null}
  */
 function ethHexToBuffer(hex) {
-  if (hex && 'string' == typeof hex) {
-    if ('0x' == hex.slice(0, 2)) {
+  if (hex && 'string' === typeof hex) {
+    if ('0x' === hex.slice(0, 2)) {
       return Buffer.from(hex.slice(2), 'hex')
-    } else {
-      return Buffer.from(hex, 'hex')
     }
+    return Buffer.from(hex, 'hex')
   }
   return null
 }
@@ -46,15 +44,14 @@ function ethHexToBuffer(hex) {
 function toBuffer(value) {
   if (isBuffer(value)) {
     return value
-  } else if (value && 'number' == typeof value) {
+  } else if (value && 'number' === typeof value) {
     return Buffer.alloc(value)
-  } else if ('string' == typeof value) {
+  } else if ('string' === typeof value) {
     return ethHexToBuffer(value)
   } else if (value) {
     return Buffer.from(value)
-  } else {
-    return Buffer.alloc(0)
   }
+  return Buffer.alloc(0)
 }
 
 module.exports = {
