@@ -1,4 +1,4 @@
-'use strict'
+
 
 const { createChannel } = require('ara-network/discovery/channel')
 const secrets = require('ara-network/secrets')
@@ -14,21 +14,20 @@ const fs = require('fs')
 const rc = require('./rc')()
 
 const kDIDIdentifierLength = 64
-const kResolutionTimeout = 5000 // in milliseconds
+// in milliseconds
+const kResolutionTimeout = 5000
 const kDIDMethod = 'ara'
 const kMaxMeers = 8
 
 async function resolve(uri, opts) {
   const did = new DID(uri)
-  if (kDIDMethod != did.method) {
-    throw new TypeError(
-      `resolve: Invalid DID method (${did.method}). ` +
-      `Expecting 'did:${kDIDMethod}:...'.`
-    )
+  if (kDIDMethod !== did.method) {
+    throw new TypeError(`resolve: Invalid DID method (${did.method}). ` +
+      `Expecting 'did:${kDIDMethod}:...'.`)
   }
 
-  if (null == did.identifier || kDIDIdentifierLength != did.identifier.length) {
-    throw new TypeError("resolve: Invalid DID identifier length.")
+  if (null == did.identifier || kDIDIdentifierLength !== did.identifier.length) {
+    throw new TypeError('resolve: Invalid DID identifier length.')
   }
 
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
@@ -40,8 +39,10 @@ async function resolve(uri, opts) {
       const buffer = await pify(fs.readFile)(file)
       const identity = protobuf.messages.Identity.decode(buffer)
       for (const k in identity.files) {
+        /* eslint-disable no-shadow */
         const { path, buffer } = identity.files[k]
-        if ('ddo.json' == path) {
+        /* eslint-enable no-shadow */
+        if ('ddo.json' === path) {
           return JSON.parse(buffer)
         }
       }
@@ -49,7 +50,8 @@ async function resolve(uri, opts) {
   }
 
   if (opts.keystore) {
-    return await findResolution(did, opts)
+    const value = await findResolution(did, opts)
+    return value
   }
 
   return null
@@ -59,12 +61,13 @@ async function findResolution(did, opts) {
   const { key, keystore } = opts
   const resolvers = []
   const channel = createChannel()
-  const keys = secrets.decrypt({keystore}, {key})
+  const keys = secrets.decrypt({ keystore }, { key })
   let timeout = null
-
-  if (null == opts.timeout || 'number' != typeof opts.timeout) {
+  /* eslint-disable no-param-reassign */
+  if (null === opts.timeout || 'number' !== typeof opts.timeout) {
     opts.timeout = kResolutionTimeout
   }
+  /* eslint-enable no-param-reassign */
 
   return pify((done) => {
     channel.on('peer', onpeer)
@@ -72,7 +75,7 @@ async function findResolution(did, opts) {
     timeout = setTimeout(doResolution, opts.timeout)
 
     function onpeer(id, peer, type) {
-      if (resolvers.push({id, peer, type}) < kMaxMeers) {
+      if (resolvers.push({ id, peer, type }) < kMaxMeers) {
         doResolution()
       } else {
         cleanup()
@@ -94,9 +97,12 @@ async function findResolution(did, opts) {
           process.nextTick(doResolution)
         }
       } else {
-        return done(Object.assign(new Error("Could not resolve DID."),
-          {status: 404, code: 'ENOTFOUND'}))
+        return done(Object.assign(
+          new Error('Could not resolve DID.'),
+          { status: 404, code: 'ENOTFOUND' }
+        ))
       }
+      return null
     }
 
     function cleanup() {

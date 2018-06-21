@@ -1,8 +1,7 @@
-'use strict'
+
 
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
-const { dirname } = require('path')
 const { toHex } = require('./util')
 const archiver = require('ara-identity-archiver')
 const ram = require('random-access-memory')
@@ -15,29 +14,29 @@ const ram = require('random-access-memory')
  * @param {Object} opts
  */
 async function archive(identity, opts) {
-  if (null == identity || 'object' != typeof identity) {
-    throw new TypeError(
-      "ara-identity.archiver.archive: Expecting identity object.")
+  if (null == identity || 'object' !== typeof identity) {
+    throw new TypeError('ara-identity.archiver.archive: Expecting identity object.')
   }
 
-  if (null == opts || 'object' != typeof opts) {
-    throw new TypeError("ara-identity.archive: Expecting options object.")
+  if (null == opts || 'object' !== typeof opts) {
+    throw new TypeError('ara-identity.archive: Expecting options object.')
   }
 
   const { publicKey, secretKey, files } = identity
 
   const cfs = await createCFS({
-    secretKey: secretKey,
+    secretKey,
     storage: ram,
     shallow: true,
     key: publicKey,
     id: toHex(publicKey),
   })
 
+  /* eslint-disable no-await-in-loop */
   for (const file of files) {
-    const dir = dirname(cfs.resolve(file.path))
     await cfs.writeFile(file.path, file.buffer)
   }
+  /* eslint-enable no-await-in-loop */
 
   Object.assign(opts, { onidentifier, onkey, onend })
 
@@ -51,7 +50,7 @@ async function archive(identity, opts) {
   await new Promise((resolve, reject) => {
     const discovery = createSwarm({
       stream() {
-        const stream = cfs.replicate({live: false})
+        const stream = cfs.replicate({ live: false })
         stream.once('end', onend)
         return stream
       }
@@ -60,11 +59,13 @@ async function archive(identity, opts) {
     discovery.join(cfs.discoveryKey)
     discovery.once('error', onend)
 
+    /* eslint-disable no-shadow */
     function onend(err) {
-      if (err && err instanceof Error) { reject(err) }
-      else { resolve() }
+      if (err && err instanceof Error) { reject(err) } else { resolve() }
       discovery.destroy()
+      return null
     }
+    /* eslint-enable no-shadow */
   })
 
   return result
@@ -86,24 +87,26 @@ async function archive(identity, opts) {
     if (--retries > 0) {
       connect()
     } else {
-      throw new Error("Failed to contact peer to archive identity.")
+      throw new Error('Failed to contact peer to archive identity.')
     }
   }
 
-  function onidentifier(connection, info) {
+  function onidentifier() {
     return cfs.identifier
   }
 
-  function onkey(connection, info) {
+  function onkey() {
     return cfs.key
   }
 
-  function onend(connection, info) {
+  /* eslint-disable no-shadow */
+  function onend() {
     clearTimeout(timeout)
     if (result.network) {
       result.network.swarm.destroy()
     }
   }
+  /* eslint-enable no-shadow */
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-'use strict'
+
 
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
@@ -15,22 +15,21 @@ const kDIDMethod = 'ara'
  * @throws TypeError
  */
 function create(identitier, method) {
-  if (null == identitier) {
-    throw new TypeError("ara-identitier.did.create: Expecting identitier.")
+  if (null === identitier) {
+    throw new TypeError('ara-identitier.did.create: Expecting identitier.')
   }
 
-  if ('string' != typeof identitier && false == isBuffer(identitier)) {
-    throw new TypeError(
-      "ara-identitier.did.create: Expecting identitier to be a string or buffer.")
+  if ('string' !== typeof identitier && false === isBuffer(identitier)) {
+    throw new TypeError('ara-identitier.did.create: Expecting identitier to be a string or buffer.')
   }
 
-  if (method && 'string' != typeof method) {
-    throw new TypeError("ara-identitier.did.create: Expecting method to be a string.")
+  if (method && 'string' !== typeof method) {
+    throw new TypeError('ara-identitier.did.create: Expecting method to be a string.')
   }
 
-  identitier = toHex(identitier)
-  method = method || kDIDMethod
-  const uri = `did:${method}:${identitier}`
+  const id = toHex(identitier)
+  const didMethod = method || kDIDMethod
+  const uri = `did:${didMethod}:${id}`
   return new DID(uri)
 }
 
