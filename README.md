@@ -1,4 +1,8 @@
-ara-identity
+<img src="https://github.com/AraBlocks/docs/blob/master/ara.png" width="30" height="30" /> ara-identity
+======================================
+
+[![Build Status](https://travis-ci.com/AraBlocks/ara-identity.svg?token=Ty4yTmKT8aELetQd1xZp&branch=master)](https://travis-ci.com/AraBlocks/ara-identity)
+
 ============
 
 Create and resolve decentralized identity based Ara identifiers.
