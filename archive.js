@@ -47,7 +47,7 @@ async function archive(identity, opts) {
     const discovery = createSwarm({
       stream() {
         const stream = cfs.replicate({ live: false })
-        stream.once('end', onend)
+        stream.once('end', _onend)
         return stream
       }
     })
