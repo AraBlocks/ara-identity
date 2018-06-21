@@ -15,7 +15,6 @@ const kScryptParameters = {
   p: 8
 }
 
-// const kKDFFunction = kScryptParameters.kdf
 const kKDFParameters = kScryptParameters
 
 /**

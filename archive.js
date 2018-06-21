@@ -32,11 +32,7 @@ async function archive(identity, opts) {
     id: toHex(publicKey),
   })
 
-  /* eslint-disable no-await-in-loop */
-  for (const file of files) {
-    await cfs.writeFile(file.path, file.buffer)
-  }
-  /* eslint-enable no-await-in-loop */
+  await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
   Object.assign(opts, { onidentifier, onkey, onend })
 
@@ -57,15 +53,13 @@ async function archive(identity, opts) {
     })
 
     discovery.join(cfs.discoveryKey)
-    discovery.once('error', onend)
+    discovery.once('error', _onend)
 
-    /* eslint-disable no-shadow */
-    function onend(err) {
+    function _onend(err) {
       if (err && err instanceof Error) { reject(err) } else { resolve() }
       discovery.destroy()
       return null
     }
-    /* eslint-enable no-shadow */
   })
 
   return result
@@ -99,14 +93,12 @@ async function archive(identity, opts) {
     return cfs.key
   }
 
-  /* eslint-disable no-shadow */
   function onend() {
     clearTimeout(timeout)
     if (result.network) {
       result.network.swarm.destroy()
     }
   }
-  /* eslint-enable no-shadow */
 }
 
 module.exports = {
