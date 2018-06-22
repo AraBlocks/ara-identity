@@ -7,6 +7,7 @@ Create and resolve decentralized identity based Ara identifiers.
 
 ```sh
 $ npm install --save ara-identity
+$ npm link
 ```
 
 ## Usage
