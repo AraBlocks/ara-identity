@@ -1,5 +1,3 @@
-
-
 const { createChannel } = require('ara-network/discovery/channel')
 const secrets = require('ara-network/secrets')
 const { toHex } = require('./util')

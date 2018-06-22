@@ -1,5 +1,3 @@
-
-
 const { DIDDocument } = require('did-document')
 
 /**

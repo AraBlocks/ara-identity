@@ -1,5 +1,3 @@
-
-
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')

@@ -1,5 +1,3 @@
-
-
 const randombytes = require('randombytes')
 const { toHex } = require('../util')
 

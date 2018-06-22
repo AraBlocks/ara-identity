@@ -1,5 +1,3 @@
-
-
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')

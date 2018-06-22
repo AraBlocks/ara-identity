@@ -1,5 +1,3 @@
-
-
 const { entropy } = require('../../ethereum/entropy')
 const test = require('ava')
 

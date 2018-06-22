@@ -1,5 +1,3 @@
-
-
 const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { PublicKey } = require('did-document/public-key')
 const { Authentication } = require('did-document')
@@ -91,13 +89,13 @@ async function create(opts) {
     signatureValue: toHex(crypto.sign(digest, secretKey))
   })
 
-  const files = [{
+  const files = [ {
     path: 'ddo.json',
     buffer: Buffer.from(JSON.stringify(didDocument))
   }, {
     path: 'keystore/eth',
     buffer: Buffer.from(JSON.stringify(encryptedKeystore))
-  }]
+  } ]
 
   /*
    * the intermediate value are the identity fields with

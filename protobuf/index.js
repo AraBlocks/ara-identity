@@ -1,5 +1,3 @@
-
-
 const { resolve } = require('path')
 const messages = require('./messages')
 const fs = require('fs')
