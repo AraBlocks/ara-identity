@@ -11,7 +11,7 @@
     "truffle": "truffle develop",
     "test": "ava test",
     "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "lint-fix": "eslint . --quiet --fix"
   },
   "keywords": [
     "ara",

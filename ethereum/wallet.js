@@ -1,5 +1,3 @@
-
-
 const { ethHexToBuffer } = require('../util')
 const { fromPrivateKey } = require('ethereumjs-wallet')
 

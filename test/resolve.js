@@ -1,5 +1,3 @@
-
-
 const { resolve } = require('../resolve')
 const test = require('ava')
 

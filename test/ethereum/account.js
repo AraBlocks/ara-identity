@@ -1,5 +1,3 @@
-
-
 const { create } = require('../../ethereum/account')
 const test = require('ava')
 const Web3 = require('web3')

@@ -1,5 +1,3 @@
-
-
 const { entropy } = require('./entropy')
 
 /**

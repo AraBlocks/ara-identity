@@ -1,5 +1,3 @@
-
-
 const isBuffer = require('is-buffer')
 
 /**

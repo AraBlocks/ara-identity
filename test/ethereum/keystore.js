@@ -1,5 +1,3 @@
-
-
 const { toBuffer } = require('../../util')
 const isBuffer = require('is-buffer')
 const keystore = require('../../ethereum/keystore')
