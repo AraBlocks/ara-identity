@@ -76,10 +76,22 @@ async function dump(opts) {
   return object
 }
 
-async function recover(password, keys, encryptedKeystore) {
+/**
+ * Returns private ethereum key
+ * @param {String} password
+ * @param {JSON} keys
+ * @param {JSON} encryptedKeystore
+ * @return {Buffer}
+ * Takes a the users password, the keys json string found in identity directory, as well
+ * as the eth json string, found in the keystore directory within the identity directory. Uses password
+ * to decrypt keys file, returning the secret key. Uses the secret key to decrypt the encryptedKeystore,
+ * returning the ethereum private key in a buffer
+ */
+
+function recover(password, keys, encryptedKeystore) {
   const secretKey = crypto.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
   const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
-  const keyObject = protobuf.messages.KeyStore.decode(crypto.decrypt(encryptedKeystore, { key: bufferedSecretKey }))
+  const keyObject = protobuf.messages.KeyStore.decode(crypto.decrypt(JSON.parse(encryptedKeystore), { key: bufferedSecretKey }))
 
   return new Promise(resolve => ks.recover(password, keyObject, resolve))
 }
