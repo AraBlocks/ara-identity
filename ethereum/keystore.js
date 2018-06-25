@@ -79,9 +79,7 @@ async function dump(opts) {
 async function recover(password, keys, encryptedKeystore) {
   const secretKey = crypto.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
   const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
-  const keyObject = protobuf.messages.KeyStore.decode(
-    crypto.decrypt(encryptedKeystore,{ key: bufferedSecretKey })
-  )
+  const keyObject = protobuf.messages.KeyStore.decode(crypto.decrypt(encryptedKeystore, { key: bufferedSecretKey }))
 
   return new Promise(resolve => ks.recover(password, keyObject, resolve))
 }
