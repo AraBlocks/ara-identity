@@ -5,6 +5,15 @@
 
 Create and resolve decentralized identity based Ara identifiers.
 
+
+## Status
+This project is still in alpha development.
+
+> **Important**: While this project is under active development, run `npm link` in `ara-identity` directory & `npm link ara-identity` in the `ara-network-node-identity-archiver`, `ara-network`, or `ara-network-node-dns` directory.
+
+## Dependencies
+- [Node](https://nodejs.org/en/download/)
+
 ## Installation
 
 ```sh
@@ -142,6 +151,15 @@ Tests are defined in the `test/` directory and are invoked with
 ```sh
 $ npm test
 ```
+
+## Contributing
+- [Commit message format](/.github/COMMIT_FORMAT.md)
+- [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
+- [How to contribute](/.github/CONTRIBUTING.md)
+
+## See Also
+- [ara-network](https://github.com/AraBlocks/ara-network)
+- [W3C Decentralized IDs specs](https://w3c-ccg.github.io/did-spec/)
 
 ## License
 
