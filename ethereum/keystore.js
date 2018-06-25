@@ -1,5 +1,7 @@
 const isBuffer = require('is-buffer')
 const ks = require('keythereum')
+const crypto = require('ara-crypto')
+const protobuf = require('../protobuf')
 
 const kKeyBytes = 32
 const kIVBytes = 16
@@ -74,8 +76,14 @@ async function dump(opts) {
   return object
 }
 
-async function recover() {
-  // TODO
+async function recover(password, keys, encryptedKeystore) {
+  const secretKey = crypto.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
+  const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
+  const keyObject = protobuf.messages.KeyStore.decode(
+    crypto.decrypt(encryptedKeystore,{ key: bufferedSecretKey })
+  )
+
+  return new Promise(resolve => ks.recover(password, keyObject, resolve))
 }
 
 module.exports = {
