@@ -19,7 +19,6 @@ const kMaxMeers = 8
 
 async function resolve(uri, opts) {
   const did = new DID(uri)
-  console.log(did)
   if (kDIDMethod !== did.method) {
     throw new TypeError(`resolve: Invalid DID method (${did.method}). ` +
       `Expecting 'did:${kDIDMethod}:...'.`)
@@ -31,7 +30,6 @@ async function resolve(uri, opts) {
 
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
   const file = path.resolve(rc.network.identity.root, hash, 'identity')
-  console.log(file)
   if (false !== opts.cache) {
     try {
       await pify(fs.access)(file)
