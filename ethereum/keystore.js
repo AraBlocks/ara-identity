@@ -78,9 +78,9 @@ async function dump(opts) {
 
 /**
  * Returns private ethereum key
- * @param {String} password
- * @param {JSON} keys
- * @param {JSON} encryptedKeystore
+ * @param {String} opts.password
+ * @param {String} opts.keys
+ * @param {String} opts.encryptedKeystore
  * @return {Buffer}
  * Takes a the users password, the keys json string found in identity directory, as well
  * as the eth json string, found in the keystore directory within the identity directory. Uses password
@@ -88,12 +88,28 @@ async function dump(opts) {
  * returning the ethereum private key in a buffer
  */
 
-function recover(password, keys, encryptedKeystore) {
-  const secretKey = crypto.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
-  const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
-  const keyObject = protobuf.messages.KeyStore.decode(crypto.decrypt(JSON.parse(encryptedKeystore), { key: bufferedSecretKey }))
+function recover(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('ethereum.keystore.recover: Expecting object.')
+  }
 
-  return new Promise(resolve => ks.recover(password, keyObject, resolve))
+  if (!opts.password || 'string' !== typeof opts.password) {
+    throw new TypeError('ethereum.keystore.recover: Expecting password to be a string.')
+  }
+
+  if (!opts.keys || 'string' !== typeof opts.keys) {
+    throw new TypeError('ethereum.keystore.keys: Expecting keys to be a string.')
+  }
+
+  if (!opts.encryptedKeystore || 'string' !== typeof opts.encryptedKeystore) {
+    throw new TypeError('ethereum.keystore.encryptedKeystore: Expecting encryptedKeystore to be a string.')
+  }
+
+  const secretKey = crypto.decrypt(JSON.parse(opts.keys), { key: opts.password.slice(0, 16) })
+  const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
+  const keyObject = protobuf.messages.KeyStore.decode(crypto.decrypt(JSON.parse(opts.encryptedKeystore), { key: bufferedSecretKey }))
+
+  return new Promise(resolve => ks.recover(opts.password, keyObject, resolve))
 }
 
 module.exports = {
