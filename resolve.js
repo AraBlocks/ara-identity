@@ -36,7 +36,9 @@ async function resolve(uri, opts) {
       const buffer = await pify(fs.readFile)(file)
       const identity = protobuf.messages.Identity.decode(buffer)
       for (const k in identity.files) {
+        /* eslint-disable no-shadow */
         const { path, buffer } = identity.files[k]
+        /* eslint-enable no-shadow */
         if ('ddo.json' === path) {
           return JSON.parse(buffer)
         }
