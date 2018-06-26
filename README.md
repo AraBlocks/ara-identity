@@ -29,7 +29,7 @@ $ npm install --save ara-identity
 
 * Generate secrets for both the Archiver & Resolver nodes
 
-  * `ans -k ${Network key string}`
+  * `ans -k ${network_key_string}`
 
 
 * Once the secrets are generated, the Archiver & Resolver Network nodes can be started.
@@ -37,9 +37,9 @@ $ npm install --save ara-identity
   * Clone the [archiver](https://github.com/AraBlocks/ara-network-node-identity-archiver) and [resolver](https://github.com/AraBlocks/ara-network-node-identity-resolver) repositories
   * Do `npm install` in each of the repositories
   * Open the repository folder in 2 separate windows and run the below command,
-    * `ann -t . -k ${Network key string}`
+    * `ann -t . -k ${network_key_string}`
 
-Note : Make sure to use different `Network Key String` for the Archiver & Resolver Network Nodes
+Note : Make sure to use different `network_key_string` for the Archiver & Resolver Network Nodes
 
 ### Create an ARA ID
 
