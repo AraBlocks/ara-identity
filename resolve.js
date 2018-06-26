@@ -30,15 +30,14 @@ async function resolve(uri, opts) {
 
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
   const file = path.resolve(rc.network.identity.root, hash, 'identity')
+
   if (false !== opts.cache) {
     try {
       await pify(fs.access)(file)
       const buffer = await pify(fs.readFile)(file)
       const identity = protobuf.messages.Identity.decode(buffer)
       for (const k in identity.files) {
-        /* eslint-disable no-shadow */
-        const { path, buffer } = identity.files[k]
-        /* eslint-enable no-shadow */
+        const { path, buffer } = identity.files[k] // eslint-disable-line no-shadow
         if ('ddo.json' === path) {
           return JSON.parse(buffer)
         }
