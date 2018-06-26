@@ -19,6 +19,7 @@ const kMaxMeers = 8
 
 async function resolve(uri, opts) {
   const did = new DID(uri)
+  console.log(did)
   if (kDIDMethod !== did.method) {
     throw new TypeError(`resolve: Invalid DID method (${did.method}). ` +
       `Expecting 'did:${kDIDMethod}:...'.`)
@@ -30,16 +31,16 @@ async function resolve(uri, opts) {
 
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
   const file = path.resolve(rc.network.identity.root, hash, 'identity')
-
+  console.log(file)
   if (false !== opts.cache) {
     try {
       await pify(fs.access)(file)
       const buffer = await pify(fs.readFile)(file)
       const identity = protobuf.messages.Identity.decode(buffer)
       for (const k in identity.files) {
-        const { identityPath, identityBuffer } = identity.files[k]
-        if ('ddo.json' === identityPath) {
-          return JSON.parse(identityBuffer)
+        const { path, buffer } = identity.files[k]
+        if ('ddo.json' === path) {
+          return JSON.parse(buffer)
         }
       }
     } catch (err) { debug(err) }
