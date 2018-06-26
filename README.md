@@ -16,7 +16,6 @@ This project is still in alpha development.
 
 ```sh
 $ npm install --save ara-identity
-$ npm link
 ```
 
 ## Usage
