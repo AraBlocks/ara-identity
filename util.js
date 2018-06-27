@@ -1,4 +1,12 @@
+const { info, warn } = require('ara-console')
+const { dirname, resolve } = require('path')
 const isBuffer = require('is-buffer')
+const crypto = require('ara-crypto')
+const mkdirp = require('mkdirp')
+const rc = require('./rc')()
+const pify = require('pify')
+const fs = require('fs')
+/* eslint-disable no-await-in-loop */
 
 /**
  * Converts a buffer to a hex string.
@@ -52,8 +60,34 @@ function toBuffer(value) {
   return Buffer.alloc(0)
 }
 
+/**
+ * Write ARA Identity files to the root folder
+ * @public
+ * @param {Object} Identity
+ */
+async function writeIdentity(identity) {
+  info('Writing New identity: %s to disc', identity.did)
+
+  const hash = toHex(crypto.blake2b(identity.publicKey))
+  const output = resolve(rc.network.identity.root, hash)
+
+  await pify(mkdirp)(output)
+
+  for (let i = 0; i < identity.files.length; ++i) {
+    warn('Writing %s', resolve(output, identity.files[i].path))
+    const dir = dirname(resolve(output, identity.files[i].path))
+    await pify(mkdirp)(dir)
+    await pify(fs.writeFile)(
+      resolve(output, identity.files[i].path),
+      identity.files[i].buffer
+    )
+  }
+  return null
+}
+
 module.exports = {
   ethHexToBuffer,
+  writeIdentity,
   toBuffer,
   toHex,
 }
