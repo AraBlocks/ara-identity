@@ -9,7 +9,9 @@
   },
   "scripts": {
     "truffle": "truffle develop",
-    "test": "ava test"
+    "test": "ava test",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --quiet --fix"
   },
   "keywords": [
     "ara",
@@ -51,7 +53,10 @@
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "truffle": "^4.1.9"
+    "truffle": "^4.1.9",
+    "eslint": "^4.19.1",
+    "eslint-config-ara": "github:arablocks/eslint-config-ara",
+    "eslint-plugin-import": "^2.12.0"
   },
   "directories": {
     "test": "test"

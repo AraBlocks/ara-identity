@@ -1,5 +1,3 @@
-'use strict'
-
 const { resolve } = require('path')
 const extend = require('extend')
 const rc = require('ara-runtime-configuration')
@@ -14,4 +12,4 @@ const defaults = () => ({
   }
 })
 
-module.exports = (conf) => rc(extend(true, {}, defaults(), conf))
+module.exports = conf => rc(extend(true, {}, defaults(), conf))

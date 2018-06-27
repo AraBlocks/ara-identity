@@ -1,5 +1,3 @@
-'use strict'
-
 const { archive } = require('./archive')
 const { resolve } = require('./resolve')
 const { create } = require('./create')

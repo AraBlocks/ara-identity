@@ -1,5 +1,3 @@
-'use strict'
-
 const { DIDDocument } = require('did-document')
 
 /**
@@ -12,11 +10,11 @@ const { DIDDocument } = require('did-document')
  */
 function create(opts) {
   if (null == opts) {
-    throw new TypeError("ara-identifier.ddo.create: Expecting object.")
+    throw new TypeError('ara-identifier.ddo.create: Expecting object.')
   }
 
   if (null == opts.id) {
-    throw new TypeError("ara-identifier.ddo.create: Expecting identifier.")
+    throw new TypeError('ara-identifier.ddo.create: Expecting identifier.')
   }
 
   return new DIDDocument(opts)

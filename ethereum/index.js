@@ -1,5 +1,3 @@
-'use strict'
-
 const { entropy } = require('./entropy')
 const keystore = require('./keystore')
 const account = require('./account')
