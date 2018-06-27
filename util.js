@@ -74,7 +74,6 @@ async function writeIdentity(identity) {
     throw new TypeError('util.writeIdentity: Expecting files object.')
   }
 
-
   info('Writing New identity: %s to disc', identity.did)
   const hash = toHex(crypto.blake2b(identity.publicKey))
   const output = resolve(rc.network.identity.root, hash)
