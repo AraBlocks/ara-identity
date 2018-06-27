@@ -66,8 +66,16 @@ function toBuffer(value) {
  * @param {Object} Identity
  */
 async function writeIdentity(identity) {
-  info('Writing New identity: %s to disc', identity.did)
+  if (null == identity || 'object' !== typeof identity) {
+    throw new TypeError('util.writeIdentity: Expecting object.')
+  }
 
+  if (null == identity.files || 'object' !== typeof identity.files) {
+    throw new TypeError('util.writeIdentity: Expecting files object.')
+  }
+
+
+  info('Writing New identity: %s to disc', identity.did)
   const hash = toHex(crypto.blake2b(identity.publicKey))
   const output = resolve(rc.network.identity.root, hash)
 
