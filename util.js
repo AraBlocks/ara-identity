@@ -99,11 +99,11 @@ async function writeIdentity(identity) {
  */
 function listIdentity(path) {
   const identities = []
+  if (undefined !== path && !fs.existsSync(path)) {
+    throw new TypeError('Specified folder does not exist')
+  }
   if (undefined === path) {
     path = resolve(rc.network.identity.root)
-  }
-  if (!fs.statSync(path)) {
-    throw new TypeError('~/.ara folder does not exist')
   }
   info('Fetching Identities from disc')
   try {
