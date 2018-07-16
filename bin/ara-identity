@@ -112,6 +112,14 @@ const { argv } = program
         describe: "Resolution timeout",
       })
   }, onresolve)
+  .command('list', "Outputs a list of all identities", (program) => {
+    program
+      .option('path', {
+        alias: 'p',
+        type: 'string',
+        describe: "Path to look for identities (Optional)"
+      })
+  }, onlist)
 
 void async function main() {
   if (program.argv.debug) {
@@ -385,6 +393,19 @@ async function onresolve(argv) {
     })
     console.log(JSON.stringify(identity))
   } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onlist(argv) {
+  try{
+    const identities = await aid.list(argv.path)
+    info("Identities:")
+    identities.forEach((id) => {
+      console.log(id)
+    })
+  }
+  catch(err) {
     onfatal(err)
   }
 }
