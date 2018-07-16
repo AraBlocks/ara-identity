@@ -92,9 +92,39 @@ async function writeIdentity(identity) {
   return null
 }
 
+/**
+ * Fetch a list Identities stored locally
+ * @public
+ * @param {String} path (Optional)
+ */
+function listIdentity(path) {
+  const identities = []
+  if (undefined === path) {
+    path = resolve(rc.network.identity.root)
+  }
+  if (!fs.statSync(path)) {
+    throw new TypeError('~/.ara folder does not exist')
+  }
+  info('Fetching Identities from disc')
+  try {
+    const folders = fs.readdirSync(path)
+    folders.forEach((folder) => {
+      const files = fs.readdirSync(resolve(path, folder))
+      if (files.indexOf('ddo.json') > -1) {
+        const data = fs.readFileSync(resolve(path, folder, 'ddo.json'))
+        identities.push(JSON.parse(data).id)
+      }
+    })
+  } catch (err) {
+    warn(err)
+  }
+  return identities
+}
+
 module.exports = {
   ethHexToBuffer,
   writeIdentity,
+  listIdentity,
   toBuffer,
   toHex,
 }
