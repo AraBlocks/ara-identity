@@ -10,25 +10,29 @@ const fs = require('fs')
  */
 function list(path) {
   const identities = []
-  if (undefined !== path && !fs.existsSync(path)) {
-    throw new TypeError('Specified folder does not exist')
-  }
   if (undefined === path) {
     path = resolve(rc.network.identity.root)
   }
-  info('Fetching Identities from disc')
-  try {
-    const folders = fs.readdirSync(path)
-    folders.forEach((folder) => {
-      const files = fs.readdirSync(resolve(path, folder))
-      if (files.indexOf('ddo.json') > -1) {
-        const data = fs.readFileSync(resolve(path, folder, 'ddo.json'))
-        identities.push(JSON.parse(data).id)
-      }
-    })
-  } catch (err) {
-    warn(err)
-  }
+  let folders = []
+  try { folders = fs.readdirSync(path) }
+  catch (err) { throw new Error(`Cannot read directory ${path}`) }
+
+  folders.forEach((folder) => {
+    let files = []
+    let data = null
+    folder = resolve(path, folder)
+
+    try { files = fs.readdirSync(folder) }
+    catch (err) { throw new Error(`Cannot read directory ${folder}`) }
+
+    if (files.indexOf('ddo.json') > -1) {
+      try { data = fs.readFileSync(resolve(folder, 'ddo.json')) }
+      catch (err) { new Error('Cannot read ddo.json') }
+
+      try { identities.push(JSON.parse(data).id) }
+      catch (err) { throw new Error('Cannot parse ddo.json') }
+    }
+  })
   return identities
 }
 

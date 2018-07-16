@@ -399,6 +399,7 @@ async function onresolve(argv) {
 
 async function onlist(argv) {
   try{
+    info('Fetching Identities from disc')
     const identities = await aid.list(argv.path)
     info("Identities:")
     identities.forEach((id) => {
