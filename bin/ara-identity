@@ -277,7 +277,7 @@ async function onimport(argv) {
     let keystore = null
 
     if (doc.public) { keystore = doc.public.keystore }
-    else if (doc.secret) { keystore = doc.public.keystore }
+    else if (doc.secret) { keystore = doc.secret.keystore }
 
     if (password) {
       const keyPair = crypto.keyPair(password)
@@ -372,7 +372,7 @@ async function onresolve(argv) {
     if (argv.key) {
       const doc = await secrets.load(argv)
       if (doc.public) { keystore = doc.public.keystore }
-      else if (doc.secret) { keystore = doc.public.keystore }
+      else if (doc.secret) { keystore = doc.secret.keystore }
     }
 
     const identity = await aid.resolve(argv.did, { context, keystore,
