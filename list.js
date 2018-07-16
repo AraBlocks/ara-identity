@@ -1,9 +1,7 @@
 const { info, warn } = require('ara-console')
-const { dirname, resolve } = require('path')
+const { resolve } = require('path')
 const rc = require('./rc')()
-const pify = require('pify')
 const fs = require('fs')
-
 
 /**
  * Fetch a list Identities stored locally

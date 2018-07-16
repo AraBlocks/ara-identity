@@ -18,9 +18,8 @@ const kDIDMethod = 'ara'
 const kMaxMeers = 8
 
 async function resolve(uri, opts) {
-
   if (0 != uri.indexOf('did:ara:')) {
-    uri = 'did:ara:' + uri
+    uri = `did:ara:${uri}`
   }
   const did = new DID(uri)
   if (kDIDMethod !== did.method) {
