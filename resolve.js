@@ -15,7 +15,7 @@ const kDIDIdentifierLength = 64
 // in milliseconds
 const kResolutionTimeout = 5000
 const kDIDMethod = 'ara'
-const kMaxMeers = 8
+const kMaxPeers = 8
 
 async function resolve(uri, opts) {
   if (0 != uri.indexOf('did:ara:')) {
@@ -74,7 +74,7 @@ async function findResolution(did, opts) {
     timeout = setTimeout(doResolution, opts.timeout)
 
     function onpeer(id, peer, type) {
-      if (resolvers.push({ id, peer, type }) < kMaxMeers) {
+      if (resolvers.push({ id, peer, type }) < kMaxPeers) {
         doResolution()
       } else {
         cleanup()
