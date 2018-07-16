@@ -112,7 +112,7 @@ const { argv } = program
         describe: "Resolution timeout",
       })
   }, onresolve)
-  .command('list', "Outputs a list of all identities", (program) => {
+  .command('list', "Outputs a list of all identities created locally", (program) => {
     program
       .option('path', {
         alias: 'p',
