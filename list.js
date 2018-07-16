@@ -9,6 +9,9 @@ const fs = require('fs')
  */
 function list(path) {
   const identities = []
+  if (undefined !== path && !fs.existsSync(path)) {
+    throw new Error(`Directory ${path} does not exist`)
+  }
   if (undefined === path) {
     path = resolve(rc.network.identity.root)
   }
