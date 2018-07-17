@@ -6,7 +6,7 @@ const test = require('ava')
 
 test('list()', async (t) => {
   const identity = await create({ context, password: 'password123' })
-  util.writeIdentity(identity)
+  await util.writeIdentity(identity)
   const identities = await list()
   t.true(null !== identities)
   t.true('object' === typeof identities)
