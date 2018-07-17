@@ -47,7 +47,8 @@ async function create(opts) {
     privateKey: wallet.getPrivateKey(),
   })
 
-  const { publicKey, secretKey } = crypto.keyPair(password)
+  const seed = crypto.randomBytes(32)
+  const { publicKey, secretKey } = crypto.keyPair(seed)
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({ id: didUri })
