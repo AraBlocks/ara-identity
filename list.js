@@ -3,6 +3,7 @@ const rc = require('./rc')()
 const pify = require('pify')
 const fs = require('fs')
 
+/* eslint-disable no-await-in-loop */
 /**
  * Fetch a list Identities stored locally
  * @public
@@ -10,23 +11,19 @@ const fs = require('fs')
  */
 async function list(path) {
   const identities = []
-  if (undefined !== path && !await pify(fs.stat)(path)) {
-    throw new Error(`directory ${path} does not exist`)
-  }
   if (undefined === path) {
     path = resolve(rc.network.identity.root)
   }
   let folders = []
   try {
     folders = await pify(fs.readdir)(path)
-  }
-  catch (err) {
+  } catch (err) {
     throw new Error(`Cannot read directory ${path}`)
   }
-  for (let key in folders){
+  for (const key in folders) {
     let files = []
     let data = null
-    let folder = resolve(path, folders[key])
+    const folder = resolve(path, folders[key])
     try {
       files = await pify(fs.readdir)(folder)
     } catch (err) {
