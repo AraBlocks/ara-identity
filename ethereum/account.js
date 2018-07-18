@@ -71,10 +71,7 @@ async function load(opts) {
 
   const { eth } = rc.network.identity
   const parsedEth = parse(eth)
-
-  const keystoreDir = basename(parsedEth.dir)
-  parsedEth.dir = parsedEth.dir.replace(keystoreDir, '')
-  const ethPath = resolve(parsedEth.dir, hash, keystoreDir, parsedEth.base)
+  const ethPath = resolve(parsedEth.dir, hash, parsedEth.base, 'eth')
 
   let keystore
   try {
