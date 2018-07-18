@@ -49,7 +49,7 @@ async function create(opts) {
 
   const seed = crypto.randomBytes(32)
   const { publicKey, secretKey } = crypto.keyPair(seed)
-  seed = fill(0)
+  seed.fill(0)
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({ id: didUri })
