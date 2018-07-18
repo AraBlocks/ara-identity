@@ -6,13 +6,10 @@ const pify = require('pify')
 const rc = require('../rc')()
 const crypto = require('ara-crypto')
 const isBuffer = require('is-buffer')
-const protobuf = require('../protobuf')
 
 const {
   resolve,
-  parse,
-  basename,
-  dirname
+  parse
 } = require('path')
 
 /**
@@ -42,7 +39,7 @@ async function create(opts) {
  * and password.
  * @public
  * @param {Object} opts
- * @param {Object} opts.web3 
+ * @param {Object} opts.web3
  * @param {Object} opts.publicKey
  * @param {Object} opts.password
  * @throws {Error} If ethPath doesn't exist
@@ -76,7 +73,7 @@ async function load(opts) {
   let keystore
   try {
     keystore = (await pify(fs.readFile)(ethPath)).toString()
-  } catch (err) { 
+  } catch (err) {
     throw new Error(err)
   }
 
