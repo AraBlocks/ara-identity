@@ -90,7 +90,7 @@ async function dump(opts) {
 
 function recover(password, keys, encryptedKeystore) {
   if (!isBuffer(password) && 'string' === typeof password) {
-    password = blake2b(Buffer.from(password))
+    password = crypto.blake2b(Buffer.from(password))
   }
   const secretKey = crypto.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
   const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
