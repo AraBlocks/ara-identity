@@ -36,6 +36,7 @@ async function create(opts) {
 
   const { context } = opts
   const { web3 } = context
+  /////// here A
   const password = crypto.blake2b(Buffer.from(opts.password))
   const { salt, iv } = await ethereum.keystore.create()
   const account = await ethereum.account.create({ web3 })
@@ -46,7 +47,7 @@ async function create(opts) {
     iv,
     privateKey: wallet.getPrivateKey(),
   })
-
+  /////// there B
   const { publicKey, secretKey } = crypto.keyPair(password)
 
   const didUri = did.create(publicKey)
