@@ -38,8 +38,8 @@ async function create(opts) {
 
   if (null == opts.mnemonic) {
     mnemonic = bip39.generateMnemonic()
-  }
-  else {
+  } else {
+    // eslint-disable-next-line prefer-destructuring
     mnemonic = opts.mnemonic
   }
 
@@ -119,14 +119,6 @@ async function create(opts) {
   })
 
   files.push({
-    path: 'keystore/ara',
-    buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
-      iv: crypto.randomBytes(16),
-      key: password.slice(0, 16)
-    })))
-  })
-
-  files.push({
     path: 'identity',
     buffer: protobuf.messages.Identity.encode({
       did: didUri.did,
@@ -136,6 +128,14 @@ async function create(opts) {
       // sign intermediate to get identity signature
       proof: { signature: crypto.sign(intermediate, secretKey) }
     }),
+  })
+
+  files.push({
+    path: 'keystore/ara',
+    buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
+      iv: crypto.randomBytes(16),
+      key: password.slice(0, 16)
+    })))
   })
 
   files.push({
