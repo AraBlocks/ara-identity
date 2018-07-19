@@ -8,7 +8,8 @@ const defaults = () => ({
   network: {
     identity: {
       root: resolve(rc().data.root, 'identities'),
-      eth: resolve(rc().data.root, 'identities', 'keystore')
+      keystore: resolve(rc().data.root, 'identities', 'keystore'),
+      ethKeystore: resolve(rc().data.root, 'identities', 'keystore', 'eth')
     }
   }
 })

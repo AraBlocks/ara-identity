@@ -9,7 +9,9 @@ const isBuffer = require('is-buffer')
 
 const {
   resolve,
-  parse
+  parse,
+  basename,
+  dirname
 } = require('path')
 
 /**
@@ -66,9 +68,12 @@ async function load(opts) {
   const publicKey = toBuffer(opts.publicKey)
   const hash = toHex(crypto.blake2b(publicKey))
 
-  const { eth } = rc.network.identity
-  const parsedEth = parse(eth)
-  const ethPath = resolve(parsedEth.dir, hash, parsedEth.base, 'eth')
+  const { ethKeystore } = rc.network.identity
+  const parsedEth = parse(ethKeystore)
+
+  const keystoreBase = basename(parsedEth.dir)
+  parsedEth.dir = dirname(parsedEth.dir)
+  const ethPath = resolve(parsedEth.dir, hash, keystoreBase, parsedEth.base)
 
   let keystore
   try {
@@ -77,15 +82,8 @@ async function load(opts) {
     throw new Error(err)
   }
 
-  const password = crypto.blake2b(Buffer.from(opts.password))
-  const { secretKey } = crypto.keyPair(password)
-  const ks = JSON.stringify(crypto.encrypt(secretKey, {
-    iv: crypto.randomBytes(16),
-    key: password.slice(0, 16)
-  }))
-
   const { web3 } = opts
-  const buf = await recover(password, ks, keystore)
+  const buf = await recover(opts.password, keystore)
   const privateKey = web3.utils.bytesToHex(buf)
 
   return web3.eth.accounts.privateKeyToAccount(privateKey)
