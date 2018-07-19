@@ -218,8 +218,8 @@ async function oncreate(argv) {
 
 
   info("New identity: %s", identity.did)
-  info('Please safely store the following 12 word mnemonic phrase for this AFS.' +
-    ' This phrase will be required to restore and delete this AFS.'+
+  info('Please safely store the following 12 word mnemonic phrase for this ARA ID.' +
+    ' This phrase will be required to restore ARA ID.'+
     ' It will never be shown again: \n\n\t\t\t< %s >\n', identity.mnemonic)
 
   const hash = toHex(crypto.blake2b(identity.publicKey))
