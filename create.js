@@ -7,6 +7,7 @@ const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
 const ddo = require('./ddo')
 const did = require('./did')
+const bip39 = require('bip39')
 
 /**
  * Creates a new ARA identity.
@@ -16,6 +17,7 @@ const did = require('./did')
  * @throws TypeError
  */
 async function create(opts) {
+  let mnemonic
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('ara-identity.create: Expecting object.')
   }
@@ -34,9 +36,16 @@ async function create(opts) {
     throw new TypeError('ara-identity.create: Expecting password to be a string.')
   }
 
+  if (null == opts.mnemonic) {
+    mnemonic = bip39.generateMnemonic()
+  }
+  else {
+    mnemonic = opts.mnemonic
+  }
+
+  const password = crypto.blake2b(Buffer.from(opts.password))
   const { context } = opts
   const { web3 } = context
-  const password = crypto.blake2b(Buffer.from(opts.password))
   const { salt, iv } = await ethereum.keystore.create()
   const account = await ethereum.account.create({ web3 })
   const wallet = await ethereum.wallet.load({ account })
@@ -46,10 +55,10 @@ async function create(opts) {
     iv,
     privateKey: wallet.getPrivateKey(),
   })
-
-  const seed = crypto.randomBytes(32)
-  const { publicKey, secretKey } = crypto.keyPair(seed)
-  seed.fill(0)
+  let mnemonicSeed = bip39.mnemonicToSeed(mnemonic)
+  mnemonicSeed = crypto.blake2b(mnemonicSeed)
+  const { publicKey, secretKey } = crypto.keyPair(mnemonicSeed)
+  mnemonicSeed.fill(0)
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({ id: didUri })
@@ -110,6 +119,14 @@ async function create(opts) {
   })
 
   files.push({
+    path: 'keystore/ara',
+    buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
+      iv: crypto.randomBytes(16),
+      key: password.slice(0, 16)
+    })))
+  })
+
+  files.push({
     path: 'identity',
     buffer: protobuf.messages.Identity.encode({
       did: didUri.did,
@@ -122,14 +139,6 @@ async function create(opts) {
   })
 
   files.push({
-    path: 'keys',
-    buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
-      iv: crypto.randomBytes(16),
-      key: password.slice(0, 16)
-    })))
-  })
-
-  files.push({
     path: 'schema.proto',
     buffer: protobuf.kProtocolBufferSchema,
   })
@@ -137,6 +146,7 @@ async function create(opts) {
   encryptionKey.fill(0)
 
   return {
+    mnemonic,
     publicKey,
     secretKey,
     account,
