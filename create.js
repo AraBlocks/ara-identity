@@ -43,9 +43,9 @@ async function create(opts) {
     mnemonic = opts.mnemonic
   }
 
-  const password = crypto.blake2b(Buffer.from(opts.password))
   const { context } = opts
   const { web3 } = context
+  const password = crypto.blake2b(Buffer.from(opts.password))
   const { salt, iv } = await ethereum.keystore.create()
   const account = await ethereum.account.create({ web3 })
   const wallet = await ethereum.wallet.load({ account })
