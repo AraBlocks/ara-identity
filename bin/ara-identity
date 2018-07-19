@@ -216,7 +216,6 @@ async function oncreate(argv) {
 
   const identity = await aid.create({ context, password })
 
-
   info("New identity: %s", identity.did)
   info('Please safely store the following 12 word mnemonic phrase for this ARA ID.' +
     ' This phrase will be required to restore your ARA ID.'+
