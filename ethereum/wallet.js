@@ -1,4 +1,5 @@
 const { fromMasterSeed } = require('ethereumjs-wallet/hdkey')
+const isZeroBuffer = require('is-zero-buffer')
 const isBuffer = require('is-buffer')
 
 async function load(opts) {
@@ -8,8 +9,8 @@ async function load(opts) {
   if (!opts.seed) {
     throw new TypeError('ethereum.wallet.load: Expecting seed to create wallet.')
   }
-  if (false === isBuffer(opts.seed)) {
-    throw new TypeError('ethereum.wallet.load: Expecting seed to be a buffer.')
+  if (false === isBuffer(opts.seed) || true === isZeroBuffer(opts.seed)) {
+    throw new TypeError('ethereum.wallet.load: Expecting seed to be a non-zero buffer.')
   }
   const { seed } = opts
   const master = fromMasterSeed(seed)
