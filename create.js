@@ -42,18 +42,18 @@ async function create(opts) {
     // eslint-disable-next-line prefer-destructuring
     mnemonic = opts.mnemonic
   }
-  let mnemonicSeed = bip39.mnemonicToSeed(mnemonic)
-  mnemonicSeed = crypto.blake2b(mnemonicSeed)
+  let seed = bip39.mnemonicToSeed(mnemonic)
+  seed = crypto.blake2b(seed)
 
-  const { publicKey, secretKey } = crypto.keyPair(mnemonicSeed)
+  const { publicKey, secretKey } = crypto.keyPair(seed)
   const password = crypto.blake2b(Buffer.from(opts.password))
   const { salt, iv } = await ethereum.keystore.create()
-  const wallet = await ethereum.wallet.load({ mnemonicSeed })
+  const wallet = await ethereum.wallet.load({ seed })
   const kstore = await ethereum.keystore.dump({
     password,
     salt,
     iv,
-    privateKey: wallet.getWallet().getPrivateKey(),
+    privateKey: wallet.getPrivateKey(),
   })
 
   const didUri = did.create(publicKey)
