@@ -23,7 +23,7 @@ test('dump(opts)', async (t) => {
   const ks = await keystore.create()
   const ko = await keystore.dump({
     password: 'test',
-    privateKey: wal.getWallet().getPrivateKey(),
+    privateKey: wal.getPrivateKey(),
     salt: ks.salt,
     iv: ks.iv
   })
