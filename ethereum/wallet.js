@@ -6,7 +6,7 @@ async function load(opts) {
     throw new TypeError('ethereum.wallet.load: Expecting object.')
   }
   if (!opts.mnemonicSeed) {
-    throw new TypeError('ethereum.wallet.load: Expecting mnemonic seed to create wallets.')
+    throw new TypeError('ethereum.wallet.load: Expecting mnemonic seed to create wallet.')
   }
   if ('string' !== typeof opts.mnemonicSeed && false === isBuffer(opts.mnemonicSeed)) {
     throw new TypeError('ethereum.wallet.load: Expecting mnemonic seed to be a string or buffer.')
