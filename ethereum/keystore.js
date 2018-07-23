@@ -89,6 +89,7 @@ async function dump(opts) {
  */
 
 function recover(password, keys, encryptedKeystore) {
+  password = crypto.blake2b(Buffer.from(password))
   const secretKey = crypto.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
   const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
   const keyObject = protobuf.messages.KeyStore.decode(crypto.decrypt(JSON.parse(encryptedKeystore), { key: bufferedSecretKey }))

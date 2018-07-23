@@ -1,9 +1,7 @@
-const { create } = require('../../ethereum/account')
 const { load } = require('../../ethereum/wallet')
+const crypto = require('ara-crypto')
+const bip39 = require('bip39')
 const test = require('ava')
-const Web3 = require('web3')
-
-const web3 = new Web3('http://127.0.0.1:9545')
 
 test('ethereum.wallet.load(opts)', async (t) => {
   await t.throws(load(), TypeError)
@@ -13,6 +11,7 @@ test('ethereum.wallet.load(opts)', async (t) => {
   await t.throws(load(NaN), TypeError)
   await t.throws(load({}), TypeError)
 
-  const account = await create({ web3 })
-  t.true(null != load({ account }))
+  let mnemonicSeed = bip39.mnemonicToSeed(bip39.generateMnemonic())
+  mnemonicSeed = crypto.blake2b(mnemonicSeed)
+  t.true(null != load({ mnemonicSeed }))
 })

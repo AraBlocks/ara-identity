@@ -1,49 +1,40 @@
-const { toBuffer } = require('../../util')
+const keystore = require('../../ethereum/keystore')
 const { create } = require('../../create')
 const context = require('ara-context')()
-const isBuffer = require('is-buffer')
-const { toHex } = require('../../util')
-const { resolve } = require('path')
-const fs = require('fs')
-const pify = require('pify')
-const crypto = require('ara-crypto')
-const keystore = require('../../ethereum/keystore')
-const wallet = require('../../ethereum/wallet')
 const test = require('ava')
-const rc = require('../../rc')()
-
-
-
 
 test('recover(opts)', async (t) => {
-  const did = 'did:ara:fc4d5bcb20dcfb9dc0c319327246cd2a78d620d5de07fac43ff480a1381796ad'
-  const mnemonic = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
-  const password = 'pressi123'
-  const hash = toHex(crypto.blake2b(Buffer.from('fc4d5bcb20dcfb9dc0c319327246cd2a78d620d5de07fac43ff480a1381796ad', 'hex')))
-  const path = resolve(rc.network.identity.root, hash)
-  const keys = await pify(fs.readFile)(resolve(path, 'keystore/ara'), 'utf8')
-  const encryptedKS = await pify(fs.readFile)(resolve(path, 'keystore/eth'), 'utf8')
-  const privateKey = await keystore.recover(password, keys, encryptedKS)
-  console.log("PK1 :",privateKey.toString('hex'))
-  console.log("ID1 :",did)
-})
+  t.plan(1)
 
-test('recover(opts) testing if same pk is generated', async (t) => {
-  const mnemonic = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
-  const password = 'pressi123'
-  const identity = await create({context, mnemonic, password})
-  const files = identity.files
+  const mnemonic1 = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
+  const password1 = 'hello123'
+  const identity1 = await create({ context, mnemonic: mnemonic1, password: password1 })
+  const files1 = identity1.files
   let keys
   let encryptedKS
-  files.forEach((file) => {
-    if (file.path === 'keystore/eth') {
+  files1.forEach((file) => {
+    if ('keystore/eth' === file.path) {
       encryptedKS = file.buffer.toString('utf8')
     }
-    if (file.path === 'keystore/ara') {
+    if ('keystore/ara' === file.path) {
       keys = file.buffer.toString('utf8')
     }
   })
-  const privateKey = await keystore.recover(password, keys, encryptedKS)
-  console.log("PK2 :",privateKey.toString('hex'))
-  console.log("ID2 :",JSON.stringify(identity.did))
+  const privateKey1 = await keystore.recover(password1, keys, encryptedKS)
+
+  const mnemonic2 = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
+  const password2 = 'hello23456'
+  const identity2 = await create({ context, mnemonic: mnemonic2, password: password2 })
+  const files2 = identity2.files // eslint-disable-line prefer-destructuring
+  files2.forEach((file) => {
+    if ('keystore/eth' === file.path) {
+      encryptedKS = file.buffer.toString('utf8')
+    }
+    if ('keystore/ara' === file.path) {
+      keys = file.buffer.toString('utf8')
+    }
+  })
+  const privateKey2 = await keystore.recover(password2, keys, encryptedKS)
+
+  t.true(0 === Buffer.compare(privateKey1, privateKey2))
 })

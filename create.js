@@ -5,9 +5,9 @@ const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
+const bip39 = require('bip39')
 const ddo = require('./ddo')
 const did = require('./did')
-const bip39 = require('bip39')
 
 /**
  * Creates a new ARA identity.
@@ -44,10 +44,8 @@ async function create(opts) {
   }
   let mnemonicSeed = bip39.mnemonicToSeed(mnemonic)
   mnemonicSeed = crypto.blake2b(mnemonicSeed)
-  const { publicKey, secretKey } = crypto.keyPair(mnemonicSeed)
 
-  const { context } = opts
-  const { web3 } = context
+  const { publicKey, secretKey } = crypto.keyPair(mnemonicSeed)
   const password = crypto.blake2b(Buffer.from(opts.password))
   const { salt, iv } = await ethereum.keystore.create()
   const wallet = await ethereum.wallet.load({ mnemonicSeed })
