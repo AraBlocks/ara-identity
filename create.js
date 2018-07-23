@@ -140,7 +140,7 @@ async function create(opts) {
   })
 
   encryptionKey.fill(0)
-  mnemonicSeed.fill(0)
+  seed.fill(0)
 
   return {
     mnemonic,

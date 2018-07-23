@@ -11,8 +11,8 @@ async function load(opts) {
   if (false === isBuffer(opts.seed)) {
     throw new TypeError('ethereum.wallet.load: Expecting seed to be a buffer.')
   }
-  const { mnemonicSeed } = opts
-  const master = fromMasterSeed(mnemonicSeed)
+  const { seed } = opts
+  const master = fromMasterSeed(seed)
   return master.getWallet()
 }
 
