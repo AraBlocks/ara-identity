@@ -174,7 +174,7 @@ async function onarchive(argv) {
 
     const { keystore } = (doc.public || doc.secret)
     const { key } = argv
-    const keys = JSON.parse(await pify(fs.readFile)(resolve(path, 'keys'), 'utf8'))
+    const keys = JSON.parse(await pify(fs.readFile)(resolve(path, 'keystore/ara'), 'utf8'))
     const secretKey = crypto.decrypt(keys, {key: password.slice(0, 16)})
     const publicKey = secretKey.slice(32)
     const { files } = identity
@@ -185,7 +185,7 @@ async function onarchive(argv) {
     })
 
     files.push({
-      path: 'keys',
+      path: 'keystore/ara',
       buffer: JSON.stringify(keys)
     })
 
@@ -217,6 +217,9 @@ async function oncreate(argv) {
   const identity = await aid.create({ context, password })
 
   info("New identity: %s", identity.did)
+  info('Please safely store the following 12 word mnemonic phrase for this ARA ID.' +
+    ' This phrase will be required to restore your ARA ID.'+
+    ' It will never be shown again: \n\n\t\t\t< %s >\n', identity.mnemonic)
 
   const hash = toHex(crypto.blake2b(identity.publicKey))
   const output = resolve(rc.network.identity.root, hash)

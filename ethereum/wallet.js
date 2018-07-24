@@ -1,21 +1,20 @@
-const { ethHexToBuffer } = require('../util')
-const { fromPrivateKey } = require('ethereumjs-wallet')
+const { fromMasterSeed } = require('ethereumjs-wallet/hdkey')
+const isZeroBuffer = require('is-zero-buffer')
+const isBuffer = require('is-buffer')
 
 async function load(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ethereum.wallet.load: Expecting object.')
-  } else if (!opts.account || 'object' !== typeof opts.account) {
-    throw new TypeError('ethereum.wallet.load: Expecting account to be an object.')
   }
-
-  const { account } = opts
-
-  if (account.privateKey) {
-    const privateKey = ethHexToBuffer(account.privateKey)
-    return fromPrivateKey(privateKey)
+  if (!opts.seed) {
+    throw new TypeError('ethereum.wallet.load: Expecting seed to create wallet.')
   }
-
-  return null
+  if (false === isBuffer(opts.seed) || true === isZeroBuffer(opts.seed)) {
+    throw new TypeError('ethereum.wallet.load: Expecting seed to be a non-zero buffer.')
+  }
+  const { seed } = opts
+  const master = fromMasterSeed(seed)
+  return master.getWallet()
 }
 
 module.exports = {

@@ -1,12 +1,10 @@
 const { toBuffer } = require('../../util')
 const isBuffer = require('is-buffer')
 const keystore = require('../../ethereum/keystore')
-const account = require('../../ethereum/account')
 const wallet = require('../../ethereum/wallet')
+const crypto = require('ara-crypto')
 const test = require('ava')
-const Web3 = require('web3')
-
-const web3 = new Web3('http://127.0.0.1:9545')
+const bip39 = require('bip39')
 
 test('create(opts)', async (t) => {
   t.true('function' === typeof keystore.create)
@@ -19,8 +17,9 @@ test('create(opts)', async (t) => {
 })
 
 test('dump(opts)', async (t) => {
-  const acc = await account.create({ web3 })
-  const wal = await wallet.load({ account: acc })
+  let seed = bip39.mnemonicToSeed(bip39.generateMnemonic())
+  seed = crypto.blake2b(seed)
+  const wal = await wallet.load({ seed })
   const ks = await keystore.create()
   const ko = await keystore.dump({
     password: 'test',
@@ -30,7 +29,6 @@ test('dump(opts)', async (t) => {
   })
 
   t.true('object' === typeof ko)
-  t.true(0 === Buffer.compare(toBuffer(acc.address), toBuffer(ko.address)))
   t.true(0 === Buffer.compare(toBuffer(ko.crypto.cipherparams.iv), toBuffer(ks.iv)))
   t.true(0 === Buffer.compare(toBuffer(ko.crypto.kdfparams.salt), toBuffer(ks.salt)))
 })

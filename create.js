@@ -5,6 +5,7 @@ const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
+const bip39 = require('bip39')
 const ddo = require('./ddo')
 const did = require('./did')
 
@@ -16,6 +17,7 @@ const did = require('./did')
  * @throws TypeError
  */
 async function create(opts) {
+  let mnemonic
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('ara-identity.create: Expecting object.')
   }
@@ -34,20 +36,25 @@ async function create(opts) {
     throw new TypeError('ara-identity.create: Expecting password to be a string.')
   }
 
-  const { context } = opts
-  const { web3 } = context
+  if (null == opts.mnemonic) {
+    mnemonic = bip39.generateMnemonic()
+  } else {
+    // eslint-disable-next-line prefer-destructuring
+    mnemonic = opts.mnemonic
+  }
+  let seed = bip39.mnemonicToSeed(mnemonic)
+  seed = crypto.blake2b(seed)
+
+  const { publicKey, secretKey } = crypto.keyPair(seed)
   const password = crypto.blake2b(Buffer.from(opts.password))
   const { salt, iv } = await ethereum.keystore.create()
-  const account = await ethereum.account.create({ web3 })
-  const wallet = await ethereum.wallet.load({ account })
+  const wallet = await ethereum.wallet.load({ seed })
   const kstore = await ethereum.keystore.dump({
     password,
     salt,
     iv,
     privateKey: wallet.getPrivateKey(),
   })
-
-  const { publicKey, secretKey } = crypto.keyPair(password)
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({ id: didUri })
@@ -120,7 +127,7 @@ async function create(opts) {
   })
 
   files.push({
-    path: 'keys',
+    path: 'keystore/ara',
     buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
       iv: crypto.randomBytes(16),
       key: password.slice(0, 16)
@@ -133,11 +140,12 @@ async function create(opts) {
   })
 
   encryptionKey.fill(0)
+  seed.fill(0)
 
   return {
+    mnemonic,
     publicKey,
     secretKey,
-    account,
     wallet,
     files,
     ddo: didDocument,
