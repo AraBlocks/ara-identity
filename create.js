@@ -45,8 +45,11 @@ async function create(opts) {
   let seed = bip39.mnemonicToSeed(mnemonic)
   seed = crypto.blake2b(seed)
 
+  const { context } = opts
+  const { web3 } = context
   const { publicKey, secretKey } = crypto.keyPair(seed)
   const password = crypto.blake2b(Buffer.from(opts.password))
+  const account = await ethereum.account.create({ web3 })
   const { salt, iv } = await ethereum.keystore.create()
   const wallet = await ethereum.wallet.load({ seed })
   const kstore = await ethereum.keystore.dump({
@@ -143,6 +146,7 @@ async function create(opts) {
   seed.fill(0)
 
   return {
+    account,
     mnemonic,
     publicKey,
     secretKey,
