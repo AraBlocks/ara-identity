@@ -49,6 +49,7 @@ async function create(opts) {
   const { web3 } = context
   const { publicKey, secretKey } = crypto.keyPair(seed)
   const password = crypto.blake2b(Buffer.from(opts.password))
+
   const { salt, iv } = await ethereum.keystore.create()
   const wallet = await ethereum.wallet.load({ seed })
   const account = await ethereum.account.create({ web3, privateKey: wallet.getPrivateKey() })

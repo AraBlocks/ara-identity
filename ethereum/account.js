@@ -1,12 +1,10 @@
-<<<<<<< HEAD
-const { entropy } = require('./entropy')
+const isBuffer = require('is-buffer')
 const { recover } = require('./keystore')
 const { toHex, toBuffer } = require('../util')
 const fs = require('fs')
 const pify = require('pify')
 const rc = require('../rc')()
 const crypto = require('ara-crypto')
-const isBuffer = require('is-buffer')
 
 const {
   resolve,
@@ -14,8 +12,6 @@ const {
   basename,
   dirname
 } = require('path')
-
-const isBuffer = require('is-buffer')
 
 /**
  * Creates an Ethereum account with web3 specified by
@@ -37,7 +33,8 @@ async function create(opts) {
   }
 
   const { web3 } = opts
-  const account = web3.eth.accounts.privateKeyToAccount(opts.privateKey)
+  const privateKey = web3.utils.bytesToHex(opts.privateKey)
+  const account = web3.eth.accounts.privateKeyToAccount(privateKey)
   return account
 }
 
@@ -70,28 +67,35 @@ async function load(opts) {
     throw new TypeError('ethereum.account.load: Expecting password to be non-empty string')
   }
 
+  const { web3 } = opts
+
   const publicKey = toBuffer(opts.publicKey)
   const hash = toHex(crypto.blake2b(publicKey))
 
-  const { ethKeystore } = rc.network.identity
-  const parsedEth = parse(ethKeystore)
+  const { araKeystore, ethKeystore } = rc.network.identity
+  const araPath = _constructKeystorePath(araKeystore, hash)
+  const ethPath = _constructKeystorePath(ethKeystore, hash)
 
-  const keystoreBase = basename(parsedEth.dir)
-  parsedEth.dir = dirname(parsedEth.dir)
-  const ethPath = resolve(parsedEth.dir, hash, keystoreBase, parsedEth.base)
-
-  let keystore
+  let keys
+  let encryptedKeystore
   try {
-    keystore = (await pify(fs.readFile)(ethPath)).toString()
+    keys = await pify(fs.readFile)(araPath, 'utf8')
+    encryptedKeystore = await pify(fs.readFile)(ethPath, 'utf8')
   } catch (err) {
     throw new Error(err)
   }
 
-  const { web3 } = opts
-  const buf = await recover(opts.password, keystore)
+  const buf = await recover(opts.password, keys, encryptedKeystore)
   const privateKey = web3.utils.bytesToHex(buf)
 
   return web3.eth.accounts.privateKeyToAccount(privateKey)
+}
+
+function _constructKeystorePath(path, hash) {
+  const parsedPath = parse(path)
+  const keystoreBase = basename(parsedPath.dir)
+  parsedPath.dir = dirname(parsedPath.dir)
+  return resolve(parsedPath.dir, hash, keystoreBase, parsedPath.base)
 }
 
 module.exports = {

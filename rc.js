@@ -9,7 +9,8 @@ const defaults = () => ({
     identity: {
       root: resolve(rc().data.root, 'identities'),
       keystore: resolve(rc().data.root, 'identities', 'keystore'),
-      ethKeystore: resolve(rc().data.root, 'identities', 'keystore', 'eth')
+      ethKeystore: resolve(rc().data.root, 'identities', 'keystore', 'eth'),
+      araKeystore: resolve(rc().data.root, 'identities', 'keystore', 'ara')
     }
   }
 })
