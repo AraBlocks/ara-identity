@@ -1,4 +1,4 @@
-const { entropy } = require('./entropy')
+const isBuffer = require('is-buffer')
 
 /**
  * Creates an Ethereum account with web3 specified by
@@ -15,10 +15,12 @@ async function create(opts) {
     throw new TypeError('ethereum.account.create: Expecting object.')
   } else if (!opts.web3 || 'object' !== typeof opts.web3) {
     throw new TypeError('ethereum.account.create: Expecting web3 to be an object.')
+  } else if (!opts.privateKey || false === isBuffer(opts.privateKey)) {
+    throw new TypeError('ethereum.account.create: Expecting privateKey to be a buffer')
   }
 
   const { web3 } = opts
-  const account = web3.eth.accounts.create(await entropy(opts.entropy))
+  const account = web3.eth.accounts.privateKeyToAccount(opts.privateKey)
   return account
 }
 
