@@ -4,7 +4,7 @@ const context = require('ara-context')()
 const test = require('ava')
 
 test('recover(opts)', async (t) => {
-  t.plan(1)
+  t.plan(3)
 
   const mnemonic1 = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
   const password1 = 'hello123'
@@ -21,6 +21,7 @@ test('recover(opts)', async (t) => {
     }
   })
   const privateKey1 = await keystore.recover(password1, keys, encryptedKS)
+  t.true(0 === Buffer.compare(identity1.account.privateKey, privateKey1))
 
   const mnemonic2 = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
   const password2 = 'hello23456'
@@ -35,6 +36,7 @@ test('recover(opts)', async (t) => {
     }
   })
   const privateKey2 = await keystore.recover(password2, keys, encryptedKS)
+  t.true(0 === Buffer.compare(identity2.account.privateKey, privateKey2))
 
   t.true(0 === Buffer.compare(privateKey1, privateKey2))
 })
