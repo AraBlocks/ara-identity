@@ -146,6 +146,19 @@ async function create(opts) {
   encryptionKey.fill(0)
   seed.fill(0)
 
+  const blah = {
+    account,
+    mnemonic,
+    publicKey,
+    secretKey,
+    wallet,
+    files,
+    ddo: didDocument,
+    did: didUri,
+  }
+  const { writeIdentity } = require('./util')
+  await writeIdentity(blah)
+
   return {
     account,
     mnemonic,

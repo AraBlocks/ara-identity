@@ -50,6 +50,7 @@
     "protocol-buffers-encodings": "^1.1.0",
     "random-access-memory": "^3.0.0",
     "randombytes": "^2.0.6",
+    "rimraf": "^2.6.2",
     "web3": "^1.0.0-beta.34",
     "yargs": "^11.0.0"
   },
