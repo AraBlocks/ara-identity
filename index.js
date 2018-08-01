@@ -1,3 +1,4 @@
+const { createIdentityKeyPath } = require('./key-path')
 const { archive } = require('./archive')
 const { resolve } = require('./resolve')
 const { create } = require('./create')
@@ -8,6 +9,7 @@ const ddo = require('./ddo')
 const did = require('./did')
 
 module.exports = {
+  createIdentityKeyPath,
   ethereum,
   archive,
   resolve,
