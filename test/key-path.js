@@ -20,8 +20,8 @@ test('createIdentityKeyPath(identity) valid identity', async (t) => {
 
   const path = createIdentityKeyPath(identity)
   t.true(path && 'string' === typeof path)
-  t.notThrows(async () => await pify(fs.access)(path))
+  t.notThrows(async () => pify(fs.access)(path))
 
   // cleanup
-  await pify(rimraf)(path)
+  pify(rimraf)(path)
 })
