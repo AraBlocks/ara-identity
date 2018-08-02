@@ -221,20 +221,6 @@ async function oncreate(argv) {
     ' This phrase will be required to restore your ARA ID.'+
     ' It will never be shown again: \n\n\t\t\t< %s >\n', identity.mnemonic)
 
-  const hash = toHex(crypto.blake2b(identity.publicKey))
-  const output = resolve(rc.network.identity.root, hash)
-
-  await pify(mkdirp)(output)
-
-  for (let i = 0; i < identity.files.length; ++i) {
-    warn("Writing %s",  resolve(output, identity.files[i].path))
-    const dir = dirname(resolve(output, identity.files[i].path))
-    await pify(mkdirp)(dir)
-    await pify(fs.writeFile)(
-      resolve(output, identity.files[i].path),
-      identity.files[i].buffer)
-  }
-
   if (argv.archive) {
     if (null == argv.key) {
       onfatal(new Error("Expecting network key."))
