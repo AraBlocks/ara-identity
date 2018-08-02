@@ -1,4 +1,4 @@
-const { fromMasterSeed } = require('ethereumjs-wallet/hdkey')
+const { fromMasterSeed } = require('ethereumjs-wallet/dist/hdkey')
 const isZeroBuffer = require('is-zero-buffer')
 const isBuffer = require('is-buffer')
 
