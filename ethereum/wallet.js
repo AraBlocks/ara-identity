@@ -1,11 +1,12 @@
 const isZeroBuffer = require('is-zero-buffer')
 const isBuffer = require('is-buffer')
 
+/* eslint-disable import/no-unresolved */
 // attempt to load hdkey from ethereumjs
 // see: https://github.com/ethereumjs/ethereumjs-wallet/issues/64
 let hdkey = null
 try { hdkey = require('ethereumjs-wallet/dist/hdkey') } catch (err) {
-  try { hdkey = require('ethereumjs-wallet/hdkey') } catch (err) {
+  try { hdkey = require('ethereumjs-wallet/hdkey') } catch (error) {
     throw new Error('Failed to load ethereumjs-wallet/hdkey.')
   }
 }
