@@ -1,160 +1,168 @@
 #!/usr/bin/env node
 
-const { basename, dirname, resolve } = require('path')
 const { info, warn, error } = require('ara-console')
-const { createSwarm } = require('ara-network/discovery')
+const { unpack, keyRing } = require('ara-network/keys')
+const { writeIdentity } = require('../util')
 const { createCFS } = require('cfsnet/create')
+const { resolve } = require('path')
 const { toHex } = require('../util')
+const { table } = require('table')
 const protobuf = require('../protobuf')
 const inquirer = require('inquirer')
 const context = require('ara-context')()
 const program = require('yargs')
-const secrets = require('ara-network/secrets')
 const crypto = require('ara-crypto')
-const extend = require('extend')
 const mirror = require('mirror-folder')
-const mkdirp = require('mkdirp')
 const debug = require('debug')('ara:identity')
 const pify = require('pify')
 const did = require('did-uri')
 const aid = require('../')
 const ram = require('random-access-memory')
 const fs = require('fs')
-const os = require('os')
 const rc = require('../rc')()
-
-const noop = () => void 0
-const $0 = basename(process.argv[1] || package.name)
 
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
 
-const { argv } = program
-  .usage("usage: $0 [-hDV] [options] <command> [options]")
+program
+  .usage('usage: $0 [-hDV] [options] <command> [options]')
   .option('debug', {
     type: 'boolean',
     alias: 'D',
-    describe: "Enable debug output",
+    describe: 'Enable debug output',
   })
   .option('force', {
     alias: 'f',
     type: 'boolean',
-    describe: "Force actions without prompt",
+    describe: 'Force actions without prompt',
   })
   .option('help', {
     alias: 'h',
-    describe: "Show this help message"
+    describe: 'Show this help message'
   })
   .option('key', {
     alias: 'k',
     type: 'string',
-    describe: "Network key name",
+    describe: 'Network key name',
   })
   .option('version', {
     alias: 'V',
-    describe: "Show program version"
+    describe: 'Show program version'
   })
-  .command('archive [did]', "Archive identity in network", (program) => {
-    program
+  .command(
+    'archive [did]',
+    'Archive identity in network',
+    // eslint-disable-next-line no-shadow
+    program => program
       .positional('did', {
         type: 'string',
-        describe: "An ARA decentralized identity (did) URI"
+        describe: 'An ARA decentralized identity (did) URI'
       })
-  }, onarchive)
-  .command('create', "Create an identity", (program) => {
-    program
+    , onarchive
+  )
+  .command(
+    'create',
+    'Create an identity',
+    // eslint-disable-next-line no-shadow
+    program => program
       .option('archive', {
         alias: 'A',
         type: 'boolean',
-        describe: "Archive identity into network",
+        describe: 'Archive identity into network',
       })
-  }, oncreate)
-  .command('import [did]', "Import an identity from the network", (program) => {
-    program
-      .positional('did', {
-        type: 'string',
-        describe: "An ARA decentralized identity (did) URI"
+    , oncreate
+  )
+  .command(
+    'resolve [did]',
+    'Resolve an identity',
+    // eslint-disable-next-line no-shadow
+    program => program
+      .option('secret', {
+        alias: 's',
+        describe: 'Shared secret key for the associated network keys.'
+      })
+      .option('name', {
+        alias: 'n',
+        describe: 'Human readable network keys name.'
+      })
+      .option('keys', {
+        alias: 'k',
+        describe: 'Path to ARA network keys'
       })
       .option('cache', {
         alias: 'C',
         type: 'boolean',
-        describe: "Enable or disable cache",
-        default: true
-      })
-      .option('no-cache', {
-        type: 'boolean',
-        describe: "Skip identity cache",
-      })
-      .option('timeout', {
-        alias: 't',
-        type: 'number',
-        describe: "Resolution timeout",
-      })
-  }, onimport)
-  .command('keys [did]', "Output keys for an identity", (program) => {
-  }, onkeys)
-  .command('resolve [did]', "Resolve an identity", (program) => {
-    program
-      .option('cache', {
-        alias: 'C',
-        type: 'boolean',
-        describe: "Enable or disable cache",
+        describe: 'Enable or disable cache',
         default: true
       })
       .option('no-cache', {
         alias: 'nocache',
         type: 'boolean',
-        describe: "Skip identity cache",
+        describe: 'Skip identity cache',
       })
       .option('timeout', {
         alias: 't',
         type: 'number',
-        describe: "Resolution timeout",
+        describe: 'Resolution timeout',
       })
-  }, onresolve)
-  .command('list', "Outputs a list of all identities created locally", (program) => {
-    program
+    , onresolve
+  )
+  .command(
+    'list',
+    'Outputs a list of all identities created locally',
+    // eslint-disable-next-line no-shadow
+    program => program
       .option('path', {
         alias: 'p',
         type: 'string',
-        describe: "Path to look for identities (Optional)"
+        describe: 'Path to look for identities (Optional)'
       })
-  }, onlist)
+    , onlist
+  )
 
-void async function main() {
-  if (program.argv.debug) {
-    require('debug').enable('ara:identity*')
-  }
-}()
+if (0 === program.argv._.length) {
+  program.showHelp()
+  process.exit(1)
+}
+
+if (program.argv.debug) {
+  // eslint-disable-next-line global-require
+  require('debug').enable('ara:identity*')
+}
 
 async function onarchive(argv) {
-  if (null == argv.key) {
-    onfatal(new Error("Expecting network key."))
+  onfatal(new Error('TODO: Not implemented'))
+
+  if (!argv.key) {
+    onfatal(new TypeError('Expecting network key.'))
   }
 
-  if (null == argv.did) {
-    onfatal(new Expecting("Expecting DID URI to resolve."))
+  if (!argv.did) {
+    onfatal(new TypeError('Expecting DID URI to resolve.'))
   }
 
-  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
-    onfatal(new Error("Expecting a did URI with an 'ara' method."))
+  if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
+    onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
-  if (0 != argv.did.indexOf('did:ara:')) {
-    argv.did = 'did:ara:' + argv.did
+  if (0 !== argv.did.indexOf('did:ara:')) {
+    // eslint-disable-next-line no-param-reassign
+    argv.did = `did:ara:${argv.did}`
   }
 
-  let { password } = await inquirer.prompt([{
+  let { password } = await inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
-    "Please provide a passphrase for your identity. This is needed to " +
-    "archive your identity.\n" +
-    "Passphrase:"
-  }])
+    'Please provide a passphrase for your identity. This is needed to ' +
+    'archive your identity.\n' +
+    'Passphrase:'
+  } ])
 
   if (!password) {
-    onfatal(new TypeError("Please provide a password to archive your identity."))
+    // eslint-disable-next-line function-paren-newline
+    onfatal(
+      new TypeError('Please provide a password to archive your identity.'))
   }
 
   password = crypto.blake2b(Buffer.from(password))
@@ -162,246 +170,125 @@ async function onarchive(argv) {
   const { identifier } = did.parse(argv.did)
   const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
   const path = resolve(rc.network.identity.root, hash)
-  const identity = protobuf.messages.Identity.decode(
-    await pify(fs.readFile)(resolve(path, 'identity'))
-  )
+  const identityBuffer = await pify(fs.readFile)(resolve(path, 'identity'))
+  const identity = protobuf.messages.Identity.decode(identityBuffer)
+
+  void identity
 
   try {
-    const doc = await secrets.load(argv)
-    if (null == doc || (null == doc.public && null == doc.secret)) {
-      onfatal(new TypeError("Unknown network key."))
-    }
 
-    const { keystore } = (doc.public || doc.secret)
+    /*
     const { key } = argv
-    const keys = JSON.parse(await pify(fs.readFile)(resolve(path, 'keystore/ara'), 'utf8'))
-    const secretKey = crypto.decrypt(keys, {key: password.slice(0, 16)})
+    const keystorePath = resolve(path, 'keystore/ara')
+    const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
+    const keys = JSON.parse(String(keystoreBuffer))
+    const secretKey = crypto.decrypt(keys, { key: password.slice(0, 16) })
     const publicKey = secretKey.slice(32)
     const { files } = identity
 
-    files.push({
-      path: 'identity',
-      buffer: protobuf.messages.Identity.encode(identity)
-    })
+    // manually construct identity file for archiver
+    files.push({ path: 'identity', buffer: identityBuffer })
 
-    files.push({
-      path: 'keystore/ara',
-      buffer: JSON.stringify(keys)
-    })
-
-    files.push({
-      path: 'schema.proto',
-      buffer: protobuf.kProtocolBufferSchema,
-    })
-
-    warn("Archiving new identity for network '%s'.", key)
+    warn('Archiving new identity for network \'%s\'.', key)
     await aid.archive({ publicKey, secretKey, files }, { keystore, key })
+    */
   } catch (err) {
-    error("Possible incorrect password.")
+    error('Possible incorrect password.')
     onfatal(err)
   }
 }
 
-async function oncreate(argv) {
-
-  const { password } = await inquirer.prompt([{
+async function oncreate() {
+  const { password } = await inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
-    "Your identity's keystore will be secured by a passphrase. " +
-    "Please provide a passphrase. Do not forget this as it will never be " +
-    "shown to you.\n"+
-    "Passphrase:"
-  }])
+    'Your identity\'s keystore will be secured by a passphrase. \n' +
+    'Please provide a passphrase. Do not forget this as it will never be ' +
+    'shown to you.\n' +
+    'Passphrase:'
+  } ])
 
+  process.stdout.write('\n')
   const identity = await aid.create({ context, password })
 
-  info("New identity: %s", identity.did)
-  info('Please safely store the following 12 word mnemonic phrase for this ARA ID.' +
-    ' This phrase will be required to restore your ARA ID.'+
-    ' It will never be shown again: \n\n\t\t\t< %s >\n', identity.mnemonic)
+  info('New identity: %s', identity.did)
 
-  if (argv.archive) {
-    if (null == argv.key) {
-      onfatal(new Error("Expecting network key."))
-    }
-
-    const doc = await secrets.load(argv)
-    if (null == doc || (null == doc.public && null == doc.secret)) {
-      onfatal(new TypeError("Unknown network key."))
-    }
-
-    const { keystore } = (doc.public || doc.secret)
-    const { key } = argv
-    warn("Archiving new identity for network '%s'.", key)
-    await aid.archive(identity, { keystore, key })
-  }
-}
-
-async function onimport(argv) {
-  if (null == argv.key) {
-    onfatal(new Error("Expecting network key."))
+  for (let i = 0; i < identity.files.length; ++i) {
+    warn('Will write %s', identity.files[i].path)
   }
 
-  if (null == argv.did) {
-    onfatal(new Expecting("Expecting DID URI to resolve."))
-  }
+  await writeIdentity(identity)
 
-  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
-    onfatal(new Error("Expecting a did URI with an 'ara' method."))
-  }
-
-  if (0 != argv.did.indexOf('did:ara:')) {
-    argv.did = 'did:ara:' + argv.did
-  }
-
-  let { password } = await inquirer.prompt([{
-    type: 'password',
-    name: 'password',
-    message:
-    "Do you own this identity? Please provide a password if you do.\n" +
-    "Passphrase:"
-  }])
-
-  if (password) {
-    password = crypto.blake2b(Buffer.from(password))
-  }
-
-  try {
-    const doc = await secrets.load(argv)
-    let publicKey = null
-    let secretKey = null
-    let keystore = null
-
-    if (doc.public) { keystore = doc.public.keystore }
-    else if (doc.secret) { keystore = doc.secret.keystore }
-
-    if (password) {
-      const keyPair = crypto.keyPair(password)
-      publicKey = keyPair.publicKey
-      secret = keyPair.secretKey
-    } else {
-      publicKey = identifier
-    }
-
-    const cfs = await createCFS({
-      storage: ram,
-      shallow: true,
-      key: publicKey,
-      id: toHex(publicKey),
-    })
-
-    const { identifier } = did.parse(argv.did)
-    const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
-    const output = resolve(rc.network.identity.root, hash)
-
-    const discovery = createSwarm({
-      dns: { loopback: true, multicast: true },
-      stream() {
-        const stream = cfs.replicate({live: false})
-        stream.once('end', onend)
-        return stream
-      }
-    })
-
-    discovery.join(cfs.discoveryKey)
-    cfs.once('update', onsync)
-
-    async function onsync() {
-      const files = await cfs.readdir('.')
-      const state = {skips: 0, puts: 0}
-      const partition = cfs.partitions.resolve('/home')
-      mirror({name: '/', fs: partition}, {name: output, fs})
-        .on('skip', () => { state.skips++ })
-        .on('put', () => { state.puts++ })
-        .on('end', onend)
-    }
-
-    function onend() {
-      cfs.close()
-      discovery.destroy()
-    }
-
-  } catch (err) {
-    onfatal(err)
-  }
-}
-
-async function onkeys(argv) {
-  if (null == argv.did) {
-    onfatal(new Expecting("Expecting DID URI to resolve."))
-  }
-
-  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
-    onfatal(new Error("Expecting a did URI with an 'ara' method."))
-  }
-
-  if (0 != argv.did.indexOf('did:ara:')) {
-    argv.did = 'did:ara:' + argv.did
-  }
-
-  const { identifier } = did.parse(argv.did)
-  const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
-  const path = resolve(rc.network.identity.root, hash)
-
-  try { await pify(fs.access)(resolve(path, 'keys')) }
-  catch (err) { onfatal(new Error(err.message)) }
-
-  const keys = await pify(fs.readFile)(resolve(path, 'keys', ), 'utf8')
-  console.log(keys);
+  info('Please safely store the following 12 word mnemonic phrase for this')
+  info('ARA ID. This phrase will be required to restore your ARA ID.')
+  info('It will never be shown again:')
+  info('\n\n%s', table([ [ identity.mnemonic ] ]))
 }
 
 async function onresolve(argv) {
-  if (null == argv.did) {
-    onfatal(new Expecting("Expecting DID URI to resolve."))
+  if (!argv.did) {
+    onfatal(new TypeError('Expecting DID URI to resolve.'))
   }
 
-  if (0 == argv.did.indexOf('did:') && 0 != argv.did.indexOf('did:ara:')) {
-    onfatal(new Error("Expecting a did URI with an 'ara' method."))
+  if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
+    onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
-  if (0 != argv.did.indexOf('did:ara:')) {
-    argv.did = 'did:ara:' + argv.did
+  if (0 !== argv.did.indexOf('did:ara:')) {
+    // eslint-disable-next-line no-param-reassign
+    argv.did = `did:ara:${argv.did}`
   }
 
   try {
-    let keystore = null
-    if (argv.key) {
-      const doc = await secrets.load(argv)
-      if (doc.public) { keystore = doc.public.keystore }
-      else if (doc.secret) { keystore = doc.secret.keystore }
+    const { timeout, key } = argv
+
+    let cache
+    let keys = null
+
+    if (argv['no-cache'] || argv.nocache || false === argv.cache) {
+      cache = false
+    } else if (true === argv.cache) {
+      cache = true
     }
 
-    const identity = await aid.resolve(argv.did, { context, keystore,
-      timeout: argv.timeout,
-      key: argv.key,
-      cache: argv['no-cache']
-        ? false : argv.cache
-          ? true : false === argv.cache ?
-            false : undefined,
+    if (argv.secret && argv.keys) {
+      const secret = Buffer.from(argv.secret)
+      const keyring = keyRing(argv.keys, { secret })
+      await keyring.ready()
+      const buffer = await keyring.get(argv.name)
+      keys = unpack({ buffer })
+    }
+
+    const identity = await aid.resolve(argv.did, {
+      context,
+      timeout,
+      cache,
+      keys,
+      key,
     })
-    console.log(JSON.stringify(identity))
+
+    process.stdout.write(JSON.stringify(identity))
   } catch (err) {
     onfatal(err)
   }
 }
 
 async function onlist(argv) {
-  try{
+  try {
     info('Fetching Identities from disc')
     const identities = await aid.list(argv.path)
-    info("Identities:")
-    identities.forEach((id) => {
-      console.log(id)
-    })
-  }
-  catch(err) {
+    info('Identities:')
+    for (const id of identities) {
+      process.stdout.write(`${id}\n`)
+    }
+  } catch (err) {
     onfatal(err)
   }
 }
 
 function onfatal(err) {
   debug(err)
-  error("fatal:", err.message)
+  error('fatal:', err.message)
   process.exit(1)
 }
