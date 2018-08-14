@@ -11,7 +11,8 @@
     "truffle": "truffle develop",
     "test": "ava test",
     "lint": "eslint .",
-    "lint-fix": "eslint . --quiet --fix"
+    "lint-fix": "eslint . --quiet --fix",
+    "pkg": "sh ./scripts/package.sh"
   },
   "keywords": [
     "ara",
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "ava": "^0.25.0",
+    "pkg": "^4.3.4",
     "truffle": "^4.1.9",
     "eslint": "^4.19.1",
     "eslint-config-ara": "github:arablocks/eslint-config-ara",
@@ -72,5 +74,10 @@
   "bugs": {
     "url": "https://github.com/AraBlocks/ara-identity/issues"
   },
-  "homepage": "https://github.com/AraBlocks/ara-identity#readme"
+  "homepage": "https://github.com/AraBlocks/ara-identity#readme",
+  "pkg": {
+    "assets": [
+      "protobuf/schema.proto"
+    ]
+  }
 }
