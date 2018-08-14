@@ -1,5 +1,4 @@
 const { createChannel } = require('ara-network/discovery/channel')
-const secrets = require('ara-network/secrets')
 const { toHex } = require('./util')
 const protobuf = require('./protobuf')
 const { DID } = require('did-uri')
@@ -18,16 +17,19 @@ const kDIDMethod = 'ara'
 const kMaxPeers = 8
 
 async function resolve(uri, opts) {
-  if (0 != uri.indexOf('did:ara:')) {
+  if (0 !== uri.indexOf('did:ara:')) {
+    // eslint-disable-next-line no-param-reassign
     uri = `did:ara:${uri}`
   }
+
   const did = new DID(uri)
+
   if (kDIDMethod !== did.method) {
     throw new TypeError(`resolve: Invalid DID method (${did.method}). ` +
       `Expecting 'did:${kDIDMethod}:...'.`)
   }
 
-  if (null == did.identifier || kDIDIdentifierLength !== did.identifier.length) {
+  if (!did.identifier || kDIDIdentifierLength !== did.identifier.length) {
     throw new TypeError('resolve: Invalid DID identifier length.')
   }
 
@@ -40,7 +42,8 @@ async function resolve(uri, opts) {
       const buffer = await pify(fs.readFile)(file)
       const identity = protobuf.messages.Identity.decode(buffer)
       for (const k in identity.files) {
-        const { path, buffer } = identity.files[k] // eslint-disable-line no-shadow
+        // eslint-disable-next-line no-shadow
+        const { path, buffer } = identity.files[k]
         if ('ddo.json' === path) {
           return JSON.parse(buffer)
         }
@@ -48,7 +51,7 @@ async function resolve(uri, opts) {
     } catch (err) { debug(err) }
   }
 
-  if (opts.keystore) {
+  if (opts.keys) {
     const value = await findResolution(did, opts)
     return value
   }
@@ -57,20 +60,18 @@ async function resolve(uri, opts) {
 }
 
 async function findResolution(did, opts) {
-  const { key, keystore } = opts
   const resolvers = []
   const channel = createChannel()
-  const keys = secrets.decrypt({ keystore }, { key })
   let timeout = null
-  /* eslint-disable no-param-reassign */
+
   if (null === opts.timeout || 'number' !== typeof opts.timeout) {
+    // eslint-disable-next-line no-param-reassign
     opts.timeout = kResolutionTimeout
   }
-  /* eslint-enable no-param-reassign */
 
   return pify((done) => {
     channel.on('peer', onpeer)
-    channel.join(keys.discoveryKey)
+    channel.join(opts.keys.discoveryKey)
     timeout = setTimeout(doResolution, opts.timeout)
 
     function onpeer(id, peer, type) {
