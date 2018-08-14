@@ -1,4 +1,4 @@
-syntax = 'proto3';
+syntax = "proto3";
 
 message KeyStore {
   uint32 version = 1;
