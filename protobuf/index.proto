@@ -1,3 +1,5 @@
+syntax = 'proto3';
+
 message KeyStore {
   uint32 version = 1;
   string address = 2;
