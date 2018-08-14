@@ -106,6 +106,15 @@ async function create(opts) {
   }, {
     path: 'keystore/eth',
     buffer: Buffer.from(JSON.stringify(encryptedKeystore))
+  }, {
+    path: 'keystore/ara',
+    buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
+      iv: crypto.randomBytes(16),
+      key: password.slice(0, 16)
+    })))
+  }, {
+    path: 'schema.proto',
+    buffer: protobuf.kProtocolBufferSchema,
   } ]
 
   /*
@@ -130,34 +139,8 @@ async function create(opts) {
     }),
   })
 
-  files.push({
-    path: 'keystore/ara',
-    buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
-      iv: crypto.randomBytes(16),
-      key: password.slice(0, 16)
-    })))
-  })
-
-  files.push({
-    path: 'schema.proto',
-    buffer: protobuf.kProtocolBufferSchema,
-  })
-
   encryptionKey.fill(0)
   seed.fill(0)
-
-  const blah = {
-    account,
-    mnemonic,
-    publicKey,
-    secretKey,
-    wallet,
-    files,
-    ddo: didDocument,
-    did: didUri,
-  }
-  const { writeIdentity } = require('./util')
-  await writeIdentity(blah)
 
   return {
     account,
