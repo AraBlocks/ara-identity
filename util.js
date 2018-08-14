@@ -1,5 +1,4 @@
 const { createIdentityKeyPath } = require('./key-path')
-const { info, warn } = require('ara-console')
 const { dirname, resolve } = require('path')
 const isBuffer = require('is-buffer')
 const mkdirp = require('mkdirp')
@@ -73,13 +72,11 @@ async function writeIdentity(identity) {
     throw new TypeError('util.writeIdentity: Expecting files object.')
   }
 
-  info('Writing New identity: %s', identity.did)
   const output = createIdentityKeyPath(identity)
 
   await pify(mkdirp)(output)
 
   for (let i = 0; i < identity.files.length; ++i) {
-    warn('Writing %s', resolve(output, identity.files[i].path))
     const dir = dirname(resolve(output, identity.files[i].path))
     await pify(mkdirp)(dir)
     await pify(fs.writeFile)(
