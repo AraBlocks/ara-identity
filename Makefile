@@ -1,23 +1,28 @@
+OS ?= $(shell uname)
+RM ?= $(shell which rm)
+CWD ?= $(shell pwd)
+NPM ?= $(shell which npm)
+BUILD ?= $(CWD)/build
+PREFIX ?= /usr/local
+TARGET ?= aid
 
-GETH := $(shell which geth)
+.PHONY: default install uninstall clean
 
-GETH_FLAGS += --rpc
-GETH_FLAGS += --rpcapi "eth,net,web3"
-GETH_FLAGS += --rpccorsdomain '*'
-GETH_FLAGS += --rpcaddr localhost
-GETH_FLAGS += --rpcport 8545
+default: build
 
-GETH_TESTNET_FLAGS += --fast
-GETH_TESTNET_FLAGS += --cache=1048
-GETH_TESTNET_FLAGS += --testnet
-GETH_TESTNET_FLAGS += --unlock 0x8eb46e89a0c72576e56138dc3fb496143d6c845a
-#GETH_TESTNET_FLAGS += --password 'ara is the dao'
+build: node_modules
+	./scripts/package.sh
 
-.PHONY: default testnet
+node_modules: package.json
 
-default:
-	@:
+package.json:
+	$(NPM) install
 
-testnet:
-	@$(GETH) $(GETH_FLAGS) $(GETH_TESTNET_FLAGS)
+install:
+	$(error "make install not supported.")
 
+uninstall:
+	$(error "make uninstall not supported.")
+
+clean:
+	$(RM) -rf $(BUILD)
