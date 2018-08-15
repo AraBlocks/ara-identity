@@ -212,10 +212,10 @@ async function oncreate() {
   process.stdout.write('\n')
   const identity = await aid.create({ context, password })
 
-  info('New identity: %s', identity.did)
+  info('New identity created: %s', identity.did)
 
   for (let i = 0; i < identity.files.length; ++i) {
-    warn('Will write %s', identity.files[i].path)
+    warn('Will write identity file: %s', identity.files[i].path)
   }
 
   await writeIdentity(identity)
