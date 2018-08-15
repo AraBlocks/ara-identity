@@ -30,6 +30,7 @@
     "ara-identity-archiver": "github:arablocks/ara-identity-archiver",
     "ara-network": "github:arablocks/ara-network",
     "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration",
+    "ara-secret-storage": "github:arablocks/ara-secret-storage",
     "bip39": "^2.5.0",
     "cfsnet": "github:arablocks/cfsnet",
     "debug": "^3.1.0",
