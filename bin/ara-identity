@@ -20,6 +20,7 @@ const aid = require('../')
 const ram = require('random-access-memory')
 const fs = require('fs')
 const rc = require('../rc')()
+const ss = require('ara-secret-storage')
 
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
@@ -182,7 +183,7 @@ async function onarchive(argv) {
     const keystorePath = resolve(path, 'keystore/ara')
     const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
     const keys = JSON.parse(String(keystoreBuffer))
-    const secretKey = crypto.decrypt(keys, { key: password.slice(0, 16) })
+    const secretKey = ss.decrypt(keys, { key: password.slice(0, 16) })
     const publicKey = secretKey.slice(32)
     const { files } = identity
 
