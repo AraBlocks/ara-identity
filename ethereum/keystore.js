@@ -1,7 +1,8 @@
-const isBuffer = require('is-buffer')
-const ks = require('keythereum')
-const crypto = require('ara-crypto')
 const protobuf = require('../protobuf')
+const isBuffer = require('is-buffer')
+const crypto = require('ara-crypto')
+const ss = require('ara-secret-storage')
+const ks = require('keythereum')
 
 const kKeyBytes = 32
 const kIVBytes = 16
@@ -89,9 +90,12 @@ async function dump(opts) {
  */
 function recover(password, keys, encryptedKeystore) {
   password = crypto.blake2b(Buffer.from(password))
-  const secretKey = crypto.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
+  const secretKey = ss.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
   const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
-  const keyObject = protobuf.messages.KeyStore.decode(crypto.decrypt(JSON.parse(encryptedKeystore), { key: bufferedSecretKey }))
+  const keyObject = protobuf.messages.KeyStore.decode(ss.decrypt(
+    JSON.parse(encryptedKeystore),
+    { key: bufferedSecretKey }
+  ))
   return new Promise(resolve => ks.recover(password, keyObject, resolve))
 }
 
