@@ -277,9 +277,11 @@ async function onresolve(argv) {
 
 async function onlist(argv) {
   try {
-    info('Fetching Identities from disc')
+    debug('aid: list: %s', argv.path)
+
     const identities = await aid.list(argv.path)
-    info('Identities:')
+
+    debug('aid: list: %d identities', identities.length)
     for (const id of identities) {
       process.stdout.write(`${id}\n`)
     }
