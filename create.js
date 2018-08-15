@@ -8,6 +8,7 @@ const crypto = require('ara-crypto')
 const bip39 = require('bip39')
 const ddo = require('./ddo')
 const did = require('./did')
+const ss = require('ara-secret-storage')
 
 /**
  * Creates a new ARA identity.
@@ -65,7 +66,7 @@ async function create(opts) {
 
   const encryptionKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
   const encodedKeystore = protobuf.messages.KeyStore.encode(kstore)
-  const encryptedKeystore = crypto.encrypt(encodedKeystore, {
+  const encryptedKeystore = ss.encrypt(encodedKeystore, {
     key: encryptionKey,
     iv: crypto.randomBytes(16),
   })
@@ -108,7 +109,7 @@ async function create(opts) {
     buffer: Buffer.from(JSON.stringify(encryptedKeystore))
   }, {
     path: 'keystore/ara',
-    buffer: Buffer.from(JSON.stringify(crypto.encrypt(secretKey, {
+    buffer: Buffer.from(JSON.stringify(ss.encrypt(secretKey, {
       iv: crypto.randomBytes(16),
       key: password.slice(0, 16)
     })))
