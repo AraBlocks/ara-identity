@@ -13,6 +13,7 @@ rm -rf $BUILD
 mkdir -p $BUILD
 
 build() {
+  printf '>  warn: %s\n' "Builds are only supported on Linux at the moment"
   printf "> build: %s\n" $TARGET
   $PKG -o $BUILD/aid $TARGET                    \
     | grep $CWD                                 \
@@ -25,6 +26,7 @@ build() {
   local rc=$?
   return $rc
 }
+
 
 build
 exit $?
