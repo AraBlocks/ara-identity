@@ -103,7 +103,7 @@ async function create(opts) {
           value
         }))
       })
-    } 
+    }
   }
 
   // sign the DDO for the proof
@@ -175,8 +175,8 @@ async function create(opts) {
 
 /**
  * Creates a new public key to be added to the publicKey array.
- * @param  {Object} opts 
- * @return {Object}      
+ * @param  {Object} opts
+ * @return {Object}
  */
 function _createPublicKey(opts = {}) {
   if (!isBuffer(opts.value)) {
