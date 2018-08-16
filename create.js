@@ -1,10 +1,11 @@
 const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { PublicKey } = require('did-document/public-key')
 const { Authentication } = require('did-document')
-const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
+const isBuffer = require('is-buffer')
 const crypto = require('ara-crypto')
+const { toHex } = require('./util')
 const bip39 = require('bip39')
 const ddo = require('./ddo')
 const did = require('./did')
@@ -35,6 +36,15 @@ async function create(opts) {
     throw new TypeError('ara-identity.create: Expecting password.')
   } else if (opts.password && 'string' !== typeof opts.password) {
     throw new TypeError('ara-identity.create: Expecting password to be a string.')
+  }
+
+  if (opts.did) {
+    if (opts.did.authentication && 'object' !== typeof opts.did.authentication) {
+      throw new TypeError('ara-identity.create: Expecting authentication to be an object.')
+    }
+    if (opts.did.keys && !Array.isArray(opts.did.keys)) {
+      throw new TypeError('ara-identity.create: Expecting additional publicKey to be an array.')
+    }
   }
 
   if (null == opts.mnemonic) {
@@ -71,21 +81,29 @@ async function create(opts) {
     iv: crypto.randomBytes(16),
   })
 
-  didDocument.addPublicKey(new PublicKey({
-    id: `${didUri.did}#owner`,
-    type: kEd25519VerificationKey2018,
-    owner: didUri.did,
-
-    // public key variants
-    publicKeyHex: toHex(publicKey),
-    publicKeyBase64: crypto.base64.encode(publicKey).toString(),
-    publicKeyBase58: crypto.base58.encode(publicKey).toString(),
+  didDocument.addPublicKey(_createPublicKey({
+    did: didUri.did,
+    id: 'owner',
+    value: publicKey
   }))
 
-  // add default authentication to ddo if available
-  if (opts.did && opts.did.authentication) {
-    const { authenticationType, authenticationKey } = opts.did.authentication
-    didDocument.addAuthentication(new Authentication(authenticationType, { authenticationKey }))
+  if (opts.did) {
+    // add default authentication to ddo if available
+    if (opts.did.authentication) {
+      const { authenticationType, authenticationKey } = opts.did.authentication
+      didDocument.addAuthentication(new Authentication(authenticationType, { authenticationKey }))
+    }
+
+    // additional keys
+    if (opts.did.keys) {
+      opts.did.keys.forEach(({ id, value }) => {
+        didDocument.addPublicKey(_createPublicKey({
+          did: didUri.did,
+          id,
+          value
+        }))
+      })
+    } 
   }
 
   // sign the DDO for the proof
@@ -153,6 +171,27 @@ async function create(opts) {
     ddo: didDocument,
     did: didUri,
   }
+}
+
+/**
+ * Creates a new public key to be added to the publicKey array.
+ * @param  {Object} opts 
+ * @return {Object}      
+ */
+function _createPublicKey(opts = {}) {
+  if (!isBuffer(opts.value)) {
+    opts.value = Buffer.from(opts.value, 'hex')
+  }
+  return new PublicKey({
+    id: `${opts.did}#${opts.id}`,
+    type: kEd25519VerificationKey2018,
+    owner: opts.did,
+
+    // public key variants
+    publicKeyHex: toHex(opts.value),
+    publicKeyBase64: crypto.base64.encode(opts.value).toString(),
+    publicKeyBase58: crypto.base58.encode(opts.value).toString()
+  })
 }
 
 module.exports = {
