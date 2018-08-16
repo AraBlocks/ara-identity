@@ -1,8 +1,22 @@
+const { createChannel } = require('ara-network/discovery/channel')
 const { createSwarm } = require('ara-network/discovery')
+const { unpack, keyRing } = require('ara-network/keys')
+const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
-const { toHex } = require('./util')
-const archiver = require('ara-identity-archiver')
+const { info, warn } = require('ara-console')
 const ram = require('random-access-memory')
+const crypto = require('ara-crypto')
+const inquirer = require('inquirer')
+const { toHex } = require('./util')
+const { resolve } = require('path')
+const { readFile } = require('fs')
+const { DID } = require('did-uri')
+const pkg = require('./package')
+const rc = require('./rc')()
+const pify = require('pify')
+const pump = require('pump')
+const net = require('net')
+
 
 /**
  * Archive an identity into the network with
@@ -20,6 +34,18 @@ async function archive(identity, opts) {
     throw new TypeError('ara-identity.archive: Expecting options object.')
   }
 
+  if (undefined == opts.secret) {
+    throw new TypeError('ara-identity.archive: Expecting shared network secret')
+  }
+
+  if (undefined == opts.key) {
+    throw new TypeError('ara-identity.archive: Expecting public network keys for the archiver node')
+  }
+
+  if (undefined == opts.name) {
+    throw new TypeError('ara-identity.archive: Expecting name for the archiver nodes key ring')
+  }
+
   const { publicKey, secretKey, files } = identity
 
   const cfs = await createCFS({
@@ -32,14 +58,16 @@ async function archive(identity, opts) {
 
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
-  Object.assign(opts, { onidentifier, onkey, onend })
+  channel = createChannel()
 
-  let timeout = null
-  let retries = opts.retries || 3
-  const result = { network: null }
+  const secret = Buffer.from(opts.secret)
+  const keyring = keyRing(opts.key, { secret })
+  const buffer = await keyring.get(opts.name)
+  const unpacked = unpack({ buffer })
 
-  await connect()
-  clearTimeout(timeout)
+  const { discoveryKey } = unpacked
+  channel.join(discoveryKey)
+  channel.on('peer', onpeer)
 
   await new Promise((resolve, reject) => {
     const discovery = createSwarm({
@@ -60,41 +88,46 @@ async function archive(identity, opts) {
     }
   })
 
-  return result
+  return true
 
-  async function connect() {
-    clearTimeout(timeout)
-    timeout = setTimeout(ontimeout, opts.timeout || 5000)
-    const { network } = await archiver.sync.connect(opts)
-    clearTimeout(timeout)
-    result.network = network
-  }
+  function onpeer(channel, peer) {
+    const socket = net.connect(peer.port, peer.host)
+    const handshake = new Handshake({
+      publicKey,
+      secretKey,
+      secret,
+      remote: { publicKey: unpacked.publicKey },
+      domain: { publicKey: unpacked.domain.publicKey }
+    })
 
-  function ontimeout() {
-    clearTimeout(timeout)
-    if (result.network) {
-      result.network.swarm.destroy()
+    pump(handshake, socket, handshake)
+
+    handshake.hello()
+    handshake.on('hello', onhello)
+    handshake.on('auth', onauth)
+    handshake.on('okay', onokay)
+
+    function onhello() {
+      handshake.auth()
     }
 
-    if (--retries > 0) {
-      connect()
-    } else {
-      throw new Error('Failed to contact peer to archive identity.')
+    function onauth() {
     }
-  }
 
-  function onidentifier() {
-    return cfs.identifier
-  }
+    function onokay() {
+      const writer = handshake.createWriteStream()
+      const msg = Buffer.concat([cfs.key, cfs.discoveryKey, cfs.identifier])
+      writer.write(msg)
+      writer.end()
+      const reader = handshake.createReadStream()
+      reader.on('data', (async (data) => {
+        handshake.destroy()
+        channel.destroy(onclose)
+      }))
+    }
 
-  function onkey() {
-    return cfs.key
-  }
-
-  function onend() {
-    clearTimeout(timeout)
-    if (result.network) {
-      result.network.swarm.destroy()
+    function onclose() {
+      return null
     }
   }
 }
