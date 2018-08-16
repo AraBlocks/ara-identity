@@ -107,8 +107,6 @@ async function create(opts) {
     }
   }
 
-  console.log('DOC', didDocument)
-
   // sign the DDO for the proof
   const digest = didDocument.digest(crypto.blake2b)
   didDocument.proof({
