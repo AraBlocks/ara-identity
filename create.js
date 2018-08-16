@@ -38,11 +38,11 @@ async function create(opts) {
     throw new TypeError('ara-identity.create: Expecting password to be a string.')
   }
 
-  if (opts.did) {
-    if (opts.did.authentication && 'object' !== typeof opts.did.authentication) {
+  if (opts.ddo) {
+    if (opts.ddo.authentication && 'object' !== typeof opts.ddo.authentication) {
       throw new TypeError('ara-identity.create: Expecting authentication to be an object.')
     }
-    if (opts.did.keys && !Array.isArray(opts.did.keys)) {
+    if (opts.ddo.publicKeys && !Array.isArray(opts.ddo.publicKeys)) {
       throw new TypeError('ara-identity.create: Expecting additional publicKey to be an array.')
     }
   }
@@ -81,30 +81,33 @@ async function create(opts) {
     iv: crypto.randomBytes(16),
   })
 
-  didDocument.addPublicKey(_createPublicKey({
+  didDocument.addPublicKey(createPublicKey({
     did: didUri.did,
     id: 'owner',
     value: publicKey
   }))
 
-  if (opts.did) {
+  if (opts.ddo) {
     // add default authentication to ddo if available
-    if (opts.did.authentication) {
-      const { authenticationType, authenticationKey } = opts.did.authentication
-      didDocument.addAuthentication(new Authentication(authenticationType, { authenticationKey }))
+    if (opts.ddo.authentication) {
+      // eslint-disable-next-line no-shadow
+      const { type, publicKey } = opts.ddo.authentication
+      didDocument.addAuthentication(new Authentication(type, { publicKey }))
     }
-
     // additional keys
-    if (opts.did.keys) {
-      opts.did.keys.forEach(({ id, value }) => {
-        didDocument.addPublicKey(_createPublicKey({
+    if (opts.ddo.keys) {
+      for (const key in opts.ddo.keys) {
+        const { id, value } = opts.ddo.keys[key]
+        didDocument.addPublicKey(createPublicKey({
           did: didUri.did,
           id,
           value
         }))
-      })
+      }
     }
   }
+
+  console.log('DOC', didDocument)
 
   // sign the DDO for the proof
   const digest = didDocument.digest(crypto.blake2b)
@@ -178,7 +181,7 @@ async function create(opts) {
  * @param  {Object} opts
  * @return {Object}
  */
-function _createPublicKey(opts = {}) {
+function createPublicKey(opts = {}) {
   if (!isBuffer(opts.value)) {
     opts.value = Buffer.from(opts.value, 'hex')
   }
