@@ -3,7 +3,7 @@ const isBuffer = require('is-buffer')
 
 /* eslint-disable import/no-unresolved */
 let hdkey = null
-try { hdkey = require('ethereumjs-wallet/dist/hdkey') } catch (err) {
+try { hdkey = require('ethereumjs-wallet/src/hdkey') } catch (err) {
   try { hdkey = require('ethereumjs-wallet/hdkey') } catch (error) {
     throw new Error('Failed to load ethereumjs-wallet/hdkey.')
   }

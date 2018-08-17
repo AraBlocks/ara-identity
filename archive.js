@@ -4,7 +4,9 @@ const { unpack, keyRing } = require('ara-network/keys')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
 const ram = require('random-access-memory')
+const { info } = require('ara-console')
 const { toHex } = require('./util')
+const pkg = require('./package')
 const pump = require('pump')
 const net = require('net')
 
@@ -112,6 +114,12 @@ async function archive(identity, opts) {
       writer.end()
       const reader = handshake.createReadStream()
       reader.on('data', (async (data) => {
+        if(data.toString() === 'ACK'){
+          info('%s : Identity Archiving Completed Successfully!!', pkg.name)
+        }
+        else {
+          info('%s : Handshake with remote node failed, Exiting....', pkg.name)
+        }
         handshake.destroy()
         connection.destroy(onclose)
       }))
