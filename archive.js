@@ -3,21 +3,12 @@ const { createSwarm } = require('ara-network/discovery')
 const { unpack, keyRing } = require('ara-network/keys')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
-const { info, warn } = require('ara-console')
 const ram = require('random-access-memory')
-const crypto = require('ara-crypto')
-const inquirer = require('inquirer')
 const { toHex } = require('./util')
-const { resolve } = require('path')
-const { readFile } = require('fs')
-const { DID } = require('did-uri')
-const pkg = require('./package')
-const rc = require('./rc')()
-const pify = require('pify')
 const pump = require('pump')
 const net = require('net')
 
-
+let channel = null
 /**
  * Archive an identity into the network with
  * `ara-identity-archiver'.
@@ -90,7 +81,7 @@ async function archive(identity, opts) {
 
   return true
 
-  function onpeer(channel, peer) {
+  function onpeer(connection, peer) {
     const socket = net.connect(peer.port, peer.host)
     const handshake = new Handshake({
       publicKey,
@@ -120,9 +111,9 @@ async function archive(identity, opts) {
       writer.write(msg)
       writer.end()
       const reader = handshake.createReadStream()
-      reader.on('data', (async (data) => {
+      reader.on('data', (async () => {
         handshake.destroy()
-        channel.destroy(onclose)
+        connection.destroy(onclose)
       }))
     }
 

@@ -50,6 +50,7 @@
     "pify": "^3.0.0",
     "protocol-buffers": "^4.0.4",
     "protocol-buffers-encodings": "^1.1.0",
+    "pump": "^3.0.0",
     "random-access-memory": "^3.0.0",
     "randombytes": "^2.0.6",
     "rimraf": "^2.6.2",
