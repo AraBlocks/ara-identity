@@ -117,7 +117,7 @@ async function archive(identity, opts) {
         if ('ACK' === data.toString()) {
           info('%s : Identity Archiving Completed Successfully!!', pkg.name)
         } else {
-          info('%s : Handshake with remote node failed, Exiting....', pkg.name)
+          throw new Error('%s : Handshake with remote node failed, Exiting....', pkg.name)
         }
         handshake.destroy()
         connection.destroy(onclose)
