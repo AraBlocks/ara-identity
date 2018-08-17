@@ -35,7 +35,7 @@
     "debug": "^3.1.0",
     "did-document": "github:AraBlocks/did-document",
     "did-uri": "^0.2.4",
-    "ethereumjs-wallet": "^0.6.2",
+    "ethereumjs-wallet": "github:arablocks/ethereumjs-wallet",
     "extend": "^3.0.1",
     "got": "^8.3.1",
     "inquirer": "^5.2.0",
