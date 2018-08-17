@@ -29,7 +29,7 @@ async function archive(identity, opts) {
     throw new TypeError('ara-identity.archive: Expecting shared network secret')
   }
 
-  if (undefined == opts.keys) {
+  if (undefined == opts.keyring) {
     throw new TypeError('ara-identity.archive: Expecting public network keys for the archiver node')
   }
 
@@ -52,7 +52,7 @@ async function archive(identity, opts) {
   channel = createChannel()
 
   const secret = Buffer.from(opts.secret)
-  const keyring = keyRing(opts.keys, { secret })
+  const keyring = keyRing(opts.keyring, { secret })
   const buffer = await keyring.get(opts.name)
   const unpacked = unpack({ buffer })
 
@@ -111,7 +111,7 @@ async function archive(identity, opts) {
       writer.write(msg)
       writer.end()
       const reader = handshake.createReadStream()
-      reader.on('data', (async () => {
+      reader.on('data', (async (data) => {
         handshake.destroy()
         connection.destroy(onclose)
       }))
