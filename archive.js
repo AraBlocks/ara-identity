@@ -114,10 +114,9 @@ async function archive(identity, opts) {
       writer.end()
       const reader = handshake.createReadStream()
       reader.on('data', (async (data) => {
-        if(data.toString() === 'ACK'){
+        if ('ACK' === data.toString()) {
           info('%s : Identity Archiving Completed Successfully!!', pkg.name)
-        }
-        else {
+        } else {
           info('%s : Handshake with remote node failed, Exiting....', pkg.name)
         }
         handshake.destroy()
