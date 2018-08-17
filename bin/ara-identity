@@ -61,12 +61,12 @@ program
       })
       .option('secret', {
         alias: 's',
-        describe: 'shared network secret string'
+        describe: 'Shared secret key for the associated network keys'
       })
       .option('key', {
         alias: 'k',
         type: 'string',
-        describe: 'shared network public key',
+        describe: 'Path to ARA network keys',
       })
       .option('name', {
         alias: 'n',
@@ -148,6 +148,14 @@ async function onarchive(argv) {
 
   if (!argv.key) {
     onfatal(new TypeError('Expecting network key.'))
+  }
+
+  if (!argv.secret) {
+    onfatal(new TypeError('Expecting Shared secret key.'))
+  }
+
+  if (!argv.name) {
+    onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
   if (!argv.did) {
@@ -239,6 +247,18 @@ async function oncreate() {
 async function onresolve(argv) {
   if (!argv.did) {
     onfatal(new TypeError('Expecting DID URI to resolve.'))
+  }
+
+  if (!argv.key) {
+    onfatal(new TypeError('Expecting network key.'))
+  }
+
+  if (!argv.secret) {
+    onfatal(new TypeError('Expecting Shared secret key.'))
+  }
+
+  if (!argv.name) {
+    onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
   if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
