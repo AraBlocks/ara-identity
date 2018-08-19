@@ -1,10 +1,11 @@
+const debug = require('debug')('ara-identity:archive')
+const { error } = require('ara-console')
 const { createChannel } = require('ara-network/discovery/channel')
 const { createSwarm } = require('ara-network/discovery')
 const { unpack, keyRing } = require('ara-network/keys')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
 const ram = require('random-access-memory')
-const { info } = require('ara-console')
 const { toHex } = require('./util')
 const pkg = require('./package')
 const pump = require('pump')
@@ -51,6 +52,9 @@ async function archive(identity, opts) {
 
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
+
+  let timeout = null
+  clearTimeout(timeout)
   channel = createChannel()
 
   const secret = Buffer.from(opts.secret)
@@ -59,8 +63,10 @@ async function archive(identity, opts) {
   const unpacked = unpack({ buffer })
 
   const { discoveryKey } = unpacked
+  timeout = setTimeout(ontimeout, opts.timeout || 5000)
   channel.join(discoveryKey)
   channel.on('peer', onpeer)
+  channel.on('error', onerror)
 
   await new Promise((resolve, reject) => {
     const discovery = createSwarm({
@@ -84,6 +90,7 @@ async function archive(identity, opts) {
   return true
 
   function onpeer(connection, peer) {
+    timeout = setTimeout(ontimeout, 5000)
     const socket = net.connect(peer.port, peer.host)
     const handshake = new Handshake({
       publicKey,
@@ -114,19 +121,32 @@ async function archive(identity, opts) {
       writer.end()
       const reader = handshake.createReadStream()
       reader.on('data', (async (data) => {
-        if ('ACK' === data.toString()) {
-          info('%s : Identity Archiving Completed Successfully!!', pkg.name)
-        } else {
-          throw new Error('%s : Handshake with remote node failed, Exiting..', pkg.name)
+        clearTimeout(timeout)
+        if ('ACK' !== data.toString()) {
+          channel.emit('error', 'Handshake with remote node failed, Exiting..')
         }
-        handshake.destroy()
         connection.destroy(onclose)
       }))
     }
+    return null
+  }
 
-    function onclose() {
-      return null
+  function onerror(err) {
+    error('%s.archive :',pkg.name, err)
+  }
+
+  function ontimeout() {
+    clearTimeout(timeout)
+    throw new Error('Request timed out: Failed to contact peer to archive identity.')
+    onclose()
+  }
+
+  function onclose() {
+    if (channel) {
+      channel.destroy()
     }
+    return true
+    channel = null
   }
 }
 
