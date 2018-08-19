@@ -1,4 +1,3 @@
-const debug = require('debug')('ara-identity:archive')
 const { error } = require('ara-console')
 const { createChannel } = require('ara-network/discovery/channel')
 const { createSwarm } = require('ara-network/discovery')
@@ -51,7 +50,6 @@ async function archive(identity, opts) {
   })
 
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
-
 
   let timeout = null
   clearTimeout(timeout)
@@ -132,21 +130,20 @@ async function archive(identity, opts) {
   }
 
   function onerror(err) {
-    error('%s.archive :',pkg.name, err)
+    error('%s.archive :', pkg.name, err)
   }
 
   function ontimeout() {
     clearTimeout(timeout)
     throw new Error('Request timed out: Failed to contact peer to archive identity.')
-    onclose()
   }
 
   function onclose() {
     if (channel) {
       channel.destroy()
     }
-    return true
     channel = null
+    return true
   }
 }
 
