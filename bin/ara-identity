@@ -310,6 +310,8 @@ async function onlist(argv) {
     for (const id of identities) {
       process.stdout.write(`${id}\n`)
     }
+
+    process.exit(0)
   } catch (err) {
     onfatal(err)
   }
