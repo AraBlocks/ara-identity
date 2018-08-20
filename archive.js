@@ -122,7 +122,7 @@ async function archive(identity, opts) {
       reader.on('data', (async (data) => {
         clearTimeout(timeout)
         if ('ACK' !== data.toString()) {
-          channel.emit('error', Error('Handshake with remote node failed, Exiting..'))
+          channel.emit('error', new Error('Handshake with remote node failed, Exiting..'))
         }
         connection.destroy(onclose)
       }))
@@ -136,7 +136,7 @@ async function archive(identity, opts) {
 
   function ontimeout() {
     clearTimeout(timeout)
-    process.emit('error', Error('Request timed out: Failed to contact peer to archive identity.'))
+    channel.emit('error', new Error('Request timed out: Failed to contact peer to archive identity.'))
   }
 
   function onclose() {
