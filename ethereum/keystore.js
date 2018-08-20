@@ -69,6 +69,7 @@ async function dump(opts) {
   const {
     password, privateKey, salt, iv
   } = opts
+
   const object = await new Promise((resolve) => {
     const params = kKDFParameters
     ks.dump(password, privateKey, salt, iv, params, resolve)
@@ -78,25 +79,40 @@ async function dump(opts) {
 }
 
 /**
- * Returns private ethereum key
- * @param {String} user's password
- * @param {JSON} keys
- * @param {JSON} encryptedKeystore
- * @return {Buffer}
- * Takes the user's password, the keys json string found in identity directory, as well
- * as the eth json string, found in the keystore directory within the identity directory. Uses password
- * to decrypt keys file, returning the secret key. Uses the secret key to decrypt the encryptedKeystore,
- * returning the ethereum private key in a buffer
+ * Returns private ethereum key.
+ * Takes the user's password, the keys json string found in identity directory,
+ * as well as the eth json string, found in the keystore directory within the
+ * identity directory. Uses password to decrypt keys file, returning the secret
+ * key. Uses the secret key to decrypt the ethereumKeystore, returning the
+ * ethereum private key in a buffer
+ *
+ * @public
+ * @param {String|Buffer} password
+ * @param {Buffer} araKeystore
+ * @param {Buffer} ethereumKeystore
+ * @return {Promise<Buffer>}
  */
-function recover(password, keys, encryptedKeystore) {
+function recover(password, araKeystore, ethereumKeystore) {
+  // eslint-disable-next-line no-param-reassign
+  ethereumKeystore = JSON.parse(ethereumKeystore)
+  // eslint-disable-next-line no-param-reassign
+  araKeystore = JSON.parse(araKeystore)
+  // eslint-disable-next-line no-param-reassign
   password = crypto.blake2b(Buffer.from(password))
-  const secretKey = ss.decrypt(JSON.parse(keys), { key: password.slice(0, 16) })
-  const bufferedSecretKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
-  const keyObject = protobuf.messages.KeyStore.decode(ss.decrypt(
-    JSON.parse(encryptedKeystore),
-    { key: bufferedSecretKey }
+
+  const secretKey = ss.decrypt(araKeystore, { key: password.slice(0, 16) })
+  const keystore = protobuf.messages.KeyStore.decode(ss.decrypt(
+    ethereumKeystore,
+    { key: secretKey.slice(0, 16) }
   ))
-  return new Promise(resolve => ks.recover(password, keyObject, resolve))
+
+  return new Promise((resolve, reject) => {
+    try {
+      ks.recover(password, keystore, resolve)
+    } catch (err) {
+      reject(err)
+    }
+  })
 }
 
 module.exports = {
