@@ -12,11 +12,13 @@ const net = require('net')
 
 let channel = null
 /**
- * Archive an identity into the network with
- * `ara-identity-archiver'.
+ * Archive an identity into the network
  * @public
  * @param {Object} identity
  * @param {Object} opts
+ * @param {string} opts.secret - Shared secret string for the keyRing
+ * @param {string} opts.keyring - Path to the public keyring file of the remote node
+ * @param {string} opts.name - Name of the discoveryKey entry in the keyring file
  */
 async function archive(identity, opts) {
   if (null == identity || 'object' !== typeof identity) {
@@ -52,7 +54,6 @@ async function archive(identity, opts) {
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
   let timeout = null
-  clearTimeout(timeout)
   channel = createChannel()
 
   const secret = Buffer.from(opts.secret)
@@ -88,7 +89,7 @@ async function archive(identity, opts) {
   return true
 
   function onpeer(connection, peer) {
-    timeout = setTimeout(ontimeout, 5000)
+    timeout = setTimeout(ontimeout, opts.timeout || 5000)
     const socket = net.connect(peer.port, peer.host)
     const handshake = new Handshake({
       publicKey,
@@ -120,8 +121,8 @@ async function archive(identity, opts) {
       const reader = handshake.createReadStream()
       reader.on('data', (async (data) => {
         clearTimeout(timeout)
-        if ('ACK' !== data.toString()) {
-          channel.emit('error', 'Handshake with remote node failed, Exiting..')
+        if ('ACK' === data.toString()) {
+          channel.emit('error', Error('Handshake with remote node failed, Exiting..'))
         }
         connection.destroy(onclose)
       }))
@@ -135,7 +136,7 @@ async function archive(identity, opts) {
 
   function ontimeout() {
     clearTimeout(timeout)
-    throw new Error('Request timed out: Failed to contact peer to archive identity.')
+    process.emit('error', Error('Request timed out: Failed to contact peer to archive identity.'))
   }
 
   function onclose() {
