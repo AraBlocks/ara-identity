@@ -1,44 +1,45 @@
-const { error } = require('ara-console')
+const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
 const { createSwarm } = require('ara-network/discovery')
-const { unpack, keyRing } = require('ara-network/keys')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
-const ram = require('random-access-memory')
+const { error } = require('ara-console')
 const { toHex } = require('./util')
-const pkg = require('./package')
 const pump = require('pump')
+const pkg = require('./package.json')
+const ram = require('random-access-memory')
 const net = require('net')
 
-let channel = null
 /**
  * Archive an identity into the network
  * @public
  * @param {Object} identity
  * @param {Object} opts
- * @param {string} opts.secret - Shared secret string for the keyRing
- * @param {string} opts.keyring - Path to the public keyring file of the remote node
- * @param {string} opts.name - Name of the discoveryKey entry in the keyring file
+ * @param {String|Buffer} opts.secret
+ * @param {Strin} opts.keyring
+ * @param {String} opts.name
+ * @throws TypeError
+ * @return {Promise}
  */
 async function archive(identity, opts) {
   if (null == identity || 'object' !== typeof identity) {
-    throw new TypeError('ara-identity.archiver.archive: Expecting identity object.')
+    throw new TypeError('Expecting identity to be an object.')
   }
 
   if (null == opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-identity.archive: Expecting options object.')
+    throw new TypeError('Expecting options to be an object.')
   }
 
-  if (undefined == opts.secret) {
-    throw new TypeError('ara-identity.archive: Expecting shared network secret')
+  if (!opts.secret) {
+    throw new TypeError('Expecting shared secret to be a string or buffer.')
   }
 
-  if (undefined == opts.keyring) {
-    throw new TypeError('ara-identity.archive: Expecting public network keys for the archiver node')
+  if (!opts.keyring) {
+    throw new TypeError('Expecting public network keys for the archiver node')
   }
 
-  if (undefined == opts.name) {
-    throw new TypeError('ara-identity.archive: Expecting name for the archiver nodes key ring')
+  if (!opts.name || 'string' !== typeof opts.name) {
+    throw new TypeError('Expecting name for the archiver nodes key ring')
   }
 
   const { publicKey, secretKey, files } = identity
@@ -53,8 +54,8 @@ async function archive(identity, opts) {
 
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
+  let channel = createChannel()
   let timeout = null
-  channel = createChannel()
 
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
@@ -71,16 +72,21 @@ async function archive(identity, opts) {
     const discovery = createSwarm({
       stream() {
         const stream = cfs.replicate({ live: false })
-        stream.once('end', _onend)
+        stream.once('end', onend)
         return stream
       }
     })
 
     discovery.join(cfs.discoveryKey)
-    discovery.once('error', _onend)
+    discovery.once('error', onend)
 
-    function _onend(err) {
-      if (err && err instanceof Error) { reject(err) } else { resolve() }
+    function onend(err) {
+      if (err && err instanceof Error) {
+        reject(err)
+      } else {
+        resolve()
+      }
+
       discovery.destroy()
       return null
     }
@@ -114,20 +120,26 @@ async function archive(identity, opts) {
     }
 
     function onokay() {
-      const writer = handshake.createWriteStream()
-      const msg = Buffer.concat([cfs.key, cfs.discoveryKey, cfs.identifier])
-      writer.write(msg)
-      writer.end()
       const reader = handshake.createReadStream()
-      reader.on('data', (async (data) => {
+      const writer = handshake.createWriteStream()
+      const msg = Buffer.concat([
+        cfs.key,
+        cfs.discoveryKey,
+        cfs.identifier
+      ])
+
+      writer.end(msg)
+
+      reader.once('data', (data) => {
         clearTimeout(timeout)
+
         if ('ACK' !== data.toString()) {
           channel.emit('error', new Error('Handshake with remote node failed, Exiting..'))
         }
+
         connection.destroy(onclose)
-      }))
+      })
     }
-    return null
   }
 
   function onerror(err) {
