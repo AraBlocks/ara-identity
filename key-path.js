@@ -1,5 +1,5 @@
-const crypto = require('ara-crypto')
 const { resolve } = require('path')
+const crypto = require('ara-crypto')
 const rc = require('./rc')()
 
 /**
@@ -13,15 +13,15 @@ function createIdentityKeyPath(identity) {
     throw new TypeError('util.createIdentityKeyPath: Expecting identity object')
   }
 
-  const { toHex } = require('./util')
   const { root } = rc.network.identity
   let { publicKey } = identity
+
   if (Array.isArray(publicKey) && 0 < publicKey.length) {
     const { publicKeyHex } = publicKey[0]
     publicKey = Buffer.from(publicKeyHex, 'hex')
   }
 
-  const hash = toHex(crypto.blake2b(publicKey))
+  const hash = crypto.blake2b(publicKey).toString('hex')
   return resolve(root, hash)
 }
 
