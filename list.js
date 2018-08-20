@@ -1,13 +1,18 @@
 /* eslint-disable no-await-in-loop */
 const { resolve } = require('path')
+const debug = require('debug')('ara-identity:list')
 const pify = require('pify')
 const fs = require('fs')
 const rc = require('./rc')()
 
 /**
- * Fetch a list Identities stored locally
+ * Fetch a list of DID identities for ara stored locally on
+ * the file system.
+ *
  * @public
- * @param {String} path (Optional)
+ * @param {?(String)} path
+ * @return {Promise<Array>}
+ * @throws TypeError
  */
 async function list(path) {
   const identities = []
@@ -58,7 +63,8 @@ async function list(path) {
 
           cb(null)
         } catch (err2) {
-          cb(err2)
+          debug('list: visit: onread: error:', err2)
+          cb(null)
         }
       }
     }
