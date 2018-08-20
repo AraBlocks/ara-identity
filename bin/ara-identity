@@ -140,7 +140,6 @@ if (program.argv.debug) {
 }
 
 async function onarchive(argv) {
-
   if (!argv.keyring) {
     onfatal(new TypeError('Expecting network key.'))
   }
@@ -192,8 +191,7 @@ async function onarchive(argv) {
   void identity
 
   try {
-
-    const { secret, keyring, name  } = argv
+    const { secret, keyring, name } = argv
     const keystorePath = resolve(path, 'keystore/ara')
     const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
     const keys = JSON.parse(String(keystoreBuffer))
@@ -204,7 +202,11 @@ async function onarchive(argv) {
     // manually construct identity file for archiver
     files.push({ path: 'identity', buffer: identityBuffer })
     warn('Archiving new identity for network \'%s\'.', keyring)
-    await aid.archive({ publicKey, secretKey, files }, { secret, keyring, name })
+    await aid.archive({
+      publicKey, secretKey, files
+    }, {
+      secret, keyring, name
+    })
   } catch (err) {
     error('Possible incorrect password.')
     onfatal(err)
@@ -266,7 +268,7 @@ async function onresolve(argv) {
   }
 
   try {
-    const { timeout, key } = argv
+    const { timeout } = argv
 
     let cache
     let keys = null
