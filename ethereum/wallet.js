@@ -2,6 +2,7 @@
 /* eslint-disable global-require */
 const isZeroBuffer = require('is-zero-buffer')
 const isBuffer = require('is-buffer')
+const debug = require('debug')('ara-identity:ethereum:wallet')
 
 // We must do this awkward cascade of `try/catch' require statements
 // because of broken deployments of the `ethereumjs-wallet' modules
@@ -27,8 +28,11 @@ const isBuffer = require('is-buffer')
 let hdkey = null
 
 try { hdkey = require('ethereumjs-wallet/dist/hdkey') } catch (err0) {
+  debug(err0)
   try { hdkey = require('ethereumjs-wallet/hdkey') } catch (err1) {
+    debug(err1)
     try { hdkey = require('ethereumjs-wallet/src/hdkey') } catch (err2) {
+      debug(err2)
       throw new Error('Failed to load ethereumjs-wallet/hdkey.')
     }
   }
