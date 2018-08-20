@@ -25,6 +25,7 @@ const isBuffer = require('is-buffer')
 // module at https://github.com/AraBlocks/ethereumjs-wallet, which is not a bunded source, so
 // we must require modules directly from the `src/' directory
 let hdkey = null
+
 try { hdkey = require('ethereumjs-wallet/dist/hdkey') } catch (err0) {
   try { hdkey = require('ethereumjs-wallet/hdkey') } catch (err1) {
     try { hdkey = require('ethereumjs-wallet/src/hdkey') } catch (err2) {

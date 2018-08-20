@@ -26,7 +26,7 @@ process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
 
 program
-  .usage('usage: $0 [-hDV] [options] <command> [options]')
+  .usage('usage: $0 [-hDfV] [options] <command> [options]')
   .option('debug', {
     type: 'boolean',
     alias: 'D',
@@ -41,11 +41,6 @@ program
     alias: 'h',
     describe: 'Show this help message'
   })
-  .option('key', {
-    alias: 'k',
-    type: 'string',
-    describe: 'Network key name',
-  })
   .option('version', {
     alias: 'V',
     describe: 'Show program version'
@@ -58,6 +53,19 @@ program
       .positional('did', {
         type: 'string',
         describe: 'An ARA decentralized identity (did) URI'
+      })
+      .option('secret', {
+        alias: 's',
+        describe: 'Shared secret key for the associated network keys'
+      })
+      .option('keyring', {
+        alias: 'k',
+        type: 'string',
+        describe: 'Path to ARA network keyring file',
+      })
+      .option('name', {
+        alias: 'n',
+        describe: 'Human readable network keys name'
       })
     , onarchive
   )
@@ -86,9 +94,9 @@ program
         alias: 'n',
         describe: 'Human readable network keys name.'
       })
-      .option('keys', {
+      .option('keyring', {
         alias: 'k',
-        describe: 'Path to ARA network keys'
+        describe: 'Path to ARA network keyring file'
       })
       .option('cache', {
         alias: 'C',
@@ -132,10 +140,17 @@ if (program.argv.debug) {
 }
 
 async function onarchive(argv) {
-  onfatal(new Error('TODO: Not implemented'))
 
-  if (!argv.key) {
+  if (!argv.keyring) {
     onfatal(new TypeError('Expecting network key.'))
+  }
+
+  if (!argv.secret) {
+    onfatal(new TypeError('Expecting Shared secret key.'))
+  }
+
+  if (!argv.name) {
+    onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
   if (!argv.did) {
@@ -178,8 +193,7 @@ async function onarchive(argv) {
 
   try {
 
-    /*
-    const { key } = argv
+    const { secret, keyring, name  } = argv
     const keystorePath = resolve(path, 'keystore/ara')
     const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
     const keys = JSON.parse(String(keystoreBuffer))
@@ -189,10 +203,8 @@ async function onarchive(argv) {
 
     // manually construct identity file for archiver
     files.push({ path: 'identity', buffer: identityBuffer })
-
-    warn('Archiving new identity for network \'%s\'.', key)
-    await aid.archive({ publicKey, secretKey, files }, { keystore, key })
-    */
+    warn('Archiving new identity for network \'%s\'.', keyring)
+    await aid.archive({ publicKey, secretKey, files }, { secret, keyring, name })
   } catch (err) {
     error('Possible incorrect password.')
     onfatal(err)
@@ -232,6 +244,18 @@ async function onresolve(argv) {
     onfatal(new TypeError('Expecting DID URI to resolve.'))
   }
 
+  if (!argv.keyring && !argv.cache) {
+    onfatal(new TypeError('Expecting ARA network keyring file.'))
+  }
+
+  if (!argv.secret && !argv.cache) {
+    onfatal(new TypeError('Expecting Shared secret key.'))
+  }
+
+  if (!argv.name && !argv.cache) {
+    onfatal(new TypeError('Expecting Human readable network keys name.'))
+  }
+
   if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
     onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
@@ -253,9 +277,9 @@ async function onresolve(argv) {
       cache = true
     }
 
-    if (argv.secret && argv.keys) {
+    if (argv.secret && argv.keyring) {
       const secret = Buffer.from(argv.secret)
-      const keyring = keyRing(argv.keys, { secret })
+      const keyring = keyRing(argv.keyring, { secret })
       await keyring.ready()
       const buffer = await keyring.get(argv.name)
       keys = unpack({ buffer })
@@ -266,7 +290,6 @@ async function onresolve(argv) {
       timeout,
       cache,
       keys,
-      key,
     })
 
     process.stdout.write(JSON.stringify(identity))
