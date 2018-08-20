@@ -29,6 +29,13 @@ test('dump(opts)', async (t) => {
   })
 
   t.true('object' === typeof ko)
-  t.true(0 === Buffer.compare(toBuffer(ko.crypto.cipherparams.iv), toBuffer(ks.iv)))
-  t.true(0 === Buffer.compare(toBuffer(ko.crypto.kdfparams.salt), toBuffer(ks.salt)))
+  t.true(0 === Buffer.compare(
+    toBuffer(ko.crypto.cipherparams.iv),
+    toBuffer(ks.iv)
+  ))
+
+  t.true(0 === Buffer.compare(
+    toBuffer(ko.crypto.kdfparams.salt),
+    toBuffer(ks.salt)
+  ))
 })
