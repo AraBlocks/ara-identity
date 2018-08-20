@@ -1,11 +1,11 @@
 const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
-const { PublicKey } = require('did-document/public-key')
 const { Authentication } = require('did-document')
+const { PublicKey } = require('did-document/public-key')
+const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const isBuffer = require('is-buffer')
 const crypto = require('ara-crypto')
-const { toHex } = require('./util')
 const bip39 = require('bip39')
 const ddo = require('./ddo')
 const did = require('./did')
@@ -63,7 +63,11 @@ async function create(opts) {
 
   const { salt, iv } = await ethereum.keystore.create()
   const wallet = await ethereum.wallet.load({ seed })
-  const account = await ethereum.account.create({ web3, privateKey: wallet.getPrivateKey() })
+  const account = await ethereum.account.create({
+    web3,
+    privateKey: wallet.getPrivateKey()
+  })
+
   const kstore = await ethereum.keystore.dump({
     password,
     salt,
@@ -94,14 +98,12 @@ async function create(opts) {
       const { type, publicKey } = opts.ddo.authentication
       didDocument.addAuthentication(new Authentication(type, { publicKey }))
     }
+
     // additional keys
-    if (opts.ddo.keys) {
-      for (const key in opts.ddo.keys) {
-        const { id, value } = opts.ddo.keys[key]
+    if (Array.isArray(opts.ddo.publicKeys)) {
+      for (const { id, value } of opts.ddo.publicKeys) {
         didDocument.addPublicKey(createPublicKey({
-          did: didUri.did,
-          id,
-          value
+          id, value, did: didUri.did,
         }))
       }
     }
@@ -137,10 +139,8 @@ async function create(opts) {
     buffer: protobuf.kProtocolBufferSchema,
   } ]
 
-  /*
-   * the intermediate value are the identity fields with
-   * the proof field missing
-   */
+  // The intermediate value are the identity fields with
+  // the proof field missing
   const intermediate = protobuf.messages.Identity.encode({
     did: didUri.did,
     key: publicKey,
@@ -181,8 +181,10 @@ async function create(opts) {
  */
 function createPublicKey(opts = {}) {
   if (!isBuffer(opts.value)) {
+    // eslint-disable-next-line no-param-reassign
     opts.value = Buffer.from(opts.value, 'hex')
   }
+
   return new PublicKey({
     id: `${opts.did}#${opts.id}`,
     type: kEd25519VerificationKey2018,
