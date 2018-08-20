@@ -121,7 +121,7 @@ async function archive(identity, opts) {
       const reader = handshake.createReadStream()
       reader.on('data', (async (data) => {
         clearTimeout(timeout)
-        if ('ACK' === data.toString()) {
+        if ('ACK' !== data.toString()) {
           channel.emit('error', Error('Handshake with remote node failed, Exiting..'))
         }
         connection.destroy(onclose)
