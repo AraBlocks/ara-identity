@@ -4,12 +4,24 @@ const context = require('ara-context')()
 const test = require('ava')
 
 test('recover(opts)', async (t) => {
-  const mnemonic1 = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
+  const mnemonic1 = (
+    'delay blanket scene cactus ' +
+    'rare bicycle embark wheel ' +
+    'swallow laptop predict moral'
+  )
+
   const password1 = 'hello123'
-  const identity1 = await create({ context, mnemonic: mnemonic1, password: password1 })
+  const identity1 = await create({
+    context,
+    mnemonic: mnemonic1,
+    password: password1
+  })
+
   const files1 = identity1.files
+
   let keys
   let encryptedKS
+
   files1.forEach((file) => {
     if ('keystore/eth' === file.path) {
       encryptedKS = file.buffer.toString('utf8')
@@ -23,10 +35,21 @@ test('recover(opts)', async (t) => {
   const privateKey1 = await keystore.recover(password1, keys, encryptedKS)
   t.is(identity1.account.privateKey, web3.utils.bytesToHex(privateKey1))
 
-  const mnemonic2 = 'delay blanket scene cactus rare bicycle embark wheel swallow laptop predict moral'
+  const mnemonic2 = (
+    'delay blanket scene cactus ' +
+    'rare bicycle embark wheel ' +
+    'swallow laptop predict moral'
+  )
+
   const password2 = 'hello23456'
-  const identity2 = await create({ context, mnemonic: mnemonic2, password: password2 })
+  const identity2 = await create({
+    context,
+    mnemonic: mnemonic2,
+    password: password2
+  })
+
   const files2 = identity2.files // eslint-disable-line prefer-destructuring
+
   files2.forEach((file) => {
     if ('keystore/eth' === file.path) {
       encryptedKS = file.buffer.toString('utf8')
