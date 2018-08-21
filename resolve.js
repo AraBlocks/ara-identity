@@ -1,4 +1,5 @@
 const { createChannel } = require('ara-network/discovery/channel')
+const { unpack, keyRing } = require('ara-network/keys')
 const { toHex } = require('./util')
 const protobuf = require('./protobuf')
 const { DID } = require('did-uri')
@@ -17,6 +18,7 @@ const kDIDMethod = 'ara'
 const kMaxPeers = 8
 
 async function resolve(uri, opts) {
+
   if (0 !== uri.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
     uri = `did:ara:${uri}`
@@ -51,7 +53,7 @@ async function resolve(uri, opts) {
     } catch (err) { debug(err) }
   }
 
-  if (opts.keys) {
+  else {
     const value = await findResolution(did, opts)
     return value
   }
@@ -61,6 +63,34 @@ async function resolve(uri, opts) {
 
 async function findResolution(did, opts) {
   const resolvers = []
+  let discoveryKey = null
+  if (null == opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting options object.')
+  }
+
+  if (undefined == opts.secret && undefined == opts.keys) {
+    throw new TypeError('Expecting shared network secret')
+  }
+
+  if (undefined == opts.keyring && undefined == opts.keys) {
+    throw new TypeError('Expecting public network keys for the archiver node')
+  }
+
+  if (undefined == opts.name && undefined == opts.keys) {
+    throw new TypeError('Expecting name for the archiver nodes key ring')
+  }
+
+  if (undefined == opts.keys) {
+    const secret = Buffer.from(opts.secret)
+    const keyring = keyRing(opts.keyring, { secret })
+    const buffer = await keyring.get(opts.name)
+    const unpacked = unpack({ buffer })
+    discoveryKey = unpacked.discoveryKey
+  }
+  else {
+    discoveryKey = opts.keys.discoveryKey
+  }
+
   const channel = createChannel()
   let timeout = null
 
@@ -68,10 +98,10 @@ async function findResolution(did, opts) {
     // eslint-disable-next-line no-param-reassign
     opts.timeout = kResolutionTimeout
   }
-
+  console.log(discoveryKey)
   return pify((done) => {
     channel.on('peer', onpeer)
-    channel.join(opts.keys.discoveryKey)
+    channel.join(discoveryKey)
     timeout = setTimeout(doResolution, opts.timeout)
 
     function onpeer(id, peer, type) {
