@@ -3,10 +3,8 @@ const { createChannel } = require('ara-network/discovery/channel')
 const { createSwarm } = require('ara-network/discovery')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
-const { error } = require('ara-console')
 const { toHex } = require('./util')
 const pump = require('pump')
-const pkg = require('./package.json')
 const ram = require('random-access-memory')
 const net = require('net')
 
@@ -45,6 +43,7 @@ async function archive(identity, opts) {
   }
 
   if (!opts.timeout) {
+    // eslint-disable-next-line no-param-reassign
     opts.timeout = kDefaultTimeout
   }
 
@@ -60,14 +59,22 @@ async function archive(identity, opts) {
 
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
-  let channel = createChannel()
-
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
   const buffer = await keyring.get(opts.name)
   const unpacked = unpack({ buffer })
-
   const { discoveryKey } = unpacked
+
+  let channel = createChannel()
+  let discovery = createSwarm({
+    stream() {
+      const stream = cfs.replicate({ live: false })
+      stream.on('error', onerror)
+      return stream
+    }
+  })
+
+  discovery.join(cfs.discoveryKey)
 
   channel.join(discoveryKey)
   channel.on('peer', onpeer)
@@ -76,27 +83,9 @@ async function archive(identity, opts) {
   timeout()
 
   await new Promise((resolve, reject) => {
-    const discovery = createSwarm({
-      stream() {
-        const stream = cfs.replicate({ live: false })
-        stream.once('end', onend)
-        return stream
-      }
-    })
-
-    discovery.join(cfs.discoveryKey)
-    discovery.once('error', onend)
-
-    function onend(err) {
-      if (err && err instanceof Error) {
-        reject(err)
-      } else {
-        resolve()
-      }
-
-      discovery.destroy()
-      return null
-    }
+    channel.once('close', resolve)
+    channel.once('error', reject)
+    discovery.once('error', reject)
   })
 
   return true
@@ -126,6 +115,7 @@ async function archive(identity, opts) {
     handshake.on('hello', onhello)
     handshake.on('auth', onauth)
     handshake.on('okay', onokay)
+    socket.on('close', onclose)
 
     function onhello(hello) {
       timeout()
@@ -166,31 +156,46 @@ async function archive(identity, opts) {
         clearTimeout(timeout)
 
         if ('ACK' !== data.toString()) {
-          channel.emit('error', new Error('Handshake with remote node failed, Exiting..'))
+          channel.emit(
+            'error',
+            new Error('Archiver handshake failed.')
+          )
         }
 
         timeout(false)
         reader.destroy()
         writer.destroy()
+        socket.destroy()
         handshake.destroy()
-        socket.destroy(onclose)
       })
     }
   }
 
   function onerror(err) {
-    error('%s.archive :', pkg.name, err)
+    if ('function' === typeof opts.onerror) {
+      opts.onerror(err)
+    }
   }
 
   function ontimeout() {
     clearTimeout(timeout)
-    channel.emit('error', new Error('Request timed out: Failed to contact peer to archive identity.'))
+    channel.emit(
+      'error',
+      new Error('Request timed out')
+    )
   }
 
   function onclose() {
     if (channel) {
       channel.destroy()
+      discovery.destroy()
     }
+
+    if ('function' === typeof opts.onclose) {
+      opts.onclose()
+    }
+
+    discovery = null
     channel = null
     return true
   }
