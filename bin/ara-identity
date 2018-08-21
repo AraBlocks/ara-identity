@@ -208,9 +208,13 @@ async function onarchive(argv) {
       secret,
       keyring,
       name,
+
       onhello,
       onauth,
-      onokay
+      onokay,
+
+      onclose,
+      onerror,
     })
   } catch (err) {
     error('Possible incorrect password.')
@@ -218,15 +222,37 @@ async function onarchive(argv) {
   }
 
   function onhello(hello) {
-    info('Got hello from archiver node:', hello)
+    info(
+      'Got hello from archiver node: key=%s mac=%s',
+      hello.publicKey.toString('hex'),
+      hello.mac.toString('hex'),
+    )
   }
 
   function onauth(auth) {
-    info('Authenticated with archiver node:', auth)
+    info(
+      'Authenticated with archiver node: keys=%s signature=%s',
+      auth.publicKey.toString('hex'),
+      auth.signature.toString('hex'),
+    )
   }
 
   function onokay(okay) {
-    info('Got okay from archiver node:', okay)
+    info(
+      'Got okay from archiver node: signature=%s',
+      okay.toString('hex'),
+    )
+  }
+
+  function onclose() {
+    info('Connection closed')
+    process.nextTick(() => process.exit(0))
+  }
+
+  function onerror(err) {
+    debug(err.stack || err)
+    error('Got error in archiver:', err.message)
+    process.nextTick(() => process.exit(1))
   }
 }
 
