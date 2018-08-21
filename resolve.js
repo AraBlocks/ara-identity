@@ -18,7 +18,6 @@ const kDIDMethod = 'ara'
 const kMaxPeers = 8
 
 async function resolve(uri, opts) {
-
   if (0 !== uri.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
     uri = `did:ara:${uri}`
@@ -86,9 +85,10 @@ async function findResolution(did, opts) {
     const keyring = keyRing(opts.keyring, { secret })
     const buffer = await keyring.get(opts.name)
     const unpacked = unpack({ buffer })
+    // eslint-disable-next-line prefer-destructuring
     discoveryKey = unpacked.discoveryKey
-  }
-  else {
+  } else {
+    // eslint-disable-next-line prefer-destructuring
     discoveryKey = opts.keys.discoveryKey
   }
 
