@@ -18,6 +18,27 @@ const kDIDMethod = 'ara'
 const kMaxPeers = 8
 
 async function resolve(uri, opts) {
+  if (null == opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting options to be an object.')
+  }
+
+  if (!opts.secret) {
+    throw new TypeError('Expecting shared secret to be a string or buffer.')
+  }
+
+  if (!opts.keyring) {
+    throw new TypeError('Expecting public network keys')
+  }
+
+  if (!opts.name || 'string' !== typeof opts.name) {
+    throw new TypeError('Expecting name for the key ring entry')
+  }
+
+  if (null === opts.timeout || 'number' !== typeof opts.timeout) {
+    // eslint-disable-next-line no-param-reassign
+    opts.timeout = kResolutionTimeout
+  }
+
   if (0 !== uri.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
     uri = `did:ara:${uri}`
@@ -52,52 +73,22 @@ async function resolve(uri, opts) {
     } catch (err) { debug(err) }
   }
 
-  if (opts.keys || opts.keyring) {
-    const value = await findResolution(did, opts)
-    return value
-  }
-
-  return null
+  const value = await findResolution(did, opts)
+  return value
 }
 
 async function findResolution(did, opts) {
   const resolvers = []
-  let discoveryKey = null
-
-  if (undefined == opts.keys) {
-    if (null == opts || 'object' !== typeof opts) {
-      throw new TypeError('Expecting options object.')
-    }
-
-    if (!opts.secret) {
-      throw new TypeError('Expecting shared network secret')
-    }
-
-    if (!opts.keyring) {
-      throw new TypeError('Expecting public keyring file')
-    }
-
-    if (!opts.name) {
-      throw new TypeError('Expecting name for the resolver nodes key ring')
-    }
-    const secret = Buffer.from(opts.secret)
-    const keyring = keyRing(opts.keyring, { secret })
-    const buffer = await keyring.get(opts.name)
-    const unpacked = unpack({ buffer })
-    // eslint-disable-next-line prefer-destructuring
-    discoveryKey = unpacked.discoveryKey
-  } else {
-    // eslint-disable-next-line prefer-destructuring
-    discoveryKey = opts.keys.discoveryKey
-  }
+  const secret = Buffer.from(opts.secret)
+  const keyring = keyRing(opts.keyring, { secret })
+  await keyring.ready()
+  const buffer = await keyring.get(opts.name)
+  const unpacked = unpack({ buffer })
+  const { discoveryKey } = unpacked
 
   const channel = createChannel()
   let timeout = null
 
-  if (null === opts.timeout || 'number' !== typeof opts.timeout) {
-    // eslint-disable-next-line no-param-reassign
-    opts.timeout = kResolutionTimeout
-  }
 
   return pify((done) => {
     channel.on('peer', onpeer)
@@ -128,7 +119,7 @@ async function findResolution(did, opts) {
         }
       } else {
         return done(Object.assign(
-          new Error('Could not resolve DID.'),
+          new Error('Could not resolve DID. No peer found'),
           { status: 404, code: 'ENOTFOUND' }
         ))
       }
