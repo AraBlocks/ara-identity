@@ -35,7 +35,6 @@ async function resolve(uri, opts) {
   }
 
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
-  console.log(hash)
   const file = path.resolve(rc.network.identity.root, hash, 'identity')
 
   if (false !== opts.cache) {
@@ -64,23 +63,23 @@ async function resolve(uri, opts) {
 async function findResolution(did, opts) {
   const resolvers = []
   let discoveryKey = null
-  if (null == opts || 'object' !== typeof opts) {
-    throw new TypeError('Expecting options object.')
-  }
-
-  if (undefined == opts.secret && undefined == opts.keys) {
-    throw new TypeError('Expecting shared network secret')
-  }
-
-  if (undefined == opts.keyring && undefined == opts.keys) {
-    throw new TypeError('Expecting public network keys for the archiver node')
-  }
-
-  if (undefined == opts.name && undefined == opts.keys) {
-    throw new TypeError('Expecting name for the archiver nodes key ring')
-  }
 
   if (undefined == opts.keys) {
+    if (null == opts || 'object' !== typeof opts) {
+      throw new TypeError('Expecting options object.')
+    }
+
+    if (undefined == opts.secret) {
+      throw new TypeError('Expecting shared network secret')
+    }
+
+    if (undefined == opts.keyring) {
+      throw new TypeError('Expecting public network keys for the archiver node')
+    }
+
+    if (undefined == opts.name) {
+      throw new TypeError('Expecting name for the archiver nodes key ring')
+    }
     const secret = Buffer.from(opts.secret)
     const keyring = keyRing(opts.keyring, { secret })
     const buffer = await keyring.get(opts.name)
