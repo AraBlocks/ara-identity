@@ -74,11 +74,11 @@ async function findResolution(did, opts) {
     }
 
     if (undefined == opts.keyring) {
-      throw new TypeError('Expecting public network keys for the archiver node')
+      throw new TypeError('Expecting public keyring file for the resolving')
     }
 
     if (undefined == opts.name) {
-      throw new TypeError('Expecting name for the archiver nodes key ring')
+      throw new TypeError('Expecting name for the resolver nodes key ring')
     }
     const secret = Buffer.from(opts.secret)
     const keyring = keyRing(opts.keyring, { secret })
