@@ -95,7 +95,7 @@ async function archive(identity, opts) {
   return true
 
   function onpeer(connection, peer) {
-    timeout = setTimeout(ontimeout, opts.timeout || 5000)
+    //timeout = setTimeout(ontimeout, opts.timeout || 5000)
     const socket = net.connect(peer.port, peer.host)
     const handshake = new Handshake({
       publicKey,
@@ -137,7 +137,7 @@ async function archive(identity, opts) {
           channel.emit('error', new Error('Handshake with remote node failed, Exiting..'))
         }
 
-        connection.destroy(onclose)
+        channel.destroy(onclose)
       })
     }
   }
