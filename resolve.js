@@ -69,15 +69,15 @@ async function findResolution(did, opts) {
       throw new TypeError('Expecting options object.')
     }
 
-    if (undefined == opts.secret) {
+    if (!opts.secret) {
       throw new TypeError('Expecting shared network secret')
     }
 
-    if (undefined == opts.keyring) {
+    if (!opts.keyring) {
       throw new TypeError('Expecting public keyring file for the resolving')
     }
 
-    if (undefined == opts.name) {
+    if (!opts.name) {
       throw new TypeError('Expecting name for the resolver nodes key ring')
     }
     const secret = Buffer.from(opts.secret)
