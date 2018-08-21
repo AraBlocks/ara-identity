@@ -10,6 +10,8 @@ const pkg = require('./package.json')
 const ram = require('random-access-memory')
 const net = require('net')
 
+const kDefaultTimeout = 5000
+
 /**
  * Archive an identity into the network
  * @public
@@ -42,6 +44,10 @@ async function archive(identity, opts) {
     throw new TypeError('Expecting name for the archiver nodes key ring')
   }
 
+  if (!opts.timeout) {
+    opts.timeout = kDefaultTimeout
+  }
+
   const { publicKey, secretKey, files } = identity
 
   const cfs = await createCFS({
@@ -55,7 +61,6 @@ async function archive(identity, opts) {
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
   let channel = createChannel()
-  let timeout = null
 
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
@@ -63,10 +68,12 @@ async function archive(identity, opts) {
   const unpacked = unpack({ buffer })
 
   const { discoveryKey } = unpacked
-  timeout = setTimeout(ontimeout, opts.timeout || 5000)
+
   channel.join(discoveryKey)
   channel.on('peer', onpeer)
   channel.on('error', onerror)
+
+  timeout()
 
   await new Promise((resolve, reject) => {
     const discovery = createSwarm({
@@ -94,8 +101,16 @@ async function archive(identity, opts) {
 
   return true
 
-  function onpeer(connection, peer) {
-    timeout = setTimeout(ontimeout, opts.timeout || 5000)
+  function timeout(again) {
+    clearTimeout(timeout.timer)
+    if (false !== again) {
+      timeout.timer = setTimeout(ontimeout, opts.timeout)
+    }
+  }
+
+  function onpeer(chan, peer) {
+    timeout()
+
     const socket = net.connect(peer.port, peer.host)
     const handshake = new Handshake({
       publicKey,
@@ -112,14 +127,31 @@ async function archive(identity, opts) {
     handshake.on('auth', onauth)
     handshake.on('okay', onokay)
 
-    function onhello() {
+    function onhello(hello) {
+      timeout()
+
+      if ('function' === typeof opts.onhello) {
+        opts.onhello(hello)
+      }
+
       handshake.auth()
     }
 
-    function onauth() {
+    function onauth(auth) {
+      timeout()
+
+      if ('function' === typeof opts.onauth) {
+        opts.onauth(auth)
+      }
     }
 
-    function onokay() {
+    function onokay(okay) {
+      timeout()
+
+      if ('function' === typeof opts.onokay) {
+        opts.onokay(okay)
+      }
+
       const reader = handshake.createReadStream()
       const writer = handshake.createWriteStream()
       const msg = Buffer.concat([
@@ -137,7 +169,11 @@ async function archive(identity, opts) {
           channel.emit('error', new Error('Handshake with remote node failed, Exiting..'))
         }
 
-        connection.destroy(onclose)
+        timeout(false)
+        reader.destroy()
+        writer.destroy()
+        handshake.destroy()
+        socket.destroy(onclose)
       })
     }
   }
