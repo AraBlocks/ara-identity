@@ -153,7 +153,7 @@ async function onarchive(argv) {
   }
 
   if (!argv.did) {
-    onfatal(new TypeError('Expecting DID URI to resolve.'))
+    onfatal(new TypeError('Please provide a DID to archive.'))
   }
 
   if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
@@ -205,11 +205,28 @@ async function onarchive(argv) {
     await aid.archive({
       publicKey, secretKey, files
     }, {
-      secret, keyring, name
+      secret,
+      keyring,
+      name,
+      onhello,
+      onauth,
+      onokay
     })
   } catch (err) {
     error('Possible incorrect password.')
     onfatal(err)
+  }
+
+  function onhello(hello) {
+    info('Got hello from archiver node:', hello)
+  }
+
+  function onauth(auth) {
+    info('Authenticated with archiver node:', auth)
+  }
+
+  function onokay(okay) {
+    info('Got okay from archiver node:', okay)
   }
 }
 
