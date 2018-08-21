@@ -268,10 +268,9 @@ async function onresolve(argv) {
   }
 
   try {
-    const { timeout } = argv
+    const { timeout, secret, keyring, name } = argv
 
     let cache
-    let keys = null
 
     if (argv['no-cache'] || argv.nocache || false === argv.cache) {
       cache = false
@@ -279,19 +278,12 @@ async function onresolve(argv) {
       cache = true
     }
 
-    if (argv.secret && argv.keyring) {
-      const secret = Buffer.from(argv.secret)
-      const keyring = keyRing(argv.keyring, { secret })
-      await keyring.ready()
-      const buffer = await keyring.get(argv.name)
-      keys = unpack({ buffer })
-    }
-
     const identity = await aid.resolve(argv.did, {
-      context,
+      keyring,
       timeout,
+      secret,
       cache,
-      keys,
+      name,
     })
 
     process.stdout.write(JSON.stringify(identity))
