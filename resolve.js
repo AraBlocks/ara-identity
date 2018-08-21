@@ -36,6 +36,7 @@ async function resolve(uri, opts) {
   }
 
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
+  console.log(hash)
   const file = path.resolve(rc.network.identity.root, hash, 'identity')
 
   if (false !== opts.cache) {
@@ -53,7 +54,7 @@ async function resolve(uri, opts) {
     } catch (err) { debug(err) }
   }
 
-  else {
+  if (opts.keys || opts.keyring) {
     const value = await findResolution(did, opts)
     return value
   }
@@ -98,7 +99,7 @@ async function findResolution(did, opts) {
     // eslint-disable-next-line no-param-reassign
     opts.timeout = kResolutionTimeout
   }
-  console.log(discoveryKey)
+
   return pify((done) => {
     channel.on('peer', onpeer)
     channel.join(discoveryKey)
