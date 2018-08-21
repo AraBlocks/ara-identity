@@ -74,7 +74,7 @@ async function findResolution(did, opts) {
     }
 
     if (!opts.keyring) {
-      throw new TypeError('Expecting public keyring file for the resolving')
+      throw new TypeError('Expecting public keyring file')
     }
 
     if (!opts.name) {
