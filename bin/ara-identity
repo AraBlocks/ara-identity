@@ -26,18 +26,18 @@ process.on('uncaughtException', onfatal)
 
 program
   .usage('usage: $0 [-hDfV] [options] <command> [options]')
-  .option('debug', {
+  .option('D', {
     type: 'boolean',
-    alias: 'D',
+    alias: 'debug',
     describe: 'Enable debug output',
   })
   .option('f', {
-    alias: 'folder',
+    alias: 'force',
     type: 'boolean',
     describe: 'Force actions without prompt',
   })
   .option('h', {
-    alias: 'hex',
+    alias: 'help',
     describe: 'Show this help message'
   })
   .option('V', {
@@ -55,17 +55,17 @@ program
         describe: 'An Ara decentralized identity (DID) URI',
         required: true,
       })
-      .option('secret', {
-        alias: 's',
+      .option('s', {
+        alias: 'secret',
         describe: 'Shared secret key for the associated network keys'
       })
-      .option('keyring', {
-        alias: 'k',
+      .option('k', {
+        alias: 'keyring',
         type: 'string',
         describe: 'Path to Ara network keyring file',
       })
-      .option('name', {
-        alias: 'n',
+      .option('n', {
+        alias: 'name',
         describe: 'Human readable network keys name'
       })
     , onarchive
@@ -75,8 +75,8 @@ program
     'Create an identity',
     // eslint-disable-next-line no-shadow
     program => program
-      .option('archive', {
-        alias: 'A',
+      .option('A', {
+        alias: 'archive',
         type: 'boolean',
         describe: 'Archive identity into network',
       })
@@ -93,20 +93,20 @@ program
         describe: 'An Ara decentralized identity (DID) URI',
         required: true,
       })
-      .option('secret', {
-        alias: 's',
+      .option('s', {
+        alias: 'secret',
         describe: 'Shared secret key for the associated network keys.'
       })
-      .option('name', {
-        alias: 'n',
+      .option('n', {
+        alias: 'name',
         describe: 'Human readable network keys name.'
       })
-      .option('keyring', {
-        alias: 'k',
+      .option('k', {
+        alias: 'keyring',
         describe: 'Path to Ara network keyring file'
       })
-      .option('cache', {
-        alias: 'C',
+      .option('C', {
+        alias: 'cache',
         type: 'boolean',
         describe: 'Enable or disable cache',
         default: true
@@ -116,8 +116,8 @@ program
         type: 'boolean',
         describe: 'Skip identity cache',
       })
-      .option('timeout', {
-        alias: 't',
+      .option('t', {
+        alias: 'timeout',
         type: 'number',
         describe: 'Resolution timeout',
       })
@@ -128,8 +128,8 @@ program
     'Output local identities',
     // eslint-disable-next-line no-shadow
     program => program
-      .option('path', {
-        alias: 'p',
+      .option('p', {
+        alias: 'path',
         type: 'string',
         describe: 'Path to look for identities',
         optional: true
@@ -405,6 +405,7 @@ async function onwhoami(argv) {
 
     if ('id' in ddo && ddo.id === uri) {
       process.stdout.write(ddo.id)
+      process.stdout.write('\n')
       process.exit(0)
     } else {
       process.exit(1)
