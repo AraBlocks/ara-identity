@@ -31,17 +31,17 @@ program
     alias: 'D',
     describe: 'Enable debug output',
   })
-  .option('force', {
-    alias: 'f',
+  .option('f', {
+    alias: 'folder',
     type: 'boolean',
     describe: 'Force actions without prompt',
   })
-  .option('help', {
-    alias: 'h',
+  .option('h', {
+    alias: 'hex',
     describe: 'Show this help message'
   })
-  .option('version', {
-    alias: 'V',
+  .option('V', {
+    alias: 'version',
     describe: 'Show program version'
   })
   .command(
@@ -51,7 +51,9 @@ program
     program => program
       .positional('did', {
         type: 'string',
-        describe: 'An ARA decentralized identity (did) URI'
+        default: rc.network.identity.whoami,
+        describe: 'An Ara decentralized identity (DID) URI',
+        required: true,
       })
       .option('secret', {
         alias: 's',
@@ -60,7 +62,7 @@ program
       .option('keyring', {
         alias: 'k',
         type: 'string',
-        describe: 'Path to ARA network keyring file',
+        describe: 'Path to Ara network keyring file',
       })
       .option('name', {
         alias: 'n',
@@ -85,6 +87,12 @@ program
     'Resolve an identity',
     // eslint-disable-next-line no-shadow
     program => program
+      .positional('did', {
+        type: 'string',
+        default: rc.network.identity.whoami,
+        describe: 'An Ara decentralized identity (DID) URI',
+        required: true,
+      })
       .option('secret', {
         alias: 's',
         describe: 'Shared secret key for the associated network keys.'
@@ -95,7 +103,7 @@ program
       })
       .option('keyring', {
         alias: 'k',
-        describe: 'Path to ARA network keyring file'
+        describe: 'Path to Ara network keyring file'
       })
       .option('cache', {
         alias: 'C',
@@ -117,15 +125,23 @@ program
   )
   .command(
     'list',
-    'Outputs a list of all identities created locally',
+    'Output local identities',
     // eslint-disable-next-line no-shadow
     program => program
       .option('path', {
         alias: 'p',
         type: 'string',
-        describe: 'Path to look for identities (Optional)'
+        describe: 'Path to look for identities',
+        optional: true
       })
     , onlist
+  )
+  .command(
+    'whoami',
+    'Output current Ara identity in context (.ararc)',
+    // eslint-disable-next-line no-shadow
+    program => program
+    , onwhoami
   )
 
 if (0 === program.argv._.length) {
@@ -278,7 +294,7 @@ async function oncreate() {
   await writeIdentity(identity)
 
   info('Please safely store the following 12 word mnemonic phrase for this')
-  info('ARA ID. This phrase will be required to restore your ARA ID.')
+  info('Ara ID. This phrase will be required to restore your Ara ID.')
   info('It will never be shown again:')
   info('\n\n%s', table([ [ identity.mnemonic ] ]))
 
@@ -291,7 +307,7 @@ async function onresolve(argv) {
   }
 
   if (!argv.keyring && !argv.cache) {
-    onfatal(new TypeError('Expecting ARA network keyring file.'))
+    onfatal(new TypeError('Expecting Ara network keyring file.'))
   }
 
   if (!argv.secret && !argv.cache) {
@@ -357,6 +373,45 @@ async function onlist(argv) {
     process.exit(0)
   } catch (err) {
     onfatal(err)
+  }
+}
+
+async function onwhoami(argv) {
+  void argv
+  let identifier = null
+  let uri = rc.network.identity.whoami
+
+  if (uri && 0 !== uri.indexOf('did:ara:')) {
+    // eslint-disable-next-line no-param-reassign
+    uri = `did:ara:${uri}`
+  }
+
+  if (!uri) {
+    process.exit(1)
+    return
+  }
+
+  try {
+    // eslint-disable-next-line prefer-destructuring
+    identifier = did.parse(uri).identifier
+  } catch (err) {
+    onfatal(new Error(`Failed to parse DID URI: ${uri}`))
+  }
+
+  try {
+    const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
+    const path = resolve(rc.network.identity.root, hash, 'ddo.json')
+    const ddo = JSON.parse(await pify(fs.readFile)(path))
+
+    if ('id' in ddo && ddo.id === uri) {
+      process.stdout.write(ddo.id)
+      process.exit(0)
+    } else {
+      process.exit(1)
+    }
+  } catch (err) {
+    debug(err)
+    process.exit(1)
   }
 }
 
