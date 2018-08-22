@@ -282,6 +282,8 @@ async function oncreate() {
   info('ARA ID. This phrase will be required to restore your ARA ID.')
   info('It will never be shown again:')
   info('\n\n%s', table([ [ identity.mnemonic ] ]))
+
+  process.exit(0)
 }
 
 async function onresolve(argv) {
@@ -311,7 +313,12 @@ async function onresolve(argv) {
   }
 
   try {
-    const { timeout, secret, keyring, name } = argv
+    const {
+      timeout,
+      keyring,
+      secret,
+      name
+    } = argv
 
     let cache
 
@@ -333,6 +340,8 @@ async function onresolve(argv) {
   } catch (err) {
     onfatal(err)
   }
+
+  process.exit(0)
 }
 
 async function onlist(argv) {
