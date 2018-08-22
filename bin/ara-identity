@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const { info, warn, error } = require('ara-console')
-const { unpack, keyRing } = require('ara-network/keys')
 const { writeIdentity } = require('../util')
 // const { createCFS } = require('cfsnet/create')
 const { resolve } = require('path')
