@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 const { info, warn, error } = require('ara-console')
+const { resolve, extname } = require('path')
 const { writeIdentity } = require('../util')
 // const { createCFS } = require('cfsnet/create')
-const { resolve } = require('path')
 const { toHex } = require('../util')
 const { table } = require('table')
 const protobuf = require('../protobuf')
@@ -60,12 +60,13 @@ program
         describe: 'Shared secret key for the associated network keys'
       })
       .option('k', {
-        alias: 'keyring',
         type: 'string',
+        alias: 'keyring',
+        default: rc.network.identity.keyring,
         describe: 'Path to Ara network keyring file',
       })
       .option('n', {
-        alias: 'name',
+        alias: 'key-name',
         describe: 'Human readable network keys name'
       })
     , onarchive
@@ -98,11 +99,12 @@ program
         describe: 'Shared secret key for the associated network keys.'
       })
       .option('n', {
-        alias: 'name',
+        alias: 'key-name',
         describe: 'Human readable network keys name.'
       })
       .option('k', {
         alias: 'keyring',
+        default: rc.network.identity.keyring,
         describe: 'Path to Ara network keyring file'
       })
       .option('C', {
@@ -163,7 +165,7 @@ async function onarchive(argv) {
     onfatal(new TypeError('Expecting Shared secret key.'))
   }
 
-  if (!argv.name) {
+  if (!argv['key-name']) {
     onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
@@ -206,7 +208,14 @@ async function onarchive(argv) {
   void identity
 
   try {
-    const { secret, keyring, name } = argv
+    let { keyring } = argv
+
+    if ('.pub' !== extname(keyring)) {
+      keyring = `${keyring}.pub`
+    }
+
+    const name = argv['key-name']
+    const { secret } = argv
     const keystorePath = resolve(path, 'keystore/ara')
     const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
     const keys = JSON.parse(String(keystoreBuffer))
@@ -314,7 +323,7 @@ async function onresolve(argv) {
     onfatal(new TypeError('Expecting Shared secret key.'))
   }
 
-  if (!argv.name && !argv.cache) {
+  if (!argv['key-name'] && !argv.cache) {
     onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
@@ -328,12 +337,14 @@ async function onresolve(argv) {
   }
 
   try {
-    const {
-      timeout,
-      keyring,
-      secret,
-      name
-    } = argv
+    let { keyring } = argv
+
+    if ('.pub' !== extname(keyring)) {
+      keyring = `${keyring}.pub`
+    }
+
+    const { timeout, secret } = argv
+    const name = argv['key-name']
 
     let cache
 
