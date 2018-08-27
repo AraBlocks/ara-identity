@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 const { info, warn, error } = require('ara-console')
-const { resolve, extname } = require('path')
 const { writeIdentity } = require('../util')
 // const { createCFS } = require('cfsnet/create')
+const { resolve } = require('path')
 const { toHex } = require('../util')
 const { table } = require('table')
 const protobuf = require('../protobuf')
@@ -208,11 +208,7 @@ async function onarchive(argv) {
   void identity
 
   try {
-    let { keyring } = argv
-
-    if ('.pub' !== extname(keyring)) {
-      keyring = `${keyring}.pub`
-    }
+    const { keyring } = argv
 
     const name = argv['key-name']
     const { secret } = argv
@@ -337,13 +333,8 @@ async function onresolve(argv) {
   }
 
   try {
-    let { keyring } = argv
-
-    if ('.pub' !== extname(keyring)) {
-      keyring = `${keyring}.pub`
-    }
-
     const { timeout, secret } = argv
+    const { keyring } = argv
     const name = argv['key-name']
 
     let cache
