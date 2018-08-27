@@ -1,4 +1,3 @@
-const { kEd25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { Authentication } = require('did-document')
 const { PublicKey } = require('did-document/public-key')
 const { toHex } = require('./util')
@@ -11,6 +10,14 @@ const ddo = require('./ddo')
 const did = require('./did')
 const ss = require('ara-secret-storage')
 
+const {
+  kEd25519VerificationKey2018,
+  kEd25519SignatureAuthentication2018,
+
+  kSecp256k1VerificationKey2018,
+  kSecp256k1SignatureAuthentication2018,
+} = require('ld-cryptosuite-registry')
+
 /**
  * Creates a new ARA identity.
  * @public
@@ -20,6 +27,7 @@ const ss = require('ara-secret-storage')
  */
 async function create(opts) {
   let mnemonic
+
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('ara-identity.create: Expecting object.')
   }
@@ -53,8 +61,8 @@ async function create(opts) {
     // eslint-disable-next-line prefer-destructuring
     mnemonic = opts.mnemonic
   }
-  let seed = bip39.mnemonicToSeed(mnemonic)
-  seed = crypto.blake2b(seed)
+
+  const seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic))
 
   const { context } = opts
   const { web3 } = context
@@ -86,24 +94,54 @@ async function create(opts) {
   })
 
   didDocument.addPublicKey(createPublicKey({
-    did: didUri.did,
     id: 'owner',
+    did: didUri.did,
+    type: kEd25519VerificationKey2018,
     value: publicKey
   }))
+
+  didDocument.addPublicKey(createPublicKey({
+    id: 'eth',
+    did: didUri.did,
+    type: kSecp256k1VerificationKey2018,
+    value: wallet.getPublicKey()
+  }))
+
+  didDocument.addAuthentication(new Authentication(
+    kEd25519SignatureAuthentication2018,
+    { publicKey: `${didUri.did}#owner` }
+  ))
+
+  didDocument.addAuthentication(new Authentication(
+    kSecp256k1SignatureAuthentication2018,
+    { publicKey: `${didUri.did}#eth` }
+  ))
 
   if (opts.ddo) {
     // add default authentication to ddo if available
     if (opts.ddo.authentication) {
-      // eslint-disable-next-line no-shadow
-      const { type, publicKey } = opts.ddo.authentication
-      didDocument.addAuthentication(new Authentication(type, { publicKey }))
+      if (!Array.isArray(opts.ddo.authentication)) {
+        // eslint-disable-next-line no-param-reassign
+        opts.ddo.authentication = [ opts.ddo.authentication ]
+      }
+
+      for (const auth of opts.ddo.authentication) {
+        // eslint-disable-next-line no-shadow
+        didDocument.addAuthentication(new Authentication(
+          auth.type,
+          { publicKey: auth.publicKey }
+        ))
+      }
     }
 
     // additional keys
     if (Array.isArray(opts.ddo.publicKeys)) {
-      for (const { id, value } of opts.ddo.publicKeys) {
+      for (const pk of opts.ddo.publicKeys) {
         didDocument.addPublicKey(createPublicKey({
-          id, value, did: didUri.did,
+          id: pk.id,
+          type: pk.type || kEd25519VerificationKey2018,
+          value: pk.value,
+          did: didUri.did,
         }))
       }
     }
@@ -187,7 +225,7 @@ function createPublicKey(opts = {}) {
 
   return new PublicKey({
     id: `${opts.did}#${opts.id}`,
-    type: kEd25519VerificationKey2018,
+    type: opts.type,
     owner: opts.did,
 
     // public key variants
