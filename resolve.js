@@ -22,23 +22,6 @@ async function resolve(uri, opts) {
     throw new TypeError('Expecting options to be an object.')
   }
 
-  if (!opts.secret) {
-    throw new TypeError('Expecting shared secret to be a string or buffer.')
-  }
-
-  if (!opts.keyring) {
-    throw new TypeError('Expecting public network keys')
-  }
-
-  if (!opts.name || 'string' !== typeof opts.name) {
-    throw new TypeError('Expecting name for the key ring entry')
-  }
-
-  if (null === opts.timeout || 'number' !== typeof opts.timeout) {
-    // eslint-disable-next-line no-param-reassign
-    opts.timeout = kResolutionTimeout
-  }
-
   if (0 !== uri.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
     uri = `did:ara:${uri}`
@@ -71,6 +54,23 @@ async function resolve(uri, opts) {
         }
       }
     } catch (err) { debug(err) }
+  }
+
+  if (!opts.secret) {
+    throw new TypeError('Expecting shared secret to be a string or buffer.')
+  }
+
+  if (!opts.keyring) {
+    throw new TypeError('Expecting public network keys')
+  }
+
+  if (!opts.name || 'string' !== typeof opts.name) {
+    throw new TypeError('Expecting name for the key ring entry')
+  }
+
+  if (null === opts.timeout || 'number' !== typeof opts.timeout) {
+    // eslint-disable-next-line no-param-reassign
+    opts.timeout = kResolutionTimeout
   }
 
   const value = await findResolution(did, opts)
