@@ -2,6 +2,7 @@ const { createChannel } = require('ara-network/discovery/channel')
 const { unpack, keyRing } = require('ara-network/keys')
 const { toHex } = require('./util')
 const protobuf = require('./protobuf')
+const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
 const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:resolve')
@@ -53,19 +54,33 @@ async function resolve(uri, opts) {
           return JSON.parse(buffer)
         }
       }
-    } catch (err) { debug(err) }
+    } catch (err) {
+      debug(err)
+    }
   }
 
-  if (!opts.secret) {
+  if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
     throw new TypeError('Expecting shared secret to be a string or buffer.')
   }
 
-  if (!opts.keyring) {
-    throw new TypeError('Expecting public network keys')
+  if (!opts.secret || 0 === opts.secret.length) {
+    throw new TypeError('Shared secret cannot be empty.')
   }
 
-  if (!opts.name || 'string' !== typeof opts.name) {
-    throw new TypeError('Expecting name for the key ring entry')
+  if (!opts.keyring) {
+    throw new TypeError('Expecting network keys keyring.')
+  }
+
+  if (opts.name && 'string' === typeof opts.name && !opts.network) {
+    const msg = 'Please set \'opts.network\' property instead of \'opts.name\'.'
+    // eslint-disable-next-line no-console
+    console.warn('aid.resolve():', msg)
+    // eslint-disable-next-line no-param-reassign
+    opts.network = opts.name
+  }
+
+  if (!opts.network || 'string' !== typeof opts.network) {
+    throw new TypeError('Expecting network name for the resolver.')
   }
 
   if (null === opts.timeout || 'number' !== typeof opts.timeout) {
@@ -82,7 +97,7 @@ async function findResolution(did, opts) {
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
   await keyring.ready()
-  const buffer = await keyring.get(opts.name)
+  const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
 
@@ -109,6 +124,7 @@ async function findResolution(did, opts) {
         const { peer } = resolvers.shift()
         const { host, port } = peer
         const uri = `http://${host}:${port}/1.0/identifiers/${did.did}`
+
         try {
           const { body } = await fetch(uri)
           done(null, JSON.parse(body))
