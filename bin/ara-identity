@@ -26,125 +26,123 @@ process.on('uncaughtException', onfatal)
 
 program
   .usage('usage: $0 [-hDfV] [options] <command> [options]')
-  .option('D', {
-    type: 'boolean',
-    alias: 'debug',
-    describe: 'Enable debug output',
-  })
-  .option('f', {
-    alias: 'force',
-    type: 'boolean',
-    describe: 'Force actions without prompt',
-  })
-  .option('h', {
-    alias: 'help',
+  .group([ 'help', 'debug', 'force', 'version' ], 'General Options:')
+  .option('help', {
+    alias: 'h',
     describe: 'Show this help message'
   })
-  .option('V', {
-    alias: 'version',
+  .option('debug', {
+    alias: 'D',
+    describe: 'Enable debug output',
+  })
+  .option('force', {
+    alias: 'f',
+    describe: 'Force actions without prompt',
+  })
+  .option('version', {
+    alias: 'V',
     describe: 'Show program version'
   })
-  .command(
-    'archive [did]',
-    'Archive identity in network',
-    // eslint-disable-next-line no-shadow
-    program => program
-      .positional('did', {
-        type: 'string',
-        default: rc.network.identity.whoami,
-        describe: 'An Ara decentralized identity (DID) URI',
-        required: true,
-      })
-      .option('s', {
-        alias: 'secret',
-        describe: 'Shared secret key for the associated network keys'
-      })
-      .option('k', {
-        type: 'string',
-        alias: 'keyring',
-        default: rc.network.identity.keyring,
-        describe: 'Path to Ara network keyring file',
-      })
-      .option('n', {
-        alias: 'key-name',
-        describe: 'Human readable network keys name'
-      })
-    , onarchive
-  )
-  .command(
-    'create',
-    'Create an identity',
-    // eslint-disable-next-line no-shadow
-    program => program
-      .option('A', {
-        alias: 'archive',
-        type: 'boolean',
-        describe: 'Archive identity into network',
-      })
-    , oncreate
-  )
-  .command(
-    'resolve [did]',
-    'Resolve an identity',
-    // eslint-disable-next-line no-shadow
-    program => program
-      .positional('did', {
-        type: 'string',
-        default: rc.network.identity.whoami,
-        describe: 'An Ara decentralized identity (DID) URI',
-        required: true,
-      })
-      .option('s', {
-        alias: 'secret',
-        describe: 'Shared secret key for the associated network keys.'
-      })
-      .option('n', {
-        alias: 'key-name',
-        describe: 'Human readable network keys name.'
-      })
-      .option('k', {
-        alias: 'keyring',
-        default: rc.network.identity.keyring,
-        describe: 'Path to Ara network keyring file'
-      })
-      .option('C', {
-        alias: 'cache',
-        type: 'boolean',
-        describe: 'Enable or disable cache',
-        default: true
-      })
-      .option('no-cache', {
-        alias: 'nocache',
-        type: 'boolean',
-        describe: 'Skip identity cache',
-      })
-      .option('t', {
-        alias: 'timeout',
-        type: 'number',
-        describe: 'Resolution timeout',
-      })
-    , onresolve
-  )
-  .command(
-    'list',
-    'Output local identities',
-    // eslint-disable-next-line no-shadow
-    program => program
-      .option('p', {
-        alias: 'path',
-        type: 'string',
-        describe: 'Path to look for identities',
-        optional: true
-      })
-    , onlist
-  )
-  .command(
-    'whoami',
-    'Output current Ara identity in context (.ararc)',
-    // eslint-disable-next-line no-shadow
-    program => program
-    , onwhoami
-  )
+
+program.command(
+  'archive [did]',
+  'Archive identity in network',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .positional('did', {
+      default: rc.network.identity.whoami,
+      describe: 'An Ara decentralized identity (DID) URI',
+      required: true,
+    })
+    .option('secret', {
+      alias: 's',
+      describe: 'Shared secret key for the associated network keys'
+    })
+    .option('keys', {
+      alias: 'k',
+      default: rc.network.identity.keyring,
+      describe: 'Path to Ara network keyring file',
+    })
+    .option('network', {
+      alias: 'n',
+      describe: 'Human readable network name for keys in keyring'
+    })
+  , onarchive
+)
+
+program.command(
+  'create',
+  'Create an identity',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .option('archive', {
+      alias: 'A',
+      describe: 'Archive identity into network',
+    })
+  , oncreate
+)
+program.command(
+  'resolve [did]',
+  'Resolve an identity',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .positional('did', {
+      default: rc.network.identity.whoami,
+      describe: 'An Ara decentralized identity (DID) URI',
+      required: true,
+    })
+    .option('secret', {
+      alias: 's',
+      describe: 'Shared secret key for the associated network keys.'
+    })
+    .option('network', {
+      alias: 'n',
+      describe: 'Human readable network name for keys in keyring'
+    })
+    .option('keyring', {
+      alias: 'k',
+      default: rc.network.identity.keyring,
+      describe: 'Path to Ara network keyring file'
+    })
+    .option('cache', {
+      alias: 'C',
+      describe: 'Enable or disable cache',
+      default: true
+    })
+    .option('no-cache', {
+      alias: 'nocache',
+      describe: 'Skip identity cache',
+    })
+    .option('timeout', {
+      alias: 't',
+      describe: 'Resolution timeout',
+    })
+  , onresolve
+)
+program.command(
+  'list',
+  'Output local identities',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .option('path', {
+      alias: 'p',
+      describe: 'Path to look for identities',
+      optional: true
+    })
+  , onlist
+)
+
+program.command(
+  'whoami',
+  'Output current Ara identity in context (.ararc)',
+  // eslint-disable-next-line no-shadow
+  program => program
+  , onwhoami
+)
+
+program
+  .recommendCommands()
+  .completion()
 
 if (0 === program.argv._.length) {
   program.showHelp()
@@ -165,8 +163,8 @@ async function onarchive(argv) {
     onfatal(new TypeError('Expecting Shared secret key.'))
   }
 
-  if (!argv['key-name']) {
-    onfatal(new TypeError('Expecting Human readable network keys name.'))
+  if (!argv.network) {
+    onfatal(new TypeError('Expecting Human readable network name for keys in keyring.'))
   }
 
   if (!argv.did) {
@@ -208,9 +206,8 @@ async function onarchive(argv) {
   void identity
 
   try {
-    const { keyring } = argv
+    const { keyring, network } = argv
 
-    const name = argv['key-name']
     const { secret } = argv
     const keystorePath = resolve(path, 'keystore/ara')
     const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
@@ -225,9 +222,9 @@ async function onarchive(argv) {
     await aid.archive({
       publicKey, secretKey, files
     }, {
+      network,
       secret,
       keyring,
-      name,
 
       onhello,
       onauth,
@@ -319,7 +316,7 @@ async function onresolve(argv) {
     onfatal(new TypeError('Expecting Shared secret key.'))
   }
 
-  if (!argv['key-name'] && !argv.cache) {
+  if (!argv.network && !argv.cache) {
     onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
@@ -333,9 +330,8 @@ async function onresolve(argv) {
   }
 
   try {
-    const { timeout, secret } = argv
+    const { timeout, secret, network } = argv
     const { keyring } = argv
-    const name = argv['key-name']
 
     let cache
 
@@ -346,11 +342,11 @@ async function onresolve(argv) {
     }
 
     const identity = await aid.resolve(argv.did, {
+      network,
       keyring,
       timeout,
       secret,
       cache,
-      name,
     })
 
     process.stdout.write(JSON.stringify(identity))
