@@ -4,6 +4,7 @@ const { createSwarm } = require('ara-network/discovery')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
+const isBuffer = require('is-buffer')
 const pump = require('pump')
 const ram = require('random-access-memory')
 const net = require('net')
@@ -17,7 +18,7 @@ const kDefaultTimeout = 5000
  * @param {Object} opts
  * @param {String|Buffer} opts.secret
  * @param {Strin} opts.keyring
- * @param {String} opts.name
+ * @param {String} opts.network
  * @throws TypeError
  * @return {Promise}
  */
@@ -30,16 +31,28 @@ async function archive(identity, opts) {
     throw new TypeError('Expecting options to be an object.')
   }
 
-  if (!opts.secret) {
+  if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
     throw new TypeError('Expecting shared secret to be a string or buffer.')
   }
 
-  if (!opts.keyring) {
-    throw new TypeError('Expecting public network keys for the archiver node')
+  if (!opts.secret || 0 === opts.secret.length) {
+    throw new TypeError('Shared secret cannot be empty.')
   }
 
-  if (!opts.name || 'string' !== typeof opts.name) {
-    throw new TypeError('Expecting name for the archiver nodes key ring')
+  if (!opts.keyring) {
+    throw new TypeError('Expecting network keys keyring.')
+  }
+
+  if (opts.name && 'string' === typeof opts.name && !opts.network) {
+    const msg = 'Please set \'opts.network\' property instead of \'opts.name\'.'
+    // eslint-disable-next-line no-console
+    console.warn('aid.archive():', msg)
+    // eslint-disable-next-line no-param-reassign
+    opts.network = opts.name
+  }
+
+  if (!opts.network || 'string' !== typeof opts.network) {
+    throw new TypeError('Expecting network name for the archiver.')
   }
 
   if (!opts.timeout) {
@@ -61,7 +74,7 @@ async function archive(identity, opts) {
 
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
-  const buffer = await keyring.get(opts.name)
+  const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
 
@@ -179,10 +192,7 @@ async function archive(identity, opts) {
 
   function ontimeout() {
     clearTimeout(timeout)
-    channel.emit(
-      'error',
-      new Error('Request timed out')
-    )
+    channel.emit('error', new Error('Archiver request timed out.'))
   }
 
   function onclose() {
