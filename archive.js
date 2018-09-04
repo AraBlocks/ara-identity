@@ -5,6 +5,7 @@ const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
+const debug = require('debug')('ara:identity:archive')
 const pump = require('pump')
 const ram = require('random-access-memory')
 const net = require('net')
@@ -51,6 +52,10 @@ async function archive(identity, opts) {
     opts.network = opts.name
   }
 
+  if (-1 === opts.keyring.indexOf('.pub')) {
+    debug(`Using keyring: ${opts.keyring}, which may not be a public keyring.`)
+  }
+
   if (!opts.network || 'string' !== typeof opts.network) {
     throw new TypeError('Expecting network name for the archiver.')
   }
@@ -73,7 +78,13 @@ async function archive(identity, opts) {
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
   const secret = Buffer.from(opts.secret)
+
   const keyring = keyRing(opts.keyring, { secret })
+  keyring.on('error', (err) => {
+    throw new Error(err)
+  })
+  keyring.ready()
+
   const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
