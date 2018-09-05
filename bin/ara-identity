@@ -316,10 +316,14 @@ async function onresolve(argv) {
   }
 
   try {
-    const { timeout, secret, network } = argv
-    const { keyring } = argv
-
     let cache
+
+    const {
+      timeout,
+      keyring,
+      network,
+      secret,
+    } = argv
 
     if (argv['no-cache'] || argv.nocache || false === argv.cache) {
       cache = false
