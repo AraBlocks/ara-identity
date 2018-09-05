@@ -25,14 +25,14 @@ process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
 
 program
-  .usage('usage: $0 [-hDV] [options] <command> [options]')
+  .usage('usage: $0 [-hDV] <command> [options]')
   .wrap(null)
 
 program
   .group([ 'help', 'debug', 'version' ], 'General Options:')
   .option('help', {
     alias: 'h',
-    describe: 'Show this help message'
+    describe: 'Show this help message',
   })
   .option('debug', {
     alias: 'D',
@@ -48,6 +48,7 @@ program.command(
   'Create an identity',
   // eslint-disable-next-line no-shadow
   program => program
+    .usage('usage: $0 [-D] create [options]')
   , oncreate
 )
 
@@ -56,6 +57,7 @@ program.command(
   'Archive identity in network',
   // eslint-disable-next-line no-shadow
   program => program
+    .usage('usage: $0 [-D] archive [options]')
     .positional('did', {
       default: rc.network.identity.whoami,
     })
@@ -87,6 +89,7 @@ program.command(
   'Resolve an identity',
   // eslint-disable-next-line no-shadow
   program => program
+    .usage('usage: $0 [-hDV] resolve [options]')
     .positional('did', {
       default: rc.network.identity.whoami,
     })
@@ -126,6 +129,7 @@ program.command(
   'Output local identities',
   // eslint-disable-next-line no-shadow
   program => program
+    .usage('usage: $0 [-D] list [options]')
     .group([ 'path' ], 'List Options:')
     .option('path', {
       alias: 'p',
@@ -140,6 +144,7 @@ program.command(
   'Output current Ara identity in context (.ararc)',
   // eslint-disable-next-line no-shadow
   program => program
+    .usage('usage: $0 [-D] whoami')
   , onwhoami
 )
 
