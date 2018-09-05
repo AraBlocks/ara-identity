@@ -199,9 +199,7 @@ async function onarchive(argv) {
   const identity = protobuf.messages.Identity.decode(identityBuffer)
 
   try {
-    const { keyring, network } = argv
-
-    const { secret } = argv
+    const { keyring, network, secret } = argv
     const keystorePath = resolve(path, 'keystore/ara')
     const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
     const keys = JSON.parse(String(keystoreBuffer))
