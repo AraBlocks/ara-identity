@@ -48,31 +48,6 @@ program.command(
   'Create an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .group([ 'archive' ], 'Identity Options:')
-    .option('archive', {
-      alias: 'A',
-      describe: 'Archive identity into network',
-    })
-    .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
-    .option('secret', {
-      alias: 's',
-      describe: 'Shared secret key for the associated network keys',
-      required: true,
-      requiresArg: true,
-    })
-    .option('keyring', {
-      alias: 'k',
-      default: rc.network.identity.keyring,
-      describe: 'Path to Ara network keyring file',
-      required: true,
-      requiresArg: true,
-    })
-    .option('network', {
-      alias: 'n',
-      describe: 'Human readable network name for keys in keyring',
-      required: true,
-      requiresArg: true,
-    })
   , oncreate
 )
 
