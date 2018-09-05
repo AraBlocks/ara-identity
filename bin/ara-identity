@@ -108,7 +108,6 @@ program.command(
       alias: 'k',
       default: rc.network.identity.keyring,
       describe: 'Path to Ara network keyring file',
-      required: true,
       requiresArg: true,
     })
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
