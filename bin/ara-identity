@@ -113,9 +113,10 @@ program.command(
     })
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
     .option('cache', {
+      type: 'boolean',
       alias: 'C',
       describe: 'Enable or disable cache',
-      default: true
+      default: true,
     })
     .option('timeout', {
       alias: 't',
