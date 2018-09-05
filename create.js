@@ -5,6 +5,7 @@ const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const isBuffer = require('is-buffer')
 const crypto = require('ara-crypto')
+const debug = require('debug')('ara-identity:create')
 const bip39 = require('bip39')
 const ddo = require('./ddo')
 const did = require('./did')
@@ -82,6 +83,8 @@ async function create(opts) {
     iv,
     privateKey: wallet.getPrivateKey(),
   })
+
+  debug(`eth wallet: ${wallet.getPrivateKey().toString('hex')} `)
 
   const didUri = did.create(publicKey)
   const didDocument = ddo.create({ id: didUri })
