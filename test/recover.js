@@ -28,6 +28,6 @@ test('recover() compare recovered identity', async (t) => {
   t.true(identity.mnemonic === recoveredID.mnemonic)
   t.true(0 === Buffer.compare(identity.publicKey, recoveredID.publicKey))
   t.true(0 === Buffer.compare(identity.secretKey, recoveredID.secretKey))
-  t.true(0 === Buffer.compare(identity.wallet._privKey, recoveredID.wallet._privKey))
-  t.true(0 === Buffer.compare(identity.wallet._pubKey, recoveredID.wallet._pubKey))
+  t.true(0 === Buffer.compare(identity.wallet.getPrivateKey(), recoveredID.wallet.getPrivateKey()))
+  t.true(0 === Buffer.compare(identity.wallet.getPublicKey(), recoveredID.wallet.getPublicKey()))
 })
