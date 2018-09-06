@@ -18,7 +18,7 @@ const kDefaultTimeout = 5000
  * @param {Object} identity
  * @param {Object} opts
  * @param {String|Buffer} opts.secret
- * @param {Strin} opts.keyring
+ * @param {String} opts.keyring
  * @param {String} opts.network
  * @throws TypeError
  * @return {Promise}
