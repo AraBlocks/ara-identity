@@ -14,7 +14,6 @@ const { create } = require('./create')
  */
 
 async function recover(opts) {
-
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts to be an object.')
   }
@@ -31,7 +30,7 @@ async function recover(opts) {
     throw new TypeError('Expecting web3 to be in context.')
   }
 
-  if (null == opts.mnemonic ) {
+  if (null == opts.mnemonic) {
     throw new TypeError('Expecting mnemonic for recovery.')
   } else if (opts.mnemonic && 'string' !== typeof opts.mnemonic) {
     throw new TypeError('Expecting mnemonic to be a string.')
@@ -44,7 +43,6 @@ async function recover(opts) {
   const identity = await create(opts)
   return identity
 }
-
 
 module.exports = {
   recover
