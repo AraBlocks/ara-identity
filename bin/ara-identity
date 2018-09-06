@@ -2,6 +2,8 @@
 
 const { info, warn, error } = require('ara-console')
 const { writeIdentity } = require('../util')
+const { normalize } = require('ara-util')
+const { resolve } = require('path')
 const { toHex } = require('../util')
 const { table } = require('table')
 const protobuf = require('../protobuf')
@@ -10,10 +12,12 @@ const context = require('ara-context')()
 const program = require('yargs')
 const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity')
+const pify = require('pify')
 const did = require('did-uri')
 const aid = require('../')
 const rc = require('../rc')()
 const ss = require('ara-secret-storage')
+const fs = require('fs')
 
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
@@ -169,6 +173,30 @@ program.command(
       requiresArg: true,
     })
   , onrecover
+)
+
+program.command(
+  'keystore-dump [did]',
+  'Recover a private ethereum|ara key.',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 [-hDV] keystore-dump [options]')
+    .positional('did', {
+      default: rc.network.identity.whoami,
+    })
+    .group([ 'path', 'token' ], 'Options:')
+    .option('path', {
+      alias: 'p',
+      describe: 'Path to look for did directory',
+      optional: true
+    })
+    .option('token', {
+      alias: 't',
+      describe: 'Token type to dump- `eth` or `ara`',
+      optional: true,
+      default: 'eth'
+    })
+  , onkeystoredump
 )
 
 program
@@ -502,6 +530,96 @@ async function onwhoami(argv) {
   } else {
     process.exit(1)
   }
+}
+
+async function onkeystoredump(argv) {
+  const identity = normalize(argv.did)
+  const hash = toHex(crypto.blake2b(Buffer.from(identity, 'hex')))
+  let path = argv.path
+  if (undefined === path) {
+    // eslint-disable-next-line no-param-reassign
+    path = resolve(rc.network.identity.root, hash, 'keystore')
+  }
+
+  try {
+    await pify(fs.readdir)(path)
+  } catch (err) {
+    throw new Error(`Cannot read identity 'did:ara:${identity}'. ${err}`)
+  }
+
+  const { password } = await inquirer.prompt([ {
+    type: 'password',
+    name: 'password',
+    message:
+    'Your identity\'s keystore will be secured by a passphrase. \n' +
+    'Please provide a passphrase. Do not forget this as it will never be ' +
+    'shown to you.\n' +
+    'Passphrase:'
+  } ])
+
+  process.stdout.write('\n')
+
+  const keystores = []
+  const visits = []
+
+  const araPath = resolve(path, 'ara')
+  const ethPath = resolve(path, 'eth')
+  const ara = await pify(visit)(araPath)
+  const eth = await pify(visit)(ethPath)
+
+  function visit(entry, cb) {
+    const file = resolve(entry)
+    fs.access(file, onaccess)
+    function onaccess(err) {
+      if (null === err) {
+        fs.readFile(file, onread)
+      } else {
+        cb(null)
+      }
+    }
+
+    function onread(err, buf) {
+      if (err) {
+        cb(err)
+      } else {
+        try {
+          if ('undefined' !== typeof buf) {
+            keystores.push(buf)
+          }
+
+          cb(null)
+        } catch (err2) {
+          debug('keystore dump: visit: onread: error:', err2)
+          cb(null)
+        }
+      }
+    }
+  }
+
+  if ('ara' === argv.token) {
+    let secretKey
+    const keystore = JSON.parse(String(keystores[0]))
+
+    try {
+      const passwordBuffer = crypto.blake2b(Buffer.from(password))
+      secretKey = ss.decrypt(keystore, { key: passwordBuffer.slice(0, 16) })
+      const publicKey = secretKey.slice(32)
+    } catch (err) {
+      debug(err)
+      onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
+    }
+
+    info('Ara private key: %s', toHex(secretKey))
+  } else { // Print Ethereum private Key
+    const privateKey = await aid
+      .ethereum
+      .keystore
+      .recover(password, keystores[0], keystores[1])
+
+    info('Ara ID Ethereum private key: %s', toHex(privateKey))
+  }
+
+  process.exit(0)
 }
 
 function onfatal(err) {
