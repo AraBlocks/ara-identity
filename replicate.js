@@ -1,15 +1,12 @@
+/* eslint-disable no-await-in-loop */
 const { createChannel, createSwarm } = require('ara-network/discovery')
 const { unpack, keyRing } = require('ara-network/keys')
-const { info, warn } = require('ara-console')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
-const debug = require('debug')('ara:identity:replicate')
-const pump = require('pump')
 const pify = require('pify')
 const ram = require('random-access-memory')
-const net = require('net')
 
 const kDIDIdentifierLength = 64
 // in milliseconds
@@ -68,6 +65,14 @@ async function replicate(identity, opts) {
     throw new TypeError('Invalid DID identifier length.')
   }
 
+  const value = await findFiles(did, opts)
+  return value
+}
+
+async function findFiles(did, opts) {
+  let timeout = null
+  const channel = createChannel()
+
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
   keyring.on('error', (err) => {
@@ -78,102 +83,14 @@ async function replicate(identity, opts) {
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
 
-  timeout = setTimeout(ontimeout, opts.timeout)
-  const value = await findFiles()
-  return value
-
-  async function findFiles() {
-    let channel = createChannel()
-
-    return pify((done) => {
-      channel.on('peer', onpeer)
-      channel.join(discoveryKey)
-      async function onpeer() {
-        const key = Buffer.from(did.identifier, 'hex')
-        const id = toHex(key)
-
-        const ttl = 1000 * 60
-        const cfs = await createCFS({
-          key,
-          id,
-          sparseMetadata: true,
-          shallow: true,
-          // @TODO(jwerle): Figure out an on-disk cache
-          storage: ram,
-          sparse: true,
-        })
-
-        cfs.discovery = createSwarm({
-          stream: () => cfs.replicate(),
-          utp: false
-        })
-
-        cfs.discovery.once('connection', onconnection)
-        cfs.discovery.join(cfs.discoveryKey)
-
-        async function onconnection() {
-          try {
-            await cfs.access('.')
-          } catch (err) {
-            await new Promise(done => cfs.once('update', done))
-          }
-
-          try{
-            let identityFiles = {}
-            await cfs.download('.')
-            const files = await cfs.readdir('.')
-            for (const file of files) {
-              try{
-                if (file == 'keystore') {
-                  const ethKeystore = await cfs.readFile('keystore/eth')
-                  const araKeystore = await cfs.readFile('keystore/ara')
-                  identityFiles['keystore/eth'] = ethKeystore.toString('utf8')
-                  identityFiles['keystore/ara'] = araKeystore.toString('utf8')
-                }
-                else {
-                  const buffer = await cfs.readFile(file)
-                  identityFiles[file] = buffer.toString('utf8')
-                }
-              } catch(err) {
-                console.log(err)
-              }
-            }
-            done(null, identityFiles)
-          } catch(err) {
-            throw new Error(err)
-          }
-        }
-      }
-    })()
-  }
-
-  async function ontimeout() {
-    clearTimeout(timeout)
-    debug('Request timed out')
-    throw new TypeError('Request Timed out')
-    onclose()
-  }
-
-  async function onclose() {
-    if (cfs && cfs.discovery) {
-      cfs.discovery.destroy()
-      cfs.discovery = null
-    }
-    channel.destroy()
-  }
-}
-
-async function findFiles(did, discoveryKey) {
-  let channel = createChannel()
-
   return pify((done) => {
     channel.on('peer', onpeer)
     channel.join(discoveryKey)
     async function onpeer() {
+      timeout = setTimeout(ontimeout, opts.timeout)
       const key = Buffer.from(did.identifier, 'hex')
       const id = toHex(key)
 
-      const ttl = 1000 * 60
       const cfs = await createCFS({
         key,
         id,
@@ -196,38 +113,54 @@ async function findFiles(did, discoveryKey) {
         try {
           await cfs.access('.')
         } catch (err) {
-          await new Promise(done => cfs.once('update', done))
+          await new Promise(resolve => cfs.once('update', resolve))
         }
 
-        try{
-          let identityFiles = {}
+        try {
+          const identityFiles = {}
           await cfs.download('.')
           const files = await cfs.readdir('.')
           for (const file of files) {
-            try{
-              if (file == 'keystore') {
+            try {
+              if ('keystore' == file) {
                 const ethKeystore = await cfs.readFile('keystore/eth')
                 const araKeystore = await cfs.readFile('keystore/ara')
                 identityFiles['keystore/eth'] = ethKeystore.toString('utf8')
                 identityFiles['keystore/ara'] = araKeystore.toString('utf8')
+              } else {
+                const content = await cfs.readFile(file)
+                identityFiles[file] = content.toString('utf8')
               }
-              else {
-                const buffer = await cfs.readFile(file)
-                identityFiles[file] = buffer.toString('utf8')
-              }
-            } catch(err) {
-              console.log(err)
+            } catch (err) {
+              throw new Error(err)
             }
           }
           done(null, identityFiles)
-        } catch(err) {
+          onclose()
+        } catch (err) {
           throw new Error(err)
         }
       }
+      return null
+
+      async function onclose() {
+        if (cfs && cfs.discovery) {
+          cfs.discovery.destroy()
+          cfs.discovery = null
+        }
+        channel.destroy()
+      }
+    }
+
+    async function ontimeout() {
+      clearTimeout(timeout)
+      if (channel) {
+        channel.destroy()
+      }
+      return done(new Error('Could not replicate DID.'))
     }
   })()
 }
-
 
 module.exports = {
   replicate
