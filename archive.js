@@ -1,6 +1,6 @@
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
-const { createSwarm } = require('ara-network/discovery')
+const { createSwarm } = require('ara-network/discovery/swarm')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
@@ -78,16 +78,19 @@ async function archive(identity, opts) {
   await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
 
   const secret = Buffer.from(opts.secret)
-
   const keyring = keyRing(opts.keyring, { secret })
-  keyring.on('error', (err) => {
+
+  keyring.once('error', (err) => {
     throw new Error(err)
   })
+
   keyring.ready()
 
   const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
+
+  let didArchive = false
 
   let channel = createChannel()
   let discovery = createSwarm({
@@ -179,11 +182,10 @@ async function archive(identity, opts) {
       reader.once('data', (data) => {
         clearTimeout(timeout)
 
-        if ('ACK' !== data.toString()) {
-          channel.emit(
-            'error',
-            new Error('Archiver handshake failed.')
-          )
+        if ('ACK' === data.toString()) {
+          didArchive = true
+        } else {
+          onerror(new Error('Archiver handshake failed.'))
         }
 
         timeout(false)
@@ -196,6 +198,7 @@ async function archive(identity, opts) {
   }
 
   function onerror(err) {
+    debug(err)
     if ('function' === typeof opts.onerror) {
       opts.onerror(err)
     }
@@ -207,18 +210,19 @@ async function archive(identity, opts) {
   }
 
   function onclose() {
-    if (channel) {
-      channel.destroy()
-      discovery.destroy()
-    }
+    if (didArchive) {
+      if (channel) {
+        channel.destroy()
+        discovery.destroy()
+      }
 
-    if ('function' === typeof opts.onclose) {
-      opts.onclose()
-    }
+      if ('function' === typeof opts.onclose) {
+        opts.onclose()
+      }
 
-    discovery = null
-    channel = null
-    return true
+      discovery = null
+      channel = null
+    }
   }
 }
 
