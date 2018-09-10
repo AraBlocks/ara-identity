@@ -11,7 +11,6 @@ const ram = require('random-access-memory')
 const kDIDIdentifierLength = 64
 // in milliseconds
 const kDefaultTimeout = 5000
-const kDIDMethod = 'ara'
 
 /**
  * Replicate & Download a DID's identity files from a remote server
@@ -33,8 +32,14 @@ async function replicate(identity, opts) {
     identity = `did:ara:${identity}`
   }
 
+  const did = new DID(identity)
+
+  if (!did.identifier || kDIDIdentifierLength !== did.identifier.length) {
+    throw new TypeError('Invalid DID identifier length.')
+  }
+
   if (null == opts || 'object' !== typeof opts) {
-    throw new TypeError('Expecting options to be an object.')
+    throw new TypeError('Expecting opts to be an object.')
   }
 
   if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
@@ -46,23 +51,16 @@ async function replicate(identity, opts) {
   }
 
   if (!opts.keyring) {
-    throw new TypeError('Expecting network keys keyring.')
+    throw new TypeError('Expecting network keyring file path.')
+  }
+
+  if (!opts.network || 'string' !== typeof opts.network) {
+    throw new TypeError('Expecting network name for replication.')
   }
 
   if (!opts.timeout) {
     // eslint-disable-next-line no-param-reassign
     opts.timeout = kDefaultTimeout
-  }
-
-  const did = new DID(identity)
-
-  if (kDIDMethod !== did.method) {
-    throw new TypeError(`Invalid DID method (${did.method}). ` +
-      `Expecting 'did:${kDIDMethod}:...'.`)
-  }
-
-  if (!did.identifier || kDIDIdentifierLength !== did.identifier.length) {
-    throw new TypeError('Invalid DID identifier length.')
   }
 
   const value = await findFiles(did, opts)
@@ -86,8 +84,10 @@ async function findFiles(did, opts) {
   return pify((done) => {
     channel.on('peer', onpeer)
     channel.join(discoveryKey)
+    timeout = setTimeout(onexpire, opts.timeout)
     async function onpeer() {
-      timeout = setTimeout(ontimeout, opts.timeout)
+      clearTimeout(timeout)
+      timeout = setTimeout(onexpire, opts.timeout)
       const key = Buffer.from(did.identifier, 'hex')
       const id = toHex(key)
 
@@ -106,6 +106,8 @@ async function findFiles(did, opts) {
         utp: false
       })
 
+      cfs.discovery.once('connection', () => setTimeout(onexpire, opts.timeout))
+      cfs.discovery.once('connection', () => clearTimeout(timeout))
       cfs.discovery.once('connection', onconnection)
       cfs.discovery.join(cfs.discoveryKey)
 
@@ -152,12 +154,9 @@ async function findFiles(did, opts) {
       }
     }
 
-    async function ontimeout() {
+    async function onexpire() {
       clearTimeout(timeout)
-      if (channel) {
-        channel.destroy()
-      }
-      return done(new Error('Could not replicate DID.'))
+      return done(new Error('Could not replicate DID from peer. Request Timed out'))
     }
   })()
 }
