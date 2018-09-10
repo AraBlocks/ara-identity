@@ -5,13 +5,14 @@
 
 Create and resolve decentralized identity based Ara identifiers.
 
-
 ## Status
+
 This project is still in alpha development.
 
 > **Important**: While this project is under active development, run `npm link` in `ara-identity` directory & `npm link ara-identity` in the `ara-network-node-identity-archiver`, `ara-network`, or `ara-network-node-dns` directory.
 
 ## Dependencies
+
 - [Node](https://nodejs.org/en/download/)
 
 ## Installation
