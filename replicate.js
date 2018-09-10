@@ -105,7 +105,7 @@ async function findFiles(did, opts) {
               })
             }
           } catch (err) {
-            throw new Error(err)
+            done(new Error(err))
           }
         }
         const response = {
@@ -117,7 +117,7 @@ async function findFiles(did, opts) {
         done(null, response)
         onclose()
       } catch (err) {
-        throw new Error(err)
+        done(new Error(err))
       }
     }
     return null
@@ -131,7 +131,7 @@ async function findFiles(did, opts) {
 
     async function onexpire() {
       clearTimeout(timeout)
-      return done(new Error('Could not replicate DID from peer. Request Timed out'))
+      done(new Error('Could not replicate DID from peer. Request Timed out'))
     }
   })()
 }
