@@ -96,7 +96,6 @@ async function findFiles(did, opts) {
         id,
         sparseMetadata: true,
         shallow: true,
-        // @TODO(jwerle): Figure out an on-disk cache
         storage: ram,
         sparse: true,
       })
