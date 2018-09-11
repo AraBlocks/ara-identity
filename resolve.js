@@ -127,7 +127,8 @@ async function findResolution(did, opts) {
 
         try {
           const { body } = await fetch(uri)
-          done(null, JSON.parse(body))
+          const response = JSON.parse(body)
+          done(null, response.didDocument)
           cleanup()
         } catch (err) {
           process.nextTick(doResolution)
