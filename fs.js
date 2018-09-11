@@ -170,7 +170,25 @@ async function access(identifier, filename, opts) {
   }
 }
 
-async function readdir() {
+async function readdir(identifier, filename, opts) {
+  if (!opts || false !== opts.cache) {
+    try {
+      const path = resolvePath(identifier, filename)
+      return pify(fs.readdir)(path, opts)
+    } catch (err) {
+      void err
+    }
+  }
+
+  return joinNetwork(identifier, filename, opts, onjoin)
+
+  async function onjoin(cfs, did, done) {
+    try {
+      done(null, await cfs.readdir(filename, opts))
+    } catch (err) {
+      done(new NoEntitityError(filename, 'scandir'))
+    }
+  }
 }
 
 class NoEntitityError extends Error {
