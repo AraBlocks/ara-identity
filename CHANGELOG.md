@@ -1,3 +1,21 @@
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/AraBlocks/ara-identity/compare/0.7.1...0.8.0) (2018-09-11)
+
+
+### Features
+
+* **bin/ara-identity:** Add recover to the aid CLI ([d640d9e](https://github.com/AraBlocks/ara-identity/commit/d640d9e))
+* **bin/ara-identity:** Address PR feedback ([2d935b2](https://github.com/AraBlocks/ara-identity/commit/2d935b2))
+* **bin/ara-identity:** Change recover CLI's console logs ([401d4d9](https://github.com/AraBlocks/ara-identity/commit/401d4d9))
+* **resolve.js:** Change remote response format to match with local resolve ([e47b251](https://github.com/AraBlocks/ara-identity/commit/e47b251))
+
+
+
+<a name="0.7.1"></a>
+## [0.7.1](https://github.com/AraBlocks/ara-identity/compare/0.7.0...0.7.1) (2018-09-11)
+
+
+
 <a name="0.7.0"></a>
 # [0.7.0](https://github.com/AraBlocks/ara-identity/compare/0.6.0...0.7.0) (2018-09-11)
 
