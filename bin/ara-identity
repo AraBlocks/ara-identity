@@ -203,9 +203,14 @@ async function onrecover(argv) {
 
   try{
     const identity = await aid.recover({context, password, mnemonic})
-    info('Identity recovered successfully : %s', identity.did)
+    info('Ara Identity recovered : %s', identity.did)
+
+    for (let i = 0; i < identity.files.length; ++i) {
+      warn('Will write identity file: %s', identity.files[i].path)
+    }
+
     await writeIdentity(identity)
-    info('Recovered Identity written to disc successfully.')
+    info('Identity recovered successfully!!!')
   } catch(err) {
     onfatal(err)
   }
