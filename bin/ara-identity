@@ -148,6 +148,22 @@ program.command(
   , onwhoami
 )
 
+program.command(
+  'recover',
+  'Recover an Ara identity using a mnemonic',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 [-D] recover')
+    .group([ 'mnemonic' ], 'Recover Options:')
+    .option('mnemonic', {
+      alias: 'm',
+      describe: 'Valid bip39 mnemonic',
+      required: true,
+      requiresArg: true,
+    })
+  , onrecover
+)
+
 program
   .recommendCommands()
   .completion('completion', false)
@@ -163,6 +179,39 @@ if (program.argv.debug) {
   // eslint-disable-next-line global-require
   require('debug').enable('ara:identity*')
 }
+
+async function onrecover(argv) {
+  const { mnemonic } = argv
+
+  info('Recovering identity for the mnemonic')
+  info('\n\n%s', table([ [ mnemonic ] ]))
+
+  let { password } = await inquirer.prompt([ {
+    type: 'password',
+    name: 'password',
+    message:
+    'Please provide a new passphrase for the identity being recovered. This would be needed to ' +
+    'archive your recovered identity.\n' +
+    'Passphrase:\n'
+  } ])
+
+  if (!password) {
+    // eslint-disable-next-line function-paren-newline
+    onfatal(
+      new TypeError('A new passphrase is required to recover the identity.'))
+  }
+
+  try{
+    const identity = await aid.recover({context, password, mnemonic})
+    info('Identity recovered successfully : %s', identity.did)
+    await writeIdentity(identity)
+    info('Recovered Identity written to disc successfully.')
+  } catch(err) {
+    onfatal(err)
+  }
+  process.exit(0)
+}
+
 
 async function onarchive(argv) {
   if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
