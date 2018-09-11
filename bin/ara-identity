@@ -21,6 +21,8 @@ const fs = require('fs')
 const rc = require('../rc')()
 const ss = require('ara-secret-storage')
 
+const { readFile } = require('../fs')
+
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
 
@@ -147,6 +149,17 @@ program.command(
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 [-D] whoami')
+    .group([ 'cache', 'timeout' ], 'Resolution Options:')
+    .option('cache', {
+      type: 'boolean',
+      alias: 'C',
+      describe: 'Enable or disable cache',
+      default: true,
+    })
+    .option('timeout', {
+      alias: 't',
+      describe: 'Resolution timeout',
+    })
   , onwhoami
 )
 
@@ -457,41 +470,30 @@ async function onlist(argv) {
 }
 
 async function onwhoami(argv) {
-  void argv
-  let identifier = null
-  let uri = rc.network.identity.whoami
+  let identifier = rc.network.identity.whoami
+  let ddo = null
 
-  if (uri && 0 !== uri.indexOf('did:ara:')) {
+  if (identifier && 0 !== identifier.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
-    uri = `did:ara:${uri}`
+    identifier = `did:ara:${identifier}`
   }
 
-  if (!uri) {
+  if (!identifier) {
     process.exit(1)
     return
   }
 
   try {
-    // eslint-disable-next-line prefer-destructuring
-    identifier = did.parse(uri).identifier
+    ddo = JSON.parse(await readFile(identifier, 'ddo.json', argv))
   } catch (err) {
-    onfatal(new Error(`Failed to parse DID URI: ${uri}`))
+    onfatal(err)
   }
 
-  try {
-    const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
-    const path = resolve(rc.network.identity.root, hash, 'ddo.json')
-    const ddo = JSON.parse(await pify(fs.readFile)(path))
-
-    if ('id' in ddo && ddo.id === uri) {
-      process.stdout.write(ddo.id)
-      process.stdout.write('\n')
-      process.exit(0)
-    } else {
-      process.exit(1)
-    }
-  } catch (err) {
-    debug(err)
+  if ('id' in ddo && ddo.id === identifier) {
+    process.stdout.write(ddo.id)
+    process.stdout.write('\n')
+    process.exit(0)
+  } else {
     process.exit(1)
   }
 }
