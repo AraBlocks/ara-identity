@@ -77,7 +77,7 @@ async function findFiles(did, opts) {
         const identityFiles = []
         const files = await cfs.readdir('.')
         for (const file of files) {
-          if ('keystore' == file) {
+          if ('keystore' === file) {
             const ethKeystore = await cfs.readFile('keystore/eth')
             const araKeystore = await cfs.readFile('keystore/ara')
             identityFiles.push({
@@ -89,7 +89,7 @@ async function findFiles(did, opts) {
             })
           } else {
             const content = await cfs.readFile(file)
-            if ('ddo.json' == file) {
+            if ('ddo.json' === file) {
               ddo = JSON.parse(content.toString('utf8'))
             }
             identityFiles.push({
