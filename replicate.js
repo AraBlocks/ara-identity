@@ -75,7 +75,6 @@ async function findFiles(did, opts) {
       try {
         let ddo
         const identityFiles = []
-        await cfs.download('.')
         const files = await cfs.readdir('.')
         for (const file of files) {
           if ('keystore' == file) {
