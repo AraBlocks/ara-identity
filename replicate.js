@@ -71,41 +71,32 @@ async function findFiles(did, opts) {
     cfs.discovery.join(cfs.discoveryKey)
 
     async function onconnection() {
-      try {
-        await cfs.access('.')
-      } catch (err) {
-        await new Promise(resolve => cfs.once('update', resolve))
-      }
-
+      await new Promise(resolve => cfs.once('update', resolve))
       try {
         let ddo
         const identityFiles = []
         await cfs.download('.')
         const files = await cfs.readdir('.')
         for (const file of files) {
-          try {
-            if ('keystore' == file) {
-              const ethKeystore = await cfs.readFile('keystore/eth')
-              const araKeystore = await cfs.readFile('keystore/ara')
-              identityFiles.push({
-                path: 'keystore/eth',
-                buffer: ethKeystore
-              }, {
-                path: 'keystore/ara',
-                buffer: araKeystore
-              })
-            } else {
-              const content = await cfs.readFile(file)
-              if ('ddo.json' == file) {
-                ddo = JSON.parse(content.toString('utf8'))
-              }
-              identityFiles.push({
-                path: file,
-                buffer: content
-              })
+          if ('keystore' == file) {
+            const ethKeystore = await cfs.readFile('keystore/eth')
+            const araKeystore = await cfs.readFile('keystore/ara')
+            identityFiles.push({
+              path: 'keystore/eth',
+              buffer: ethKeystore
+            }, {
+              path: 'keystore/ara',
+              buffer: araKeystore
+            })
+          } else {
+            const content = await cfs.readFile(file)
+            if ('ddo.json' == file) {
+              ddo = JSON.parse(content.toString('utf8'))
             }
-          } catch (err) {
-            done(new Error(err))
+            identityFiles.push({
+              path: file,
+              buffer: content
+            })
           }
         }
         const response = {
