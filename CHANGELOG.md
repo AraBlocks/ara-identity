@@ -1,5 +1,32 @@
-<a name="0.5.0"></a>
-# [0.5.0](https://github.com/AraBlocks/ara-identity/compare/0.4.0...0.5.0) (2018-09-06)
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/AraBlocks/ara-identity/compare/0.6.0...0.7.0) (2018-09-11)
+
+
+### Features
+
+* **index.js:** Fix PR feedback ([25af5f0](https://github.com/AraBlocks/ara-identity/commit/25af5f0))
+* **replicate.js:** Add proper error handling ([de15cb2](https://github.com/AraBlocks/ara-identity/commit/de15cb2))
+* **replicate.js:** Initial Method Commit ([e3dbf30](https://github.com/AraBlocks/ara-identity/commit/e3dbf30))
+* **replicate.js:** Linting & add timeouts ([5698de3](https://github.com/AraBlocks/ara-identity/commit/5698de3))
+* **replicate.js:** Remove redundant method ([8ff8d7f](https://github.com/AraBlocks/ara-identity/commit/8ff8d7f))
+* **replicate.js:** Simplify replication to only use cfs.discovery ([2fd1930](https://github.com/AraBlocks/ara-identity/commit/2fd1930))
+* **replicate.js:** Update implementation ([5221e98](https://github.com/AraBlocks/ara-identity/commit/5221e98))
+
+
+
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/AraBlocks/ara-identity/compare/0.5.1...0.6.0) (2018-09-10)
+
+
+### Features
+
+* **recover.js:** To recover an Ara ID using a Bip39 mnemonic ([b5930e0](https://github.com/AraBlocks/ara-identity/commit/b5930e0))
+* **test/recover.js:** Change wallet test methods ([3a84554](https://github.com/AraBlocks/ara-identity/commit/3a84554))
+
+
+
+<a name="0.5.1"></a>
+## [0.5.1](https://github.com/AraBlocks/ara-identity/compare/0.4.0...0.5.1) (2018-09-06)
 
 
 
