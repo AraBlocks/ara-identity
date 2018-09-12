@@ -1,11 +1,7 @@
 const { toHex, toBuffer } = require('../util')
 const { recover } = require('./keystore')
-const { resolve } = require('path')
 const isBuffer = require('is-buffer')
-const crypto = require('ara-crypto')
-const pify = require('pify')
-const rc = require('../rc')()
-const fs = require('fs')
+const fs = require('../fs')
 
 /**
  * Creates an Ethereum account with web3 specified by
@@ -51,52 +47,30 @@ async function create(opts) {
  */
 async function load(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ethereum.account.load: Expecting object')
+    throw new TypeError('Expecting object')
   }
 
   if (!opts.web3 || 'object' !== typeof opts.web3) {
-    throw new TypeError('ethereum.account.load: Expecting web3 object')
+    throw new TypeError('Expecting web3 object')
   }
 
   if (!opts.publicKey || ('string' !== typeof opts.publicKey
     && !isBuffer(opts.publicKey))) {
-    throw new TypeError('ethereum.account.load: Expecting public key to be string or buffer')
+    throw new TypeError('Expecting public key to be string or buffer')
   }
 
   if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('ethereum.account.load: Expecting password to be non-empty string')
+    throw new TypeError('Expecting password to be non-empty string')
   }
 
   const { web3 } = opts
 
   const publicKey = toBuffer(opts.publicKey)
-  const hash = toHex(crypto.blake2b(publicKey))
+  const identifier = toHex(publicKey)
+  const secretKey = await fs.readFile(identifier, 'keystore/ara')
+  const encryptedKeystore = await fs.readFile(identifier, 'keystore/eth')
 
-  let encryptedKeystore
-  let keys
-
-  const araKeystorePath = resolve(
-    rc.network.identity.root,
-    hash,
-    'keystore',
-    'ara'
-  )
-
-  const ethKeystorePath = resolve(
-    rc.network.identity.root,
-    hash,
-    'keystore',
-    'eth'
-  )
-
-  try {
-    keys = await pify(fs.readFile)(araKeystorePath, 'utf8')
-    encryptedKeystore = await pify(fs.readFile)(ethKeystorePath, 'utf8')
-  } catch (err) {
-    throw new Error(err)
-  }
-
-  const buf = await recover(opts.password, keys, encryptedKeystore)
+  const buf = await recover(opts.password, secretKey, encryptedKeystore)
   const privateKey = web3.utils.bytesToHex(buf)
 
   return web3.eth.accounts.privateKeyToAccount(privateKey)
