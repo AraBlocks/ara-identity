@@ -9,7 +9,7 @@ const debug = require('debug')('ara:identity:resolve')
 const fetch = require('got')
 const path = require('path')
 const pify = require('pify')
-const fs = require('fs')
+const fs = require('./fs')
 const rc = require('./rc')()
 
 const kDIDIdentifierLength = 64
@@ -42,21 +42,19 @@ async function resolve(uri, opts) {
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
   const file = path.resolve(rc.network.identity.root, hash, 'identity')
 
-  if (false !== opts.cache) {
-    try {
-      await pify(fs.access)(file)
-      const buffer = await pify(fs.readFile)(file)
-      const identity = protobuf.messages.Identity.decode(buffer)
-      for (const k in identity.files) {
-        // eslint-disable-next-line no-shadow
-        const { path, buffer } = identity.files[k]
-        if ('ddo.json' === path) {
-          return JSON.parse(buffer)
-        }
+  try {
+    await fs.access(did.identifier, file, opts)
+    const buffer = await fs.readFile(did.identifier, file, opts)
+    const identity = protobuf.messages.Identity.decode(buffer)
+    for (const k in identity.files) {
+      // eslint-disable-next-line no-shadow
+      const { path, buffer } = identity.files[k]
+      if ('ddo.json' === path) {
+        return JSON.parse(buffer)
       }
-    } catch (err) {
-      debug(err)
     }
+  } catch (err) {
+    debug(err)
   }
 
   if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
