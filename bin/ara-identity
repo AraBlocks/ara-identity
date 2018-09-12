@@ -257,23 +257,21 @@ async function onarchive(argv) {
   password = crypto.blake2b(Buffer.from(password))
 
   const { identifier } = did.parse(argv.did)
-  const hash = toHex(crypto.blake2b(Buffer.from(identifier, 'hex')))
-  const path = resolve(rc.network.identity.root, hash)
-  const identityBuffer = await pify(fs.readFile)(resolve(path, 'identity'))
-  const identity = protobuf.messages.Identity.decode(identityBuffer)
+  let identityBuffer = null
+  let identity = null
 
   const stats = {
     totalConnections: 0
   }
 
-  try {
-    const { keyring, network, secret } = argv
-    const keystorePath = resolve(path, 'keystore/ara')
-    const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
-    const keystore = JSON.parse(String(keystoreBuffer))
+  const { keyring, network, secret } = argv
 
-    let secretKey = null
-    let publicKey = null
+  let secretKey = null
+  let publicKey = null
+
+  try {
+    const keystoreBuffer = await aid.fs.readFile(identifier, 'keystore/ara')
+    const keystore = JSON.parse(String(keystoreBuffer))
 
     try {
       secretKey = ss.decrypt(keystore, { key: password.slice(0, 16) })
@@ -283,8 +281,22 @@ async function onarchive(argv) {
       onfatal(new Error('Invalid passphrase when decoding keystore.'))
     }
 
-    const { files } = identity
+    identityBuffer = await aid.fs.readFile(identifier, 'identity', argv)
+  } catch (err) {
+    error('Unable to read identity.')
+    onfatal(err)
+  }
 
+  try {
+    identity = protobuf.messages.Identity.decode(identityBuffer)
+  } catch (err) {
+    error('Failed to decode identity.')
+    onfatal(err)
+  }
+
+  const { files } = identity
+
+  try {
     // manually construct identity file for archiver
     files.push({
       path: 'identity',
@@ -323,6 +335,7 @@ async function onarchive(argv) {
       process.nextTick(() => process.exit(1))
     }
   } catch (err) {
+    error('Failed to archive identity.')
     onfatal(err)
   }
 
