@@ -21,8 +21,6 @@ const fs = require('fs')
 const rc = require('../rc')()
 const ss = require('ara-secret-storage')
 
-const { readFile } = require('../fs')
-
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
 
@@ -197,13 +195,14 @@ if (program.argv.debug) {
 
 async function onrecover(argv) {
   const { mnemonic } = argv
-
-  let { password } = await inquirer.prompt([ {
+  const { password } = await inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
-    'Please provide a new passphrase for the identity being recovered. This would be needed to ' +
-    'archive your recovered identity.\n' +
+    'Your identity\'s keystore will be secured by a passphrase ' +
+    'after recovery. \n' +
+    'Please provide a passphrase. Do not forget this as it will never be ' +
+    'shown to you.\n' +
     'Passphrase:'
   } ])
 
@@ -484,7 +483,7 @@ async function onwhoami(argv) {
   }
 
   try {
-    ddo = JSON.parse(await readFile(identifier, 'ddo.json', argv))
+    ddo = JSON.parse(await aid.fs.readFile(identifier, 'ddo.json', argv))
   } catch (err) {
     onfatal(err)
   }
