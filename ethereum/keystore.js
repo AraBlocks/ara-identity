@@ -39,31 +39,31 @@ async function load() {
  */
 async function dump(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ethereum.keystore.dump: Expecting object.')
+    throw new TypeError('Expecting object.')
   }
 
   if (!opts.password) {
-    throw new TypeError('ethereum.keystore.dump: Expecting password.')
+    throw new TypeError('Expecting password.')
   } else if (!isBuffer(opts.password) && 'string' !== typeof opts.password) {
-    throw new TypeError('ethereum.keystore.dump: Expecting password to be a string or buffer.')
+    throw new TypeError('Expecting password to be a string or buffer.')
   }
 
   if (!opts.privateKey) {
-    throw new TypeError('ethereum.keystore.dump: Expecting private key.')
+    throw new TypeError('Expecting private key.')
   } else if (!isBuffer(opts.privateKey) && 'string' !== typeof opts.privateKey) {
-    throw new TypeError('ethereum.keystore.dump: Expecting private key to be a string or buffer.')
+    throw new TypeError('Expecting private key to be a string or buffer.')
   }
 
   if (!opts.salt) {
-    throw new TypeError('ethereum.keystore.dump: Expecting salt.')
+    throw new TypeError('Expecting salt.')
   } else if (!isBuffer(opts.salt) && 'string' !== typeof opts.salt) {
-    throw new TypeError('ethereum.keystore.dump: Expecting salt to be a string or buffer.')
+    throw new TypeError('Expecting salt to be a string or buffer.')
   }
 
   if (!opts.iv) {
-    throw new TypeError('ethereum.keystore.dump: Expecting iv.')
+    throw new TypeError('Expecting iv.')
   } else if (!isBuffer(opts.iv) && 'string' !== typeof opts.iv) {
-    throw new TypeError('ethereum.keystore.dump: Expecting iv to be a string or buffer.')
+    throw new TypeError('Expecting iv to be a string or buffer.')
   }
 
   const {
