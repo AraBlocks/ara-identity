@@ -1,5 +1,6 @@
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
+const { normalize } = require('./did')
 const { resolve } = require('path')
 const { toHex } = require('./util')
 const { DID } = require('did-uri')
@@ -23,7 +24,7 @@ const DISCOVERY_TIMEOUT = 5 * 1000
  */
 async function joinNetwork(identifier, filename, opts, onjoin) {
   return pify(async (done) => {
-    const did = new DID(identifier)
+    const did = new DID(normalize(identifier))
     const cfs = await createCFS({
       shallow: true,
       storage: ram,
@@ -33,7 +34,6 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     })
 
     const swarm = createSwarm({
-      utp: false,
       stream: () => cfs.replicate()
     })
 
@@ -78,16 +78,17 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
  * @return {String}
  */
 function resolvePath(identifier, filename) {
-  const did = new DID(identifier)
+  const did = new DID(normalize(identifier))
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
   return resolve(rc.network.identity.root, hash, filename)
 }
 
 async function readFile(identifier, filename, opts) {
-  if (!opts || false !== opts.cache) {
+  const skipCache = Boolean(opts && false === opts.cache)
+  if (false === skipCache) {
     try {
       const path = resolvePath(identifier, filename)
-      return pify(fs.readFile)(path, opts)
+      return await pify(fs.readFile)(path, opts)
     } catch (err) {
       void err
     }
@@ -123,7 +124,7 @@ async function stat(identifier, filename, opts) {
   if (!opts || false !== opts.cache) {
     const path = resolvePath(identifier, filename)
     try {
-      return pify(fs.stat)(path, opts)
+      return await pify(fs.stat)(path, opts)
     } catch (err) {
       void err
     }
@@ -144,7 +145,7 @@ async function lstat(identifier, filename, opts) {
   if (!opts || false !== opts.cache) {
     const path = resolvePath(identifier, filename)
     try {
-      return pify(fs.lstat)(path, opts)
+      return await pify(fs.lstat)(path, opts)
     } catch (err) {
       void err
     }
@@ -165,7 +166,7 @@ async function access(identifier, filename, opts) {
   if (!opts || false !== opts.cache) {
     try {
       const path = resolvePath(identifier, filename)
-      return pify(fs.access)(path)
+      return await pify(fs.access)(path)
     } catch (err) {
       void err
     }
@@ -186,7 +187,7 @@ async function readdir(identifier, filename, opts) {
   if (!opts || false !== opts.cache) {
     try {
       const path = resolvePath(identifier, filename)
-      return pify(fs.readdir)(path, opts)
+      return await pify(fs.readdir)(path, opts)
     } catch (err) {
       void err
     }
