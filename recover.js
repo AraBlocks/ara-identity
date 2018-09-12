@@ -1,5 +1,5 @@
-const bip39 = require('bip39')
 const { create } = require('./create')
+const bip39 = require('bip39')
 
 /**
  * Recover an Identity using a bip39 mnemonic
