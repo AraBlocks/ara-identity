@@ -8,6 +8,7 @@ const { list } = require('./list')
 const util = require('./util')
 const ddo = require('./ddo')
 const did = require('./did')
+const fs = require('./fs')
 
 module.exports = {
   createIdentityKeyPath,
@@ -20,4 +21,5 @@ module.exports = {
   util,
   ddo,
   did,
+  fs,
 }
