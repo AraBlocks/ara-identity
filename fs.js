@@ -15,6 +15,11 @@ const DISCOVERY_TIMEOUT = 5 * 1000
  * Joins a network swarm for an identity scoped to a given
  * filename.
  * @private
+ * @param {String} identifier
+ * @param {String} filename
+ * @param {?(Object)} opts
+ * @param {Function} onjoin
+ * @return {Promise}
  */
 async function joinNetwork(identifier, filename, opts, onjoin) {
   return pify(async (done) => {
@@ -28,6 +33,7 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     })
 
     const swarm = createSwarm({
+      utp: false,
       stream: () => cfs.replicate()
     })
 
@@ -64,6 +70,12 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
 }
 
 /**
+ * Resolves a filename path for an identity based on
+ * a given identifier.
+ * @private
+ * @param {String} identifier
+ * @param {String} filename
+ * @return {String}
  */
 function resolvePath(identifier, filename) {
   const did = new DID(identifier)
