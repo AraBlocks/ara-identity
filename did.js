@@ -2,7 +2,7 @@ const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
 
-const kDIDMethod = 'ara'
+const DID_ARA_METHOD = 'ara'
 
 /**
  * Creates a DID document (DDO) from an identitier.
@@ -13,24 +13,53 @@ const kDIDMethod = 'ara'
  * @throws TypeError
  */
 function create(identitier, method) {
-  if (null === identitier) {
-    throw new TypeError('ara-identitier.did.create: Expecting identitier.')
+  if (!identitier) {
+    throw new TypeError('Expecting identitier.')
   }
 
   if ('string' !== typeof identitier && false === isBuffer(identitier)) {
-    throw new TypeError('ara-identitier.did.create: Expecting identitier to be a string or buffer.')
+    throw new TypeError('Expecting identitier to be a string or buffer.')
   }
 
   if (method && 'string' !== typeof method) {
-    throw new TypeError('ara-identitier.did.create: Expecting method to be a string.')
+    throw new TypeError('Expecting method to be a string.')
   }
 
   const id = toHex(identitier)
-  const didMethod = method || kDIDMethod
+  const didMethod = method || DID_ARA_METHOD
   const uri = `did:${didMethod}:${id}`
   return new DID(uri)
 }
 
+/**
+ * Normalizes a given DID URI
+ * @public
+ * @return {String}
+ * @throws TypeError
+ */
+function normalize(uri, method) {
+  if (!uri) {
+    throw new TypeError('Expecting URI.')
+  }
+
+  if ('string' !== typeof uri) {
+    throw new TypeError('Expecting uri to be a string or buffer.')
+  }
+
+  if (method && 'string' !== typeof method) {
+    throw new TypeError('Expecting method to be a string.')
+  }
+
+  const prefix = `did:${method || DID_ARA_METHOD}:`
+
+  if (prefix !== uri.slice(0, prefix.length)) {
+    return prefix + uri
+  }
+
+  return uri
+}
+
 module.exports = {
-  create
+  normalize,
+  create,
 }
