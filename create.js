@@ -29,29 +29,30 @@ async function create(opts) {
   let mnemonic
 
   if (null == opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-identity.create: Expecting object.')
+    throw new TypeError('Expecting object.')
   }
 
   if (null == opts.context || 'object' !== typeof opts.context) {
-    throw new TypeError('ara-identity.create: Expecting context object.')
+    throw new TypeError('Expecting context object.')
   }
 
   if (null == opts.context.web3 || 'object' !== typeof opts.context.web3) {
-    throw new TypeError('ara-identity.create: Expecting web3 to be in context.')
+    throw new TypeError('Expecting web3 to be in context.')
   }
 
   if (null == opts.password) {
-    throw new TypeError('ara-identity.create: Expecting password.')
+    throw new TypeError('Expecting password.')
   } else if (opts.password && 'string' !== typeof opts.password) {
-    throw new TypeError('ara-identity.create: Expecting password to be a string.')
+    throw new TypeError('Expecting password to be a string.')
   }
 
   if (opts.ddo) {
     if (opts.ddo.authentication && 'object' !== typeof opts.ddo.authentication) {
-      throw new TypeError('ara-identity.create: Expecting authentication to be an object.')
+      throw new TypeError('Expecting authentication to be an object.')
     }
+
     if (opts.ddo.publicKeys && !Array.isArray(opts.ddo.publicKeys)) {
-      throw new TypeError('ara-identity.create: Expecting additional publicKey to be an array.')
+      throw new TypeError('Expecting additional publicKey to be an array.')
     }
   }
 
