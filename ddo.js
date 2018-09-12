@@ -10,11 +10,11 @@ const { DIDDocument } = require('did-document')
  */
 function create(opts) {
   if (null == opts) {
-    throw new TypeError('ara-identifier.ddo.create: Expecting object.')
+    throw new TypeError('Expecting options object.')
   }
 
   if (null == opts.id) {
-    throw new TypeError('ara-identifier.ddo.create: Expecting identifier.')
+    throw new TypeError('Expecting DID identifier.')
   }
 
   return new DIDDocument(opts)
