@@ -80,17 +80,15 @@ async function archive(identity, opts) {
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
 
-  keyring.once('error', (err) => {
-    throw new Error(err)
-  })
-
-  keyring.ready()
+  await keyring.ready()
 
   const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
 
+  let peerCount = 0
   let didArchive = false
+  let totalConnections = 0
 
   let channel = createChannel()
   let discovery = createSwarm({
@@ -120,7 +118,7 @@ async function archive(identity, opts) {
     discovery.once('close', resolve)
   })
 
-  return true
+  return didArchive
 
   function timeout(again) {
     clearTimeout(timeout.timer)
@@ -133,6 +131,7 @@ async function archive(identity, opts) {
     timeout()
 
     const socket = net.connect(peer.port, peer.host)
+    const peerIndex = peerCount++
     const handshake = new Handshake({
       publicKey,
       secretKey,
@@ -188,6 +187,7 @@ async function archive(identity, opts) {
         clearTimeout(timeout)
 
         if ('ACK' === data.toString()) {
+          void totalConnections++
           didArchive = true
         } else {
           onerror(new Error('Archiver handshake failed.'))
@@ -199,6 +199,29 @@ async function archive(identity, opts) {
         socket.destroy()
         handshake.destroy()
       })
+    }
+
+    function onclose() {
+      if (didArchive) {
+        if (channel) {
+          channel.destroy()
+          channel = null
+        }
+
+        if (discovery) {
+          discovery.destroy()
+          discovery = null
+        }
+
+        if ('function' === typeof opts.onclose) {
+          opts.onclose({
+            totalConnections,
+            discoveryKey,
+            peerIndex,
+            peer,
+          })
+        }
+      }
     }
   }
 
@@ -212,23 +235,6 @@ async function archive(identity, opts) {
   function ontimeout() {
     clearTimeout(timeout)
     channel.emit('error', new Error('Archiver request timed out.'))
-  }
-
-  function onclose() {
-    if (didArchive) {
-      if (channel) {
-        channel.destroy()
-        channel = null
-      }
-
-      if (discovery) {
-        discovery.destroy()
-        discovery = null
-      }
-      if ('function' === typeof opts.onclose) {
-        opts.onclose()
-      }
-    }
   }
 }
 
