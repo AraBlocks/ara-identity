@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 const { resolve } = require('path')
-const debug = require('debug')('ara-identity:list')
+const debug = require('debug')('ara:identity:list')
 const pify = require('pify')
 const fs = require('fs')
 const rc = require('./rc')()
@@ -41,6 +41,7 @@ async function list(path) {
 
   function visit(entry, cb) {
     const file = resolve(entry, 'ddo.json')
+    debug('visit', file)
     fs.access(file, onaccess)
     function onaccess(err) {
       if (null === err) {
