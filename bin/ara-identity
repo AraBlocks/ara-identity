@@ -24,6 +24,8 @@ const ss = require('ara-secret-storage')
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
 
+const ellipsis = (s, x, y) => s.slice(x || 0, y || 4)
+
 program
   .usage('usage: $0 [-hDV] <command> [options]')
   .wrap(null)
@@ -198,7 +200,7 @@ async function onrecover(argv) {
       new TypeError('A new passphrase is required to recover the identity.'))
   }
 
-  try{
+  try {
     const identity = await aid.recover({ context, password, mnemonic })
     info('Identity recovered : %s', identity.did)
 
@@ -208,12 +210,12 @@ async function onrecover(argv) {
 
     await writeIdentity(identity)
     info('Identity recovered successfully.')
-  } catch(err) {
+  } catch (err) {
     onfatal(err)
   }
+
   process.exit(0)
 }
-
 
 async function onarchive(argv) {
   if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
@@ -248,20 +250,40 @@ async function onarchive(argv) {
   const identityBuffer = await pify(fs.readFile)(resolve(path, 'identity'))
   const identity = protobuf.messages.Identity.decode(identityBuffer)
 
+  const stats = {
+    totalConnections: 0
+  }
+
   try {
     const { keyring, network, secret } = argv
     const keystorePath = resolve(path, 'keystore/ara')
     const keystoreBuffer = await pify(fs.readFile)(keystorePath, 'utf8')
-    const keys = JSON.parse(String(keystoreBuffer))
-    const secretKey = ss.decrypt(keys, { key: password.slice(0, 16) })
-    const publicKey = secretKey.slice(32)
+    const keystore = JSON.parse(String(keystoreBuffer))
+
+    let secretKey = null
+    let publicKey = null
+
+    try {
+      secretKey = ss.decrypt(keystore, { key: password.slice(0, 16) })
+      publicKey = secretKey.slice(32)
+    } catch (err) {
+      debug(err)
+      onfatal(new Error('Invalid passphrase when decoding keystore.'))
+    }
+
     const { files } = identity
 
     // manually construct identity file for archiver
-    files.push({ path: 'identity', buffer: identityBuffer })
+    files.push({
+      path: 'identity',
+      buffer: identityBuffer
+    })
+
     warn('Archiving new identity for network \'%s\'.', keyring)
-    await aid.archive({
-      publicKey, secretKey, files
+    const didArchive = await aid.archive({
+      publicKey,
+      secretKey,
+      files
     }, {
       network,
       secret,
@@ -274,37 +296,56 @@ async function onarchive(argv) {
       onclose,
       onerror,
     })
+
+    info(
+      '%d connection%s made',
+      stats.totalConnections,
+      1 === stats.totalConnections ? '' : 's',
+    )
+
+    if (didArchive) {
+      info('Successfully archived identity to network "%s"', network)
+      process.nextTick(() => process.exit(0))
+    } else {
+      error('Failed to archive identity')
+      process.nextTick(() => process.exit(1))
+    }
   } catch (err) {
-    error('Possible incorrect password.')
     onfatal(err)
   }
 
   function onhello(hello) {
     info(
       'Got hello from archiver node: key=%s mac=%s',
-      hello.publicKey.toString('hex'),
-      hello.mac.toString('hex'),
+      toHex(ellipsis(hello.publicKey)),
+      toHex(ellipsis(hello.mac)),
     )
   }
 
   function onauth(auth) {
     info(
       'Authenticated with archiver node: keys=%s signature=%s',
-      auth.publicKey.toString('hex'),
-      auth.signature.toString('hex'),
+      toHex(ellipsis(auth.publicKey)),
+      toHex(ellipsis(auth.signature)),
     )
   }
 
   function onokay(okay) {
     info(
       'Got okay from archiver node: signature=%s',
-      okay.toString('hex'),
+      toHex(ellipsis(okay)),
     )
   }
 
-  function onclose() {
-    info('Connection closed')
-    process.nextTick(() => process.exit(0))
+  function onclose(rinfo) {
+    stats.totalConnections = rinfo.totalConnections
+    warn(
+      'Connection #%d to %s:%s@%s closed.',
+      rinfo.peerIndex,
+      rinfo.peer.host,
+      rinfo.peer.port,
+      toHex(ellipsis(rinfo.discoveryKey)),
+    )
   }
 
   function onerror(err) {
