@@ -95,7 +95,12 @@ async function archive(identity, opts) {
   let channel = createChannel()
   let discovery = createSwarm({
     stream() {
-      const stream = cfs.replicate({ live: false })
+      const stream = cfs.replicate({
+        download: false,
+        upload: true,
+        live: false,
+      })
+
       stream.on('error', onerror)
       return stream
     }
@@ -110,9 +115,9 @@ async function archive(identity, opts) {
   timeout()
 
   await new Promise((resolve, reject) => {
-    channel.once('close', resolve)
     channel.once('error', reject)
     discovery.once('error', reject)
+    discovery.once('close', resolve)
   })
 
   return true
@@ -213,15 +218,16 @@ async function archive(identity, opts) {
     if (didArchive) {
       if (channel) {
         channel.destroy()
-        discovery.destroy()
+        channel = null
       }
 
+      if (discovery) {
+        discovery.destroy()
+        discovery = null
+      }
       if ('function' === typeof opts.onclose) {
         opts.onclose()
       }
-
-      discovery = null
-      channel = null
     }
   }
 }
