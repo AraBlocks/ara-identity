@@ -1,16 +1,12 @@
 const { createChannel } = require('ara-network/discovery/channel')
 const { unpack, keyRing } = require('ara-network/keys')
-const { toHex } = require('./util')
 const protobuf = require('./protobuf')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
-const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:resolve')
 const fetch = require('got')
-const path = require('path')
 const pify = require('pify')
 const fs = require('./fs')
-const rc = require('./rc')()
 
 const kDIDIdentifierLength = 64
 // in milliseconds
@@ -39,55 +35,61 @@ async function resolve(uri, opts) {
     throw new TypeError('resolve: Invalid DID identifier length.')
   }
 
-  const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
-  const file = path.resolve(rc.network.identity.root, hash, 'identity')
+  const resolutions = []
 
-  try {
-    await fs.access(did.identifier, file, opts)
-    const buffer = await fs.readFile(did.identifier, file, opts)
-    const identity = protobuf.messages.Identity.decode(buffer)
-    for (const k in identity.files) {
-      // eslint-disable-next-line no-shadow
-      const { path, buffer } = identity.files[k]
-      if ('ddo.json' === path) {
-        return JSON.parse(buffer)
+  resolutions.push((async function local() {
+    try {
+      await fs.access(did.identifier, 'identity', opts)
+      const buffer = await fs.readFile(did.identifier, 'identity', opts)
+      const identity = protobuf.messages.Identity.decode(buffer)
+      for (const k in identity.files) {
+        // eslint-disable-next-line no-shadow
+        const { path, buffer } = identity.files[k]
+        if ('ddo.json' === path) {
+          return JSON.parse(buffer)
+        }
       }
+    } catch (err) {
+      debug(err)
     }
-  } catch (err) {
-    debug(err)
-  }
 
-  if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
-    throw new TypeError('Expecting shared secret to be a string or buffer.')
-  }
+    return null
+  }()))
 
-  if (!opts.secret || 0 === opts.secret.length) {
-    throw new TypeError('Shared secret cannot be empty.')
-  }
+  resolutions.push((async function remote() {
+    if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
+      throw new TypeError('Expecting shared secret to be a string or buffer.')
+    }
 
-  if (!opts.keyring) {
-    throw new TypeError('Expecting network keys keyring.')
-  }
+    if (!opts.secret || 0 === opts.secret.length) {
+      throw new TypeError('Shared secret cannot be empty.')
+    }
 
-  if (opts.name && 'string' === typeof opts.name && !opts.network) {
-    const msg = 'Please set \'opts.network\' property instead of \'opts.name\'.'
-    // eslint-disable-next-line no-console
-    console.warn('aid.resolve():', msg)
-    // eslint-disable-next-line no-param-reassign
-    opts.network = opts.name
-  }
+    if (!opts.keyring) {
+      throw new TypeError('Expecting network keys keyring.')
+    }
 
-  if (!opts.network || 'string' !== typeof opts.network) {
-    throw new TypeError('Expecting network name for the resolver.')
-  }
+    if (opts.name && 'string' === typeof opts.name && !opts.network) {
+      const msg = 'Please set \'opts.network\' property instead of \'opts.name\'.'
+      // eslint-disable-next-line no-console
+      console.warn('aid.resolve():', msg)
+      // eslint-disable-next-line no-param-reassign
+      opts.network = opts.name
+    }
 
-  if (null === opts.timeout || 'number' !== typeof opts.timeout) {
-    // eslint-disable-next-line no-param-reassign
-    opts.timeout = kResolutionTimeout
-  }
+    if (!opts.network || 'string' !== typeof opts.network) {
+      throw new TypeError('Expecting network name for the resolver.')
+    }
 
-  const value = await findResolution(did, opts)
-  return value
+    if (null === opts.timeout || 'number' !== typeof opts.timeout) {
+      // eslint-disable-next-line no-param-reassign
+      opts.timeout = kResolutionTimeout
+    }
+
+    return findResolution(did, opts)
+  })())
+
+  return Promise.race(resolutions)
 }
 
 async function findResolution(did, opts) {
