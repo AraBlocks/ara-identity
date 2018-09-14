@@ -57,24 +57,20 @@ async function resolve(uri, opts) {
   }()))
 
   resolutions.push((async function remote() {
+    if (!opts || !opts.secret || !opts.keyring || !opts.network) {
+      return null
+    }
+
     if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
-      throw new TypeError('Expecting shared secret to be a string or buffer.')
+      return new TypeError('Expecting shared secret to be a string or buffer.')
     }
 
     if (!opts.secret || 0 === opts.secret.length) {
-      throw new TypeError('Shared secret cannot be empty.')
+      return new TypeError('Shared secret cannot be empty.')
     }
 
     if (!opts.keyring) {
-      throw new TypeError('Expecting network keys keyring.')
-    }
-
-    if (opts.name && 'string' === typeof opts.name && !opts.network) {
-      const msg = 'Please set \'opts.network\' property instead of \'opts.name\'.'
-      // eslint-disable-next-line no-console
-      console.warn('aid.resolve():', msg)
-      // eslint-disable-next-line no-param-reassign
-      opts.network = opts.name
+      return new TypeError('Expecting network keys keyring.')
     }
 
     if (!opts.network || 'string' !== typeof opts.network) {
@@ -89,7 +85,26 @@ async function resolve(uri, opts) {
     return findResolution(did, opts)
   })())
 
-  return Promise.race(resolutions)
+  return pify((done) => {
+    let resolved = false
+
+    for (let i = 0; i < resolutions.length; ++i) {
+      const resolution = resolutions[i]
+
+      if (resolved) {
+        break
+      } else {
+        resolution.then(onthen)
+      }
+    }
+
+    function onthen(result) {
+      if (result) {
+        resolved = true
+        done(null, result)
+      }
+    }
+  })()
 }
 
 async function findResolution(did, opts) {
