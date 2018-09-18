@@ -1,5 +1,48 @@
-<a name="0.11.0"></a>
-# [0.11.0](https://github.com/AraBlocks/ara-identity/compare/0.10.0...0.11.0) (2018-09-13)
+<a name="0.15.0"></a>
+# [0.15.0](https://github.com/AraBlocks/ara-identity/compare/0.14.0...0.15.0) (2018-09-18)
+
+
+
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/AraBlocks/ara-identity/compare/0.13.0...0.14.0) (2018-09-18)
+
+
+### Features
+
+* **bin/ara-identity:** Add CLI command keystore-dump ([7b0241a](https://github.com/AraBlocks/ara-identity/commit/7b0241a))
+* **did.js:** Add getIdentifier method ([79b3b76](https://github.com/AraBlocks/ara-identity/commit/79b3b76))
+
+
+
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/AraBlocks/ara-identity/compare/0.12.0...0.13.0) (2018-09-14)
+
+
+### Bug Fixes
+
+* **resolve.js:** Fix resolution race to error ([cfa2227](https://github.com/AraBlocks/ara-identity/commit/cfa2227))
+
+
+
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/AraBlocks/ara-identity/compare/0.11.1...0.12.0) (2018-09-14)
+
+
+### Features
+
+* **bin/ara-identity:** Add CLI command keystore-dump ([5e516f4](https://github.com/AraBlocks/ara-identity/commit/5e516f4))
+* **resolve.js:** Introduce faster and concurrenty resolution ([17b7058](https://github.com/AraBlocks/ara-identity/commit/17b7058))
+
+
+
+<a name="0.11.1"></a>
+## [0.11.1](https://github.com/AraBlocks/ara-identity/compare/0.10.0...0.11.1) (2018-09-13)
+
+
+### Features
+
+* **did.js:** Introduce did.normalize() ([564a910](https://github.com/AraBlocks/ara-identity/commit/564a910))
+* **fs.js:** Consolidated/abstract FS API for identity files ([5e3abad](https://github.com/AraBlocks/ara-identity/commit/5e3abad))
 
 
 
