@@ -4,6 +4,7 @@ const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
 const { DID } = require('did-uri')
 const pify = require('pify')
+const pump = require('pump')
 const ram = require('random-access-memory')
 
 const kDIDIdentifierLength = 64
@@ -65,21 +66,49 @@ async function findFiles(did, opts) {
       stream: () => cfs.replicate()
     })
 
-    cfs.discovery.once('connection', () => setTimeout(onexpire, opts.timeout))
-    cfs.discovery.once('connection', () => clearTimeout(timeout))
-    cfs.discovery.once('connection', onconnection)
+    cfs.discovery.on('connection', onconnection)
     cfs.discovery.join(cfs.discoveryKey)
 
-    async function onconnection() {
-      await new Promise(resolve => cfs.once('update', resolve))
+    await Promise.race([
+      new Promise(resolve => cfs.once('update', resolve)),
+      new Promise(resolve => cfs.once('sync', resolve)),
+    ])
+
+    await onupdate()
+
+    function onconnection(connection, peer) {
+      void peer
+      clearTimeout(timeout)
+      timeout = setTimeout(onexpire, opts.timeout)
+
+      const stream = cfs.replicate({
+        download: true,
+        upload: true,
+        live: false,
+      })
+
+      pump(connection, stream, connection)
+    }
+
+    async function onupdate() {
+      clearTimeout(timeout)
+
       try {
-        let ddo
         const identityFiles = []
+        const response = {
+          publicKey: Buffer.from(did.identifier),
+          files: identityFiles,
+          ddo: null,
+          did
+        }
+
         const files = await cfs.readdir('.')
+
         for (const file of files) {
           if ('keystore' === file) {
             const ethKeystore = await cfs.readFile('keystore/eth')
             const araKeystore = await cfs.readFile('keystore/ara')
+
             identityFiles.push({
               path: 'keystore/eth',
               buffer: ethKeystore
@@ -89,33 +118,32 @@ async function findFiles(did, opts) {
             })
           } else {
             const content = await cfs.readFile(file)
+
             if ('ddo.json' === file) {
-              ddo = JSON.parse(content.toString('utf8'))
+              response.ddo = JSON.parse(content.toString('utf8'))
             }
+
             identityFiles.push({
               path: file,
               buffer: content
             })
           }
         }
-        const response = {
-          publicKey: Buffer.from(did.identifier),
-          files: identityFiles,
-          ddo,
-          did
-        }
+
         done(null, response)
         onclose()
       } catch (err) {
         done(new Error(err))
+        onclose()
       }
     }
-    return null
 
     async function onclose() {
       if (cfs && cfs.discovery) {
-        cfs.discovery.destroy()
+        cfs.discovery.destroy(done)
         cfs.discovery = null
+      } else {
+        done(null)
       }
     }
 
