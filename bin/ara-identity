@@ -603,14 +603,14 @@ async function onkeystoredump(argv) {
       onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
     }
 
-    info('Ara private key: %s', toHex(secretKey))
+    info(toHex(secretKey))
   } else { // Print Ethereum private Key
     const privateKey = await aid
       .ethereum
       .keystore
       .recover(password, keystores[0], keystores[1])
 
-    info('Ara ID Ethereum private key: %s', toHex(privateKey))
+    info(toHex(privateKey))
   }
 
   process.exit(0)
