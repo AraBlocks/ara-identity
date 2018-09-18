@@ -47,7 +47,7 @@ program.command(
   'Create an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-D] create [options]')
+    .usage('usage: $0 create [-D] [options]')
   , oncreate
 )
 
@@ -56,7 +56,7 @@ program.command(
   'Archive identity in network',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-D] archive [options]')
+    .usage('usage: $0 archive [-D] [options]')
     .positional('did', {
       default: rc.network.identity.whoami,
     })
@@ -88,7 +88,7 @@ program.command(
   'Resolve an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-hDV] resolve [options]')
+    .usage('usage: $0 resolve [-D] [options]')
     .positional('did', {
       default: rc.network.identity.whoami,
     })
@@ -128,7 +128,7 @@ program.command(
   'Output local identities',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-D] list [options]')
+    .usage('usage: $0 list [-D] [options]')
     .group([ 'path' ], 'List Options:')
     .option('path', {
       alias: 'p',
@@ -143,7 +143,7 @@ program.command(
   'Output current Ara identity in context (.ararc)',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-D] whoami')
+    .usage('usage: $0 whoami [-D] [options]')
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
     .option('cache', {
       type: 'boolean',
@@ -163,7 +163,7 @@ program.command(
   'Recover an Ara identity using a mnemonic',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-D] recover')
+    .usage('usage: $0 [-D] recover [options]')
     .group([ 'mnemonic' ], 'Recovery Options:')
     .option('mnemonic', {
       alias: 'm',
@@ -179,7 +179,7 @@ program.command(
   'Recover a private ethereum|ara key.',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-hDV] keystore-dump [options]')
+    .usage('usage: $0 keystore-dump [-D] [options]')
     .positional('did', {
       default: rc.network.identity.whoami,
     })
