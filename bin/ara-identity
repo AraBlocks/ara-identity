@@ -213,16 +213,29 @@ if (program.argv.debug) {
 
 async function onrecover(argv) {
   const { mnemonic } = argv
-  const { password } = await inquirer.prompt([ {
-    type: 'password',
-    name: 'password',
-    message:
-    'Your identity\'s keystore will be secured by a passphrase ' +
-    'after recovery. \n' +
-    'Please provide a passphrase. Do not forget this as it will never be ' +
-    'shown to you.\n' +
-    'Passphrase:'
-  } ])
+  let { password } = argv
+
+  if ('string' === typeof password) {
+    try {
+      await pify(fs.access)(password)
+      password = String(await pify(fs.readFile)(password))
+    } catch (err) {
+      void err
+    }
+  }
+
+  if (!password) {
+    ({ password } = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Your identity\'s keystore will be secured by a passphrase ' +
+      'after recovery. \n' +
+      'Please provide a passphrase. Do not forget this as it will never be ' +
+      'shown to you.\n' +
+      'Passphrase:'
+    } ]))
+  }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
@@ -248,6 +261,8 @@ async function onrecover(argv) {
 }
 
 async function onarchive(argv) {
+  let { password } = argv
+
   if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
     onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
@@ -257,14 +272,25 @@ async function onarchive(argv) {
     argv.did = `did:ara:${argv.did}`
   }
 
-  let { password } = await inquirer.prompt([ {
-    type: 'password',
-    name: 'password',
-    message:
-    'Please provide a passphrase for your identity. This is needed to ' +
-    'archive your identity.\n' +
-    'Passphrase:'
-  } ])
+  if ('string' === typeof password) {
+    try {
+      await pify(fs.access)(password)
+      password = String(await pify(fs.readFile)(password))
+    } catch (err) {
+      void err
+    }
+  }
+
+  if (!password) {
+    ({ password } = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please provide a passphrase for your identity. This is needed to ' +
+      'archive your identity.\n' +
+      'Passphrase:'
+    } ]))
+  }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
@@ -398,16 +424,35 @@ async function onarchive(argv) {
   }
 }
 
-async function oncreate() {
-  const { password } = await inquirer.prompt([ {
-    type: 'password',
-    name: 'password',
-    message:
-    'Your identity\'s keystore will be secured by a passphrase. \n' +
-    'Please provide a passphrase. Do not forget this as it will never be ' +
-    'shown to you.\n' +
-    'Passphrase:'
-  } ])
+async function oncreate(argv) {
+  let { password } = argv
+
+  if ('string' === typeof password) {
+    try {
+      await pify(fs.access)(password)
+      password = String(await pify(fs.readFile)(password))
+    } catch (err) {
+      void err
+    }
+  }
+
+  if (!password) {
+    ({ password } = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Your identity\'s keystore will be secured by a passphrase. \n' +
+      'Please provide a passphrase. Do not forget this as it will never be ' +
+      'shown to you.\n' +
+      'Passphrase:'
+    } ]))
+  }
+
+  if (!password) {
+    // eslint-disable-next-line function-paren-newline
+    onfatal(
+      new TypeError('A new passphrase is required to secure the identity.'))
+  }
 
   process.stdout.write('\n')
   const identity = await aid.create({ context, password })
