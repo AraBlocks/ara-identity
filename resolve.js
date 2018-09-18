@@ -14,6 +14,13 @@ const kResolutionTimeout = 5000
 const kDIDMethod = 'ara'
 const kMaxPeers = 8
 
+function notFound() {
+  return Object.assign(
+    new Error('Could not resolve DID. No peer found'),
+    { status: 404, code: 'ENOTFOUND' }
+  )
+}
+
 async function resolve(uri, opts) {
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting options to be an object.')
@@ -85,8 +92,9 @@ async function resolve(uri, opts) {
     return findResolution(did, opts)
   })())
 
-  return pify((done) => {
+  return pify(async (done) => {
     let resolved = false
+    const promises = []
 
     for (let i = 0; i < resolutions.length; ++i) {
       const resolution = resolutions[i]
@@ -94,8 +102,14 @@ async function resolve(uri, opts) {
       if (resolved) {
         break
       } else {
-        resolution.then(onthen)
+        promises.push(resolution.then(onthen))
       }
+    }
+
+    await Promise.all(promises).then(() => done(null)).catch(done)
+
+    if (!resolved) {
+      done(notFound())
     }
 
     function onthen(result) {
@@ -117,6 +131,7 @@ async function findResolution(did, opts) {
   const { discoveryKey } = unpacked
 
   const channel = createChannel()
+  let didResolve = false
   let timeout = null
 
   return pify((done) => {
@@ -134,33 +149,36 @@ async function findResolution(did, opts) {
 
     async function doResolution() {
       clearTimeout(timeout)
-      timeout = setTimeout(doResolution, opts.timeout)
-      if (resolvers.length) {
+
+      if (!didResolve && 0 === resolvers.length) {
+        done(notFound())
+      } else if (!didResolve) {
         const { peer } = resolvers.shift()
         const { host, port } = peer
         const uri = `http://${host}:${port}/1.0/identifiers/${did.did}`
 
+        timeout = setTimeout(doResolution, opts.timeout)
+
         try {
           const { body } = await fetch(uri)
           const response = JSON.parse(body)
+          didResolve = true
           done(null, response.didDocument)
           cleanup()
         } catch (err) {
           process.nextTick(doResolution)
         }
-      } else {
-        return done(Object.assign(
-          new Error('Could not resolve DID. No peer found'),
-          { status: 404, code: 'ENOTFOUND' }
-        ))
       }
-      return null
     }
 
     function cleanup() {
       clearTimeout(timeout)
       channel.removeListener('peer', onpeer)
       channel.destroy()
+
+      if (!didResolve) {
+        notFound()
+      }
     }
   })()
 }
