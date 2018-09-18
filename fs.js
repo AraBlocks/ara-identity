@@ -1,4 +1,5 @@
 const { createSwarm } = require('ara-network/discovery')
+const { destroyCFS } = require('cfsnet/destroy')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
 const { resolve } = require('path')
@@ -27,30 +28,46 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     const did = new DID(normalize(identifier))
     const cfs = await createCFS({
       shallow: true,
-      storage: ram,
+      storage: () => ram(),
       sparse: true,
       key: Buffer.from(did.identifier, 'hex'),
       id: did.identifier,
     })
 
     const swarm = createSwarm({
-      stream: () => cfs.replicate()
+      stream() {
+        return cfs.replicate({
+          download: true,
+          upload: false,
+          live: false,
+        })
+      }
     })
 
     let timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
 
     swarm.join(cfs.discoveryKey)
-    swarm.once('connection', onconnection)
-    swarm.once('error', onerror)
-    cfs.once('update', onupdate)
+    swarm.on('connection', onconnection)
+    swarm.on('error', onerror)
+    cfs.once('sync', onupdate)
+    cfs.update(onupdate)
+
+    async function close(err, result) {
+      try {
+        await destroyCFS({ cfs })
+        done(err, result)
+      } catch (err2) {
+        done(err2, result)
+      }
+    }
 
     function onerror(err) {
       clearTimeout(timeout)
-      done(err)
+      close(err)
     }
 
     function ontimeout() {
-      done(new NoEntitityError(filename, 'open'))
+      close(new NoEntitityError(filename, 'open'))
     }
 
     function onconnection() {
@@ -63,7 +80,7 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
       timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
       onjoin(cfs, did, (err, result) => {
         clearTimeout(timeout)
-        done(err, result)
+        close(err, result)
       })
     }
   })()
