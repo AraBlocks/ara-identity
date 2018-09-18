@@ -7,6 +7,7 @@ const { toHex } = require('./util')
 const { DID } = require('did-uri')
 const crypto = require('ara-crypto')
 const pify = require('pify')
+const pump = require('pump')
 const ram = require('random-access-memory')
 const rc = require('./rc')()
 const fs = require('fs')
@@ -34,16 +35,7 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
       id: did.identifier,
     })
 
-    const swarm = createSwarm({
-      stream() {
-        return cfs.replicate({
-          download: true,
-          upload: false,
-          live: false,
-        })
-      }
-    })
-
+    const swarm = createSwarm({ })
     let timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
 
     swarm.join(cfs.discoveryKey)
@@ -70,9 +62,19 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
       close(new NoEntitityError(filename, 'open'))
     }
 
-    function onconnection() {
+    function onconnection(connection, peer) {
+      void peer
       clearTimeout(timeout)
       timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
+
+      const stream = cfs.replicate({
+        download: true,
+        upload: true,
+        live: false,
+      })
+
+      stream.on('error', onerror)
+      pump(connection, stream, connection)
     }
 
     function onupdate() {
