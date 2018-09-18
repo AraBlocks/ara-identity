@@ -122,8 +122,10 @@ async function archive(identity, opts) {
 
   function timeout(again) {
     clearTimeout(timeout.timer)
-    if (false !== again) {
+    if (false !== again && false !== timeout.timer) {
       timeout.timer = setTimeout(ontimeout, opts.timeout)
+    } else {
+      timeout.timer = false
     }
   }
 
@@ -184,8 +186,6 @@ async function archive(identity, opts) {
       writer.end(msg)
 
       reader.once('data', (data) => {
-        clearTimeout(timeout)
-
         if ('ACK' === data.toString()) {
           void totalConnections++
           didArchive = true
@@ -233,7 +233,6 @@ async function archive(identity, opts) {
   }
 
   function ontimeout() {
-    clearTimeout(timeout)
     channel.emit('error', new Error('Archiver request timed out.'))
   }
 }
