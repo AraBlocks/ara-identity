@@ -91,20 +91,10 @@ async function archive(identity, opts) {
   let totalConnections = 0
 
   let channel = createChannel()
-  let discovery = createSwarm({
-    stream() {
-      const stream = cfs.replicate({
-        download: false,
-        upload: true,
-        live: false,
-      })
+  let discovery = createSwarm({ })
 
-      stream.on('error', onerror)
-      return stream
-    }
-  })
-
-  discovery.join(cfs.discoveryKey)
+  discovery.join(cfs.discoveryKey, { announce: true })
+  discovery.on('connection', onconnection)
 
   channel.join(discoveryKey)
   channel.on('peer', onpeer)
@@ -119,6 +109,18 @@ async function archive(identity, opts) {
   })
 
   return didArchive
+
+  function onconnection(connection, peer) {
+    void peer
+    const stream = cfs.replicate({
+      download: false,
+      upload: true,
+      live: false,
+    })
+
+    stream.on('error', onerror)
+    pump(connection, stream, connection)
+  }
 
   function timeout(again) {
     clearTimeout(timeout.timer)
