@@ -408,7 +408,7 @@ async function onarchive(argv) {
 
   function onclose(rinfo) {
     stats.totalConnections = rinfo.totalConnections
-    warn(
+    debug(
       'Connection #%d to %s:%s@%s closed.',
       rinfo.peerIndex,
       rinfo.peer.host,
