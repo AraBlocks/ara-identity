@@ -1,9 +1,10 @@
 # Ara Identity
-<img align="right" src="https://github.com/AraBlocks/docs/blob/master/ara.png" width="90" height="90" />
+
 [![Build Status](https://travis-ci.com/AraBlocks/ara-identity.svg?token=Ty4yTmKT8aELetQd1xZp&branch=master)](https://travis-ci.com/AraBlocks/ara-identity)
 
-
 Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/) which allows users to interact with services in the Ara network. It provides the users with an ability to access the services running on the Ara network. To learn more about Ara, please visit our project [site](https://ara.one/)
+
+<img align="right" src="https://github.com/AraBlocks/docs/blob/master/ara.png" width="90" height="90" />
 
 ## Table of Contents
 * [Status](#status)
