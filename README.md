@@ -74,7 +74,7 @@ $ aid whoami
 ### 3. Archive an Ara ID
 Archiving an identity is the process of broadcasting newly created identities so that they can be resolved & discovered by other services & endpoints in the Ara network.
 
-- `$ aid archive <ara-id> \
+- `$ aid archive <ara-id>
                  -s <shared-secret>
                  -n <keyring-network-entry>
                  -k <public-keyring-file>`
@@ -90,7 +90,7 @@ Archiving an identity is the process of broadcasting newly created identities so
 ### 4. Resolve an Ara ID
 Ara network has special network nodes which act as an Identity resolver's(similar to a DNS lookup). These resolvers provide a method interface through which services can send requests and obtain the [DDO-document](https://w3c-ccg.github.io/did-spec/#did-documents) associated with an Ara ID
 
-- `$ aid resolve <ara-id> \
+- `$ aid resolve <ara-id>
                  -s <shared-secret>
                  -n <keyring-network-entry>
                  -k <public-keyring-file>`
