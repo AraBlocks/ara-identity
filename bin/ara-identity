@@ -572,7 +572,7 @@ async function onwhoami(argv) {
     }
   }
 
-  if (ddo) {
+  if (!ddo) {
     onfatal(new Error('Missing or malformed identity document (ddo.json).'))
   }
 
