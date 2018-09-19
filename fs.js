@@ -44,7 +44,7 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     const swarm = createSwarm(Object.assign({ utp: false }, opts))
     let timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
 
-    swarm.join(cfs.discoveryKey)
+    swarm.join(cfs.discoveryKey, { announce: false })
     swarm.on('connection', onconnection)
     swarm.on('error', onerror)
 
