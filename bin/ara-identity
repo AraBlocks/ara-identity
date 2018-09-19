@@ -559,16 +559,21 @@ async function onwhoami(argv) {
   }
 
   try {
-    ddo = await Promise.race([
-      aid.fs.readFile(identifier, 'ddo.json', argv).then(JSON.parse).catch(debug),
-      aid.resolve(identifier, argv).catch(debug)
-    ])
-
-    if (!ddo) {
-      throw new Error(`Could not resolve identity: ${identifier}`)
-    }
+    ddo = JSON.parse(await aid.fs.readFile(identifier, 'ddo.json', argv))
   } catch (err) {
-    onfatal(err)
+    try {
+      ddo = await aid.resolve(identifier, argv)
+      if (!ddo) {
+        throw err
+      }
+    } catch (err2) {
+      debug(err2)
+      onfatal(err)
+    }
+  }
+
+  if (ddo) {
+    onfatal(new Error('Missing or malformed identity document (ddo.json).'))
   }
 
   if ('id' in ddo && ddo.id === identifier) {
