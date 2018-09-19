@@ -63,7 +63,8 @@ async function findFiles(did, opts) {
     })
 
     cfs.discovery = createSwarm({
-      stream: () => cfs.replicate()
+      stream: () => cfs.replicate(),
+      id: cfs.discoveryKey
     })
 
     cfs.discovery.on('connection', onconnection)
