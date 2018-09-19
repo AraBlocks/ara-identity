@@ -112,12 +112,7 @@ async function archive(identity, opts) {
 
   function onconnection(connection, peer) {
     void peer
-    const stream = cfs.replicate({
-      download: false,
-      upload: true,
-      live: false,
-    })
-
+    const stream = cfs.replicate({ live: false })
     stream.on('error', onerror)
     pump(connection, stream, connection)
   }
@@ -214,15 +209,15 @@ async function archive(identity, opts) {
           discovery.destroy()
           discovery = null
         }
+      }
 
-        if ('function' === typeof opts.onclose) {
-          opts.onclose({
-            totalConnections,
-            discoveryKey,
-            peerIndex,
-            peer,
-          })
-        }
+      if ('function' === typeof opts.onclose) {
+        opts.onclose({
+          totalConnections,
+          discoveryKey,
+          peerIndex,
+          peer,
+        })
       }
     }
   }
