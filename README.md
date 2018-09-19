@@ -11,8 +11,8 @@ Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg
 * [Status](#status)
 * [Installation](#installation)
 * [Setup](#setup)
-* [Javascript API](#js-api)
-* [For Developers](#for-dev)
+* [API](#api)
+* [For Developers](#for-developers)
 
 ## Status
 
@@ -50,18 +50,9 @@ To setup network nodes locally, please follow the instruction in the respective 
 - [identity-resolver](https://github.com/AraBlocks/ara-network-node-identity-resolver/blob/master/README.md)
 
 
-## Tests
 
-### Running test
-
-Tests are defined in the `test/` directory and are invoked with
-[ava](https://github.com/avajs/ava). To run the tests, simply run:
-
-```sh
-$ npm test
-```
-
-## Contributing
+## For Developers
+To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) & [feature request's]()
 - [Commit message format](/.github/COMMIT_FORMAT.md)
 - [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
 - [How to contribute](/.github/CONTRIBUTING.md)
