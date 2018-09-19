@@ -52,6 +52,8 @@ To setup network nodes locally, please follow the instruction in the respective 
 - [identity-archiver](https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md)
 - [identity-resolver](https://github.com/AraBlocks/ara-network-node-identity-resolver/blob/master/README.md)
 
+## CLI methodsa
+
 ### 1. Create an Ara ID
 
 To create a new Ara ID, use the create option of the Ara Identity CLI
@@ -63,8 +65,6 @@ $ aid create
 ### 2. Set default Ara ID locally
 
 Set a default Ara identity locally by editing the `whoami` entry under [rc.js](https://github.com/AraBlocks/ara-identity/blob/master/rc.js)
-
-To test it, run the following command
 
 ```sh
 $ aid whoami
@@ -88,7 +88,9 @@ Archiving an identity is the process of broadcasting newly created identities so
   ```
 
 ### 4. Resolve an Ara ID
-Ara network has special network nodes which act as an Identity resolver's(similar to a DNS lookup). These resolvers provide a method interface through which services can send requests and obtain the [DDO-document](https://w3c-ccg.github.io/did-spec/#did-documents) associated with an Ara ID
+* Ara network has special network nodes which act as an Identity resolver's(similar to a DNS lookup).
+
+* These resolvers provide a method interface through which services can send requests and obtain the [DDO-document](https://w3c-ccg.github.io/did-spec/#did-documents) associated with an Ara ID
 
 - `$ aid resolve <ara-id>
                  -s <shared-secret>
@@ -111,7 +113,7 @@ $ aid list
 ```
 
 
-## API
+## Method API
 
 TODO
 
