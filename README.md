@@ -9,7 +9,6 @@ Create and resolve decentralized identity based Ara identifiers.
 
 This project is still in alpha development.
 
-> **Important**: While this project is under active development, run `npm link` in `ara-identity` directory & `npm link ara-identity` in the `ara-network-node-identity-archiver`, `ara-network`, or `ara-network-node-dns` directory.
 
 ## Dependencies
 
@@ -24,77 +23,87 @@ $ npm install --save ara-identity
 ## Usage - Running ara-identity modules locally
 
 ### Prerequisites
-Setup the CLI for ARA Identity & ARA Network
+
+#### Setup the CLI for Ara Identity & Ara Network
 
   - Clone the [ara-identity](https://github.com/AraBlocks/ara-identity) & [ara-network](https://github.com/AraBlocks/ara-network) repositories
   - Do `npm install` & then `npm link` inside each of the repositories
   - Test the CLI by running the following commands,
   ```sh
-  $ aid --help // ARA Identity CLI
-  $ ann --help // ARA Network Node CLI
-  $ ans --help // ARA Network Secrets CLI
+  $ aid --help // Ara Identity CLI
+  $ ann --help // Ara Network Node CLI
+  $ ank --help // Ara Network Keyring CLI
   ```
   - The above commands should display the help options for each of the cli's
 
-Generate secrets for both the Archiver & Resolver nodes
+**Note**: To learn more about ara network & keyrings, please read through the following RFCs,
 
-  - `$ ans -k ${network_key_string}`
+- [Ara network](https://github.com/AraBlocks/RFCs/blob/master/text/0002-ann.md)
+- [Ara keyring](https://github.com/AraBlocks/RFCs/blob/master/text/0003-ank.md)
 
-  - Example:
-  ```sh
-  $ ans -k archiver // Generating secrets for the archiver node
-  $ ans -k resolver // Generating secrets for the resolver node
-  ```
+#### Setup archiver & resolver network nodes locally
 
-Once the secrets are generated, the Archiver & Resolver Network nodes can be started.
+To make publish Ara ID into our network and make it discoverable by other peers, you can either use one of our archiver nodes or setup one locally
 
-  - Clone the [archiver](https://github.com/AraBlocks/ara-network-node-identity-archiver) and [resolver](https://github.com/AraBlocks/ara-network-node-identity-resolver) repositories
-  - Do `npm install` in each of the repositories
-  - Open the repository folder in 2 separate windows and run the below command,
-    - `$ ann -t . -k ${network_key_string}`
+To setup network nodes locally, please follow the README in the respective repositories below,
 
-    - Example:
-      ```sh
-      $ ann -t . -k archiver // starting the archiver network node
-      $ ann -t . -k resolver // starting the resolver network node
-      ```
+- [identity-archiver](https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md)
+- [identity-resolver](https://github.com/AraBlocks/ara-network-node-identity-resolver/blob/master/README.md)
 
+### 1. Create an Ara ID
 
-Note : Make sure to use different `network_key_string` for the Archiver & Resolver Network Nodes
-
-### Create an ARA ID
-
-To create a new ARA ID, use the create option of the ARA Identity CLI
+To create a new Ara ID, use the create option of the ARA Identity CLI
 
 ```sh
 $ aid create
 ```
 
-### Archive an ARA ID
+### 2. Set default Ara ID locally
+
+Set a default Ara identity locally by editing the `whoami` entry under [rc.js](https://github.com/AraBlocks/ara-identity/blob/master/rc.js)
+
+To test it, run the following command
+
+```sh
+$ aid whoami
+```
+
+
+### 3. Archive an Ara ID
 Archiving an identity is the process of broadcasting newly created identities so that they can be resolved & discovered by other services & endpoints in the ARA network.
 
-- `$ aid archive ${ara_id} -k ${network_key_string}`
+- `$ aid archive <ara-id> \
+                 -s <shared-secret>
+                 -n <keyring-network-entry>
+                 -k <public-keyring-file>`
 
 - Example:
   ```sh
-  $ aid archive did:ara:df45010fee8baf67f91f5102b9562b14d5b49c972a007cd460b1aa77fd90eaf9 -k archiver
+  $ aid archive did:ara:df45010fee8baf67f91f5102b9562b14d5b49c972a007cd460b1aa77fd90eaf9 \
+                -s 'ara-secret' \
+                -n 'archiver' \
+                -k '~/.ara/keyrings/keyring.pub'
   ```
 
 ### Resolve an ARA ID
 ARA network has special network nodes which act as an Identity resolver's(similar to a DNS lookup). These resolvers provide a method interface and a REST API through which services can send requests and obtain the DDO document associated with an ARA ID
 
-To resolve an identity, use the `resolve` method or the resolver API as below.
+- `$ aid resolve <ara-id> \
+                 -s <shared-secret>
+                 -n <keyring-network-entry>
+                 -k <public-keyring-file>`
+
+To resolve an identity, use the `resolve` method as below.
 
 #### Method - 1
 
 ```sh
-$ aid resolve did:ara:df45010fee8baf67f91f5102b9562b14d5b49c972a007cd460b1aa77fd90eaf9 -k resolver
+$ aid resolve did:ara:df45010fee8baf67f91f5102b9562b14d5b49c972a007cd460b1aa77fd90eaf9 \
+              -s 'ara-secret' \
+              -n 'resolver' \
+              -k '~/.ara/keyrings/keyring.pub'
 ```
 
-#### Method - 2 (API not configured yet)
-```sh
-curl -X GET https://araresolver.io/1.0/identifiers/${ara_id}?key=${network_key_string}
-```
 
 ## API
 
