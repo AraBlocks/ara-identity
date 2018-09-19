@@ -91,7 +91,7 @@ async function archive(identity, opts) {
   let totalConnections = 0
 
   let channel = createChannel()
-  let discovery = createSwarm({ })
+  let discovery = createSwarm({ id: cfs.discoveryKey })
 
   discovery.join(cfs.discoveryKey, { announce: true })
   discovery.on('connection', onconnection)
