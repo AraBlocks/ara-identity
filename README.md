@@ -33,26 +33,8 @@ $ npm install arablocks/ara-identity
   $ aid --help // Ara Identity CLI
   ```
 
-**Note**: To learn more about ara network & keyrings, please read through the following RFCs,
-
-- [Ara network](https://github.com/AraBlocks/RFCs/blob/master/text/0002-ann.md)
-- [Ara keyring](https://github.com/AraBlocks/RFCs/blob/master/text/0003-ank.md)
-
-#### Setup archiver & resolver network nodes locally
-
-To publish Ara ID into our network and make it discoverable by other peers, you can either use one of our archiver nodes or setup one locally
-
-**TODO**: Decide if we want to add our own archiver/resolver config reference here
-
-To setup network nodes locally, please follow the instruction in the respective repositories below,
-
-- [identity-archiver](https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md)
-- [identity-resolver](https://github.com/AraBlocks/ara-network-node-identity-resolver/blob/master/README.md)
-
-
-
 ## For Developers
-To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) & [feature request's]()
+To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
 - [Commit message format](/.github/COMMIT_FORMAT.md)
 - [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
 - [How to contribute](/.github/CONTRIBUTING.md)
