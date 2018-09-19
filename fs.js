@@ -41,7 +41,7 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
       id: did.identifier,
     })
 
-    const swarm = createSwarm({ })
+    const swarm = createSwarm({ utp: false })
     let timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
 
     swarm.join(cfs.discoveryKey, { announce: true })
