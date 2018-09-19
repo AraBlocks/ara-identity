@@ -10,7 +10,8 @@ Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg
 * [Status](#status)
 * [Installation](#installation)
 * [Setup](#setup)
-* [API](#api)
+* [CLI](#cli)
+* [Javascript API](#api)
 * [For Developers](#for-developers)
 
 ## Status
@@ -31,6 +32,12 @@ $ npm install arablocks/ara-identity
   ```sh
   $ aid --help // Ara Identity CLI
   ```
+
+## CLI
+TODO
+
+## API
+TODO
 
 ## For Developers
 To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
