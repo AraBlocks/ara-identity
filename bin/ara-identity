@@ -559,7 +559,14 @@ async function onwhoami(argv) {
   }
 
   try {
-    ddo = JSON.parse(await aid.fs.readFile(identifier, 'ddo.json', argv))
+    ddo = await Promise.race([
+      aid.fs.readFile(identifier, 'ddo.json', argv).then(JSON.parse).catch(debug),
+      aid.resolve(identifier, argv).catch(debug)
+    ])
+
+    if (!ddo) {
+      throw new Error(`Could not resolve identity: ${identifier}`)
+    }
   } catch (err) {
     onfatal(err)
   }
