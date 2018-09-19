@@ -6,6 +6,7 @@ const { resolve } = require('path')
 const { toHex } = require('./util')
 const { DID } = require('did-uri')
 const crypto = require('ara-crypto')
+const debug = require('debug')('ara:identity:fs')
 const pify = require('pify')
 const pump = require('pump')
 const ram = require('random-access-memory')
@@ -13,6 +14,7 @@ const rc = require('./rc')()
 const fs = require('fs')
 
 const DISCOVERY_TIMEOUT = 5 * 1000
+const CFS_UPDATE_TIMEOUT = 3 * 1000
 
 /**
  * Joins a network swarm for an identity scoped to a given
@@ -27,7 +29,11 @@ const DISCOVERY_TIMEOUT = 5 * 1000
 async function joinNetwork(identifier, filename, opts, onjoin) {
   return pify(async (done) => {
     const did = new DID(normalize(identifier))
+
+    debug('network: open: %s: %s', did.identifier, filename)
+
     const cfs = await createCFS({
+      sparseMetadata: true,
       shallow: true,
       storage: () => ram(),
       sparse: true,
@@ -38,51 +44,69 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     const swarm = createSwarm({ })
     let timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
 
-    swarm.join(cfs.discoveryKey)
+    swarm.join(cfs.discoveryKey, { announce: true })
     swarm.on('connection', onconnection)
     swarm.on('error', onerror)
-    cfs.once('sync', onupdate)
-    cfs.update(onupdate)
+
+    try {
+      debug('network: access: %s: %s', did.identifier, filename)
+      await cfs.access(filename)
+    } catch (err) {
+      await Promise.race([
+        new Promise(cb => cfs.once('sync', cb)),
+        new Promise(cb => cfs.once('update', cb)),
+        new Promise(cb => setTimeout(cb, CFS_UPDATE_TIMEOUT))
+      ])
+    }
+
+    clearTimeout(timeout)
+    timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
+
+    return onjoin(cfs, did, (err, result) => {
+      debug('network: onjoin: %s: %s', did.identifier, filename)
+      clearTimeout(timeout)
+      close(err, result)
+    })
 
     async function close(err, result) {
       try {
         await destroyCFS({ cfs })
+        swarm.close()
         done(err, result)
+        debug('network: close: %s: %s', did.identifier, filename)
       } catch (err2) {
         done(err2, result)
       }
     }
 
     function onerror(err) {
+      debug('network: onerror: %s: %s', did.identifier, filename, err)
       clearTimeout(timeout)
       close(err)
     }
 
     function ontimeout() {
+      debug('network: ontimeout: %s: %s', did.identifier, filename)
       close(new NoEntitityError(filename, 'open'))
     }
 
     function onconnection(connection, peer) {
-      void peer
+      debug('network: onconnection: %s: %s', did.identifier, filename, peer)
+
       clearTimeout(timeout)
       timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
 
-      const stream = cfs.replicate({
-        download: true,
-        upload: true,
-        live: false,
-      })
+      const stream = cfs.replicate({ live: false })
 
-      stream.on('error', onerror)
-      pump(connection, stream, connection)
-    }
-
-    function onupdate() {
-      clearTimeout(timeout)
-      timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
-      onjoin(cfs, did, (err, result) => {
-        clearTimeout(timeout)
-        close(err, result)
+      pump(connection, stream, connection, (err) => {
+        if (err) {
+          debug(
+            'network: onconnection: onerror: %s: %s',
+            did.identifier,
+            filename,
+            err
+          )
+        }
       })
     }
   })()
