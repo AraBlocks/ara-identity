@@ -87,7 +87,60 @@ const identity = aid.recover({mnemonic: 'hello silver ......', password: 'qwerty
 
 
 ## API
-TODO
+All functions exported by this module will check for input correctness. If given an invalid input, a function will throw a `TypeError` with the error message.
+
+* [aid.archive()](#archive)
+* [aid.create()](#create)
+* [aid.createIdentityKeyPath()](#)
+* [aid.ddo.create()](#ddoCreate)
+* [aid.did.create()](#didCreate)
+* [aid.did.getIdentifier()](#didGetIdentifier)
+* [aid.did.normalize()](#didNormalize)
+* [aid.ethereum.keystore.create()](#)
+* [aid.ethereum.keystore.dump()](#)
+* [aid.ethereum.keystore.load()](#)
+* [aid.ethereum.keystore.recover()](#)
+* [aid.ethereum.account.create()](#)
+* [aid.ethereum.account.load()](#)
+* [aid.ethereum.entropy()](#)
+* [aid.ethereum.load()](#)
+* [aid.fs.writeFile()](#fsWriteFile)
+* [aid.fs.readFile()](#fsReadFile)
+* [aid.fs.readdir()](#fsReaddir)
+* [aid.fs.access()](#fsAccess)
+* [aid.fs.lstat()](#)
+* [aid.fs.stat()](#)
+* [aid.list()](#)
+* [aid.recover()](#)
+* [aid.replicate()](#)
+* [aid.resolve()](#)
+* [aid.util.ethHexToBuffer()](#)
+* [aid.util.toBuffer()](#)
+* [aid.util.toHex()](#)
+* [aid.util.writeIdentity()](#)
+
+### `aid.archive()` <a name="archive"></a>
+
+### `aid.create()` <a name="create"></a>
+
+### `aid.ddo.create()` <a name="ddoCreate"></a>
+
+### `aid.did.create()` <a name="didCreate"></a>
+
+### `aid.did.getIdentifier()` <a name="didGetIdentifier"></a>
+
+### `aid.did.normalize()` <a name="didNormalize"></a>
+
+### `aid.fs.writeFile()` <a name="fsWriteFile"></a>
+
+### `aid.fs.readFile()` <a name="fsReadFile"></a>
+
+### `aid.fs.readdir()` <a name="fsReaddir"></a>
+
+### `aid.fs.access()` <a name="fsAccess"></a>
+
+### `aid.fs.lstat()` <a name=""></a>
+
 
 ## For Developers
 To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
