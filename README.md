@@ -56,8 +56,33 @@ General Options:
   --version, -V  Show program version
 ```
 
+## Usage
+
+```js
+const aid = require('ara-identity')
+const context = require('ara-context') // Required for web3 interactions
+
+// Creating an Ara ID
+const identity = aid.create({context, password: 'hello'})
+
+// Archiving an Ara ID
+// Learn more about archiving and archiverOpts below
+await aid.archive(identity, archiverOpts)
+
+// Resolving an Ara ID to get  DID-document
+// Learn more about resolving and resolverOpts below
+const ddo = aid.resolver(aid.identifier, resolverOpts)
+
+// Recovering an Ara ID using bip39 mnemonic
+const identity = aid.recover({mnemonic:'hello silver ......'})
+```
+
+### Method References
+* [archiving][archiver-readme]
+* [resolving][resolver-readme]
+
 ## CLI
-TODO
+
 
 ## API
 TODO
@@ -76,3 +101,5 @@ To Contribute to Ara Identity, please look into our latest [issues](https://gith
 LGPL-3.0
 
 [stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index
+[archiver-readme]: https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
+[resolver-readme]: https://github.com/AraBlocks/ara-network-node-identity-resolver/blob/master/README.md
