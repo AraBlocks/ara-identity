@@ -117,6 +117,12 @@ All functions exported by this module will check for input correctness. If given
 <a name="create"></a>
 ### `aid.create()`
 
+<a name="createIdPath"></a>
+### `aid.createIdentityKeyPath()`
+
+<a name="ddoCreate"></a>
+### `aid.ddo.create()`
+
 <a name="ddoCreate"></a>
 ### `aid.ddo.create()`
 
