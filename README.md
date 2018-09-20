@@ -26,12 +26,27 @@ $ npm install arablocks/ara-identity
 
 ## Setup
 
-  - Clone the [ara-identity](https://github.com/AraBlocks/ara-identity)
-  - Do `npm install` & then `npm link` inside each of the repositories
-  - Test the CLI by running the following commands,
-  ```sh
-  $ aid --help // Ara Identity CLI
-  ```
+```sh
+$ git clone git@github.com:AraBlocks/ara-identity.git
+$ cd ara-identity
+$ npm install && npm link
+$ aid --help
+usage: aid [-hDV] <command> [options]
+
+Commands:
+  aid create                      Create an identity
+  aid archive [did]               Archive identity in network
+  aid resolve [did]               Resolve an identity
+  aid list                        Output local identities
+  aid whoami                      Output current Ara identity in context (.ararc)
+  aid recover                     Recover an Ara identity using a mnemonic
+  aid keystore-dump [did] [type]  Recover a private ethereum|ara key.
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+```
 
 ## CLI
 TODO
