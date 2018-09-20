@@ -91,7 +91,7 @@ All functions exported by this module will check for input correctness. If given
 
 * [aid.archive()](#archive)
 * [aid.create()](#create)
-* [aid.createIdentityKeyPath()](#)
+* [aid.createIdentityKeyPath()](#createIdPath)
 * [aid.ddo.create()](#ddoCreate)
 * [aid.did.create()](#didCreate)
 * [aid.did.getIdentifier()](#didGetIdentifier)
@@ -112,16 +112,13 @@ All functions exported by this module will check for input correctness. If given
 * [aid.util.writeIdentity()](#utilWriteIdentity)
 
 <a name="archive"></a>
-### `aid.archive()`
+### `aid.archive(did, opts)`
 
 <a name="create"></a>
 ### `aid.create()`
 
 <a name="createIdPath"></a>
 ### `aid.createIdentityKeyPath()`
-
-<a name="ddoCreate"></a>
-### `aid.ddo.create()`
 
 <a name="ddoCreate"></a>
 ### `aid.ddo.create()`
