@@ -18,6 +18,14 @@ Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg
 
 This project is still in active development.
 
+## Stability
+
+> [Stability][stability-index]: 1 - Experimental. This feature is still under
+> active development and subject to non-backwards compatible changes, or even
+> removal, in any future version. Use of the feature is not recommended
+> in production environments. Experimental features are not subject to
+> the Node.js Semantic Versioning model.
+
 ## Installation
 
 ```sh
@@ -66,3 +74,5 @@ To Contribute to Ara Identity, please look into our latest [issues](https://gith
 ## License
 
 LGPL-3.0
+
+[stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index
