@@ -66,18 +66,18 @@ const context = require('ara-context') // Required for web3 interactions
 const identity = aid.create({context, password: 'hello'})
 
 // Archiving an Ara ID
-// Learn more about archiving and archiverOpts below
+// Learn more about archiving and archiverOpts below under Ara references
 await aid.archive(identity, archiverOpts)
 
 // Resolving an Ara ID to get  DID-document
-// Learn more about resolving and resolverOpts below
+// Learn more about resolving and resolverOpts below under Ara references
 const ddo = aid.resolver(aid.identifier, resolverOpts)
 
 // Recovering an Ara ID using bip39 mnemonic
-const identity = aid.recover({mnemonic:'hello silver ......'})
+const identity = aid.recover({mnemonic: 'hello silver ......', password: 'qwerty'})
 ```
 
-### Method References
+### Ara References
 * [archiving][archiver-readme]
 * [resolving][resolver-readme]
 
