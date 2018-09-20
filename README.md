@@ -96,51 +96,80 @@ All functions exported by this module will check for input correctness. If given
 * [aid.did.create()](#didCreate)
 * [aid.did.getIdentifier()](#didGetIdentifier)
 * [aid.did.normalize()](#didNormalize)
-* [aid.ethereum.keystore.create()](#)
-* [aid.ethereum.keystore.dump()](#)
-* [aid.ethereum.keystore.load()](#)
-* [aid.ethereum.keystore.recover()](#)
-* [aid.ethereum.account.create()](#)
-* [aid.ethereum.account.load()](#)
-* [aid.ethereum.entropy()](#)
-* [aid.ethereum.load()](#)
 * [aid.fs.writeFile()](#fsWriteFile)
 * [aid.fs.readFile()](#fsReadFile)
 * [aid.fs.readdir()](#fsReaddir)
 * [aid.fs.access()](#fsAccess)
-* [aid.fs.lstat()](#)
-* [aid.fs.stat()](#)
-* [aid.list()](#)
-* [aid.recover()](#)
-* [aid.replicate()](#)
-* [aid.resolve()](#)
-* [aid.util.ethHexToBuffer()](#)
-* [aid.util.toBuffer()](#)
-* [aid.util.toHex()](#)
-* [aid.util.writeIdentity()](#)
+* [aid.fs.lstat()](#fsLstat)
+* [aid.fs.stat()](#fsStat)
+* [aid.list()](#list)
+* [aid.recover()](#recover)
+* [aid.replicate()](#replicate)
+* [aid.resolve()](#resolve)
+* [aid.util.ethHexToBuffer()](#utilHexToBuffer)
+* [aid.util.toBuffer()](#utilToBuffer)
+* [aid.util.toHex()](#utilToHex)
+* [aid.util.writeIdentity()](#utilWriteIdentity)
 
-### `aid.archive()` <a name="archive"></a>
+<a name="archive"></a>
+### `aid.archive()`
 
-### `aid.create()` <a name="create"></a>
+<a name="create"></a>
+### `aid.create()`
 
-### `aid.ddo.create()` <a name="ddoCreate"></a>
+<a name="ddoCreate"></a>
+### `aid.ddo.create()`
 
-### `aid.did.create()` <a name="didCreate"></a>
+<a name="didCreate"></a>
+### `aid.did.create()`
 
-### `aid.did.getIdentifier()` <a name="didGetIdentifier"></a>
+<a name="didGetIdentifier"></a>
+### `aid.did.getIdentifier()`
 
-### `aid.did.normalize()` <a name="didNormalize"></a>
+<a name="didNormalize"></a>
+### `aid.did.normalize()`
 
-### `aid.fs.writeFile()` <a name="fsWriteFile"></a>
+<a name="fsWriteFile"></a>
+### `aid.fs.writeFile()`
 
-### `aid.fs.readFile()` <a name="fsReadFile"></a>
+<a name="fsReadFile"></a>
+### `aid.fs.readFile()`
 
-### `aid.fs.readdir()` <a name="fsReaddir"></a>
+<a name="fsReaddir"></a>
+### `aid.fs.readdir()`
 
-### `aid.fs.access()` <a name="fsAccess"></a>
+<a name="fsAccess"></a>
+### `aid.fs.access()`
 
-### `aid.fs.lstat()` <a name=""></a>
+<a name="fsLstat"></a>
+### `aid.fs.lstat()`
 
+<a name="fsStat"></a>
+### `aid.fs.stat()`
+
+<a name="list"></a>
+### `aid.list()`
+
+<a name="recover"></a>
+### `aid.recover()`
+
+<a name="replicate"></a>
+### `aid.replicate()`
+
+<a name="resolve"></a>
+### `aid.resolve()`
+
+<a name="utilHexToBuffer"></a>
+### `aid.util.ethHexToBuffer()`
+
+<a name="utilToBuffer"></a>
+### `aid.util.toBuffer()`
+
+<a name="utilToHex"></a>
+### `aid.util.toHex()`
+
+<a name="utilWriteIdentity"></a>
+### `aid.util.writeIdentity()`
 
 ## For Developers
 To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
