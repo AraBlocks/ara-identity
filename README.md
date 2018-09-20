@@ -1,6 +1,6 @@
 <img align="right" src="https://github.com/AraBlocks/docs/blob/master/ara.png" width="90" height="90" />
 
-# Ara Identity
+# ara-identity
 
 [![Build Status](https://travis-ci.com/AraBlocks/ara-identity.svg?token=Ty4yTmKT8aELetQd1xZp&branch=master)](https://travis-ci.com/AraBlocks/ara-identity)
 
@@ -8,8 +8,10 @@ Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg
 
 ## Table of Contents
 * [Status](#status)
+* [Stability](#stability)
 * [Installation](#installation)
 * [Setup](#setup)
+* [Usage](#usage)
 * [CLI](#cli)
 * [Javascript API](#api)
 * [For Developers](#for-developers)
