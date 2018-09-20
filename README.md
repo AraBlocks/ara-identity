@@ -75,7 +75,7 @@ await aid.archive(identity, archiverOpts)
 // Learn more about resolving and resolverOpts below under Ara references
 const ddo = aid.resolver(aid.identifier, resolverOpts)
 
-// Recovering an Ara ID using bip39 mnemonic
+// Recovering a lost Ara ID using your bip39 mnemonic
 const identity = aid.recover({mnemonic: 'hello silver ......', password: 'qwerty'})
 ```
 
@@ -89,13 +89,13 @@ const identity = aid.recover({mnemonic: 'hello silver ......', password: 'qwerty
 ## API
 All functions exported by this module will check for input correctness. If given an invalid input, a function will throw a `TypeError` with the error message.
 
-* [aid.archive()](#archive)
-* [aid.create()](#create)
-* [aid.createIdentityKeyPath()](#createIdPath)
+* [aid.archive(identity, opts)](#archive)
+* [aid.create({context, password})](#create)
+* [aid.createIdentityKeyPath(identity)](#createIdPath)
+* [aid.did.create(publicKey)](#didCreate)
+* [aid.did.getIdentifier(didURI)](#didGetIdentifier)
+* [aid.did.normalize(identifier, method)](#didNormalize)
 * [aid.ddo.create()](#ddoCreate)
-* [aid.did.create()](#didCreate)
-* [aid.did.getIdentifier()](#didGetIdentifier)
-* [aid.did.normalize()](#didNormalize)
 * [aid.fs.writeFile()](#fsWriteFile)
 * [aid.fs.readFile()](#fsReadFile)
 * [aid.fs.readdir()](#fsReaddir)
@@ -112,73 +112,194 @@ All functions exported by this module will check for input correctness. If given
 * [aid.util.writeIdentity()](#utilWriteIdentity)
 
 <a name="archive"></a>
-### `aid.archive(did, opts)`
+### `aid.archive(identity, opts)`
+Archives an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method
+```js
+// Learn more about archive() opts here:
+// https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
+const opts = {
+  secret: 'test-secret',
+  network: 'test',
+  keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
+}
+const identity = await aid.create({context, password: 'hello'})
+await aid.archive(identity, opts)
+```
 
 <a name="create"></a>
-### `aid.create()`
+### `aid.create({context, password})`
+Creates an Ara identity encrypted using the provided `password`
+```js
+//Used for web3 interactions
+//Learn more about ara-context here : https://github.com/arablocks/ara-context
+const context = require('ara-context')
+const password = 'hello'
+
+const identity = await aid.create({context, password})
+```
 
 <a name="createIdPath"></a>
-### `aid.createIdentityKeyPath()`
-
-<a name="ddoCreate"></a>
-### `aid.ddo.create()`
+### `aid.createIdentityKeyPath(identity)`
+Generate and retrieve the path to files of an identity stored locally
+```js
+const identity = await aid.create({context, password})
+const path = aid.createIdentityKeyPath(identity)
+```
 
 <a name="didCreate"></a>
-### `aid.did.create()`
+### `aid.did.create(publicKey)`
+Creates a DID reference document from a given publicKey of a key pair
+```js
+const { publicKey, secretKey } = crypto.keyPair(seed)
+const didUri = did.create(publicKey)
+```
 
 <a name="didGetIdentifier"></a>
 ### `aid.did.getIdentifier()`
+Retrieve the identifier from a DID URI
+```js
+const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+
+const identifier = aid.did.getIdentifier(didURI)
+console.log(identifier) // '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+```
 
 <a name="didNormalize"></a>
 ### `aid.did.normalize()`
+Recreate an DID URI from an identifier & method where `method` is the DID method
+```js
+const identifier = '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const method = 'ara'
+
+const didURI = aid.did.normalize(identifier, method)
+console.log(didURI) // 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+```
+
+<a name="ddoCreate"></a>
+### `aid.ddo.create()`
+Creates a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents
+```js
+const { publicKey, secretKey } = crypto.keyPair(seed)
+const didUri = did.create(publicKey)
+
+const didDocument = ddo.create({ id: didUri })
+```
 
 <a name="fsWriteFile"></a>
 ### `aid.fs.writeFile()`
 
+TODO
+
 <a name="fsReadFile"></a>
 ### `aid.fs.readFile()`
+
+TODO
 
 <a name="fsReaddir"></a>
 ### `aid.fs.readdir()`
 
+TODO
+
 <a name="fsAccess"></a>
 ### `aid.fs.access()`
+
+TODO
 
 <a name="fsLstat"></a>
 ### `aid.fs.lstat()`
 
+TODO
+
 <a name="fsStat"></a>
 ### `aid.fs.stat()`
 
+TODO
+
 <a name="list"></a>
 ### `aid.list()`
+Returns a list all identities present locally in a given path. Defaults to the root path if no path is provided
+```js
+const identities = await list()
+console.log(identities) // Displays an Array of identity strings
+```
 
 <a name="recover"></a>
-### `aid.recover()`
+### `aid.recover({mnemonic})`
+Recover a lost Ara identity by providing a valid bip39 mnemonic returned during creation
+```js
+const context = require('ara-context')
+const password = 'test'
+
+const mnemonic = 'soda inmate audit purpose logic raise put weasel child major cupboard daring'
+const identity = await aid.recover({context, password, mnemonic})
+```
 
 <a name="replicate"></a>
 ### `aid.replicate()`
+Replicates all identity files of a given Ara ID from a remote server(archiver/resolver). Make sure your `.ararc` file contains entries to the DNS & DHT server of the remote node
+```js
+const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const identity = await aid.replicate(did)
+```
 
 <a name="resolve"></a>
 ### `aid.resolve()`
+Returns the DID document of an Ara ID either from a local copy or from a remote server
+```js
+// Learn more about resolve() opts here:
+// https://github.com/AraBlocks/ara-network-node-identity-resolver/blob/master/README.md
+const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const opts = {
+  secret: 'test-secret',
+  network: 'resolver',
+  keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
+}
+const ddo = await aid.resolve(did, opts)
+console.log(ddo) // Displays the DID document in JSON format
+```
 
 <a name="utilHexToBuffer"></a>
 ### `aid.util.ethHexToBuffer()`
+Converts an ethereum style hex string into a buffer
+```js
+const hex = '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const hexBuffer = aid.util.ethHexToBuffer(hex)
+```
 
 <a name="utilToBuffer"></a>
 ### `aid.util.toBuffer()`
+Converts any provided value to a buffer
+```js
+const value = 1234
+const buffer = aid.util.toBuffer(value)
+```
 
 <a name="utilToHex"></a>
 ### `aid.util.toHex()`
+Converts a buffer to a hex string.
+```js
+const buffer = Buffer.from('hello')
+const hex = aid.util.toHex(buffer)
+```
 
 <a name="utilWriteIdentity"></a>
 ### `aid.util.writeIdentity()`
+Writes given ARA Identity files to the Ara root folder
+```js
+const context = require('ara-context')
+const password = 'hello'
+
+const identity = await aid.create({context, password})
+
+await writeIdentity(identity)
+```
 
 ## For Developers
 To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
 - [Commit message format](/.github/COMMIT_FORMAT.md)
 - [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
 - [How to contribute](/.github/CONTRIBUTING.md)
+- [Release Versioning guidelines](https://semver.org/)
 
 ## References
 - [W3C Decentralized IDs specs](https://w3c-ccg.github.io/did-spec/)
@@ -187,6 +308,7 @@ To Contribute to Ara Identity, please look into our latest [issues](https://gith
 
 LGPL-3.0
 
+[did-document]: https://w3c-ccg.github.io/did-spec/#did-documents
 [stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index
 [archiver-readme]: https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
 [resolver-readme]: https://github.com/AraBlocks/ara-network-node-identity-resolver/blob/master/README.md
