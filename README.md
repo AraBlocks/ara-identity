@@ -102,7 +102,7 @@ $ aid create
 Please provide a passphrase. Do not forget this as it will never be shown to you.
 Passphrase: [hidden]
 
- ara: info:  New identity created: did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478
+ ara: info:  New identity created: did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
  ara: warn:  Will write identity file: ddo.json
  ara: warn:  Will write identity file: keystore/eth
  ara: warn:  Will write identity file: keystore/ara
@@ -138,7 +138,7 @@ General Options:
   --help, -h     Show this help message
   --debug, -D    Enable debug output
   --version, -V  Show program version
-$ aid archive did:ara:d914852ea70409af1bdaa7fc0a13f3557dc49b9af09d8b4e36ae5248943010ec \
+$ aid archive did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
               -n archiver \
               -k /home/ubuntu/.ara/keyrings/test-keyring.pub
@@ -157,7 +157,30 @@ Passphrase: [hidden]
 Resolves an Ara ID to its DID document either locally or from a remote server
 
 ```
+$ aid resolver -h
+usage: aid resolve [-D] [options]
 
+Positionals:
+  did  [default: ""]
+
+Network Options:
+  --secret, -s   Shared secret key for the associated network keys.
+  --keyring, -k  Path to Ara network keyring file
+  --network, -n  Human readable network name for keys in keyring
+
+Resolution Options:
+  --cache, -C    Enable or disable cache  [boolean] [default: true]
+  --timeout, -t  Resolution timeout
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+
+$ aid resolve 4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
+              -s test-secret \
+              -n resolver \
+              -k /home/ubuntu/.ara/keyrings/test-keyring.pub
 ```
 
 ## API
