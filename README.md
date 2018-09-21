@@ -181,6 +181,153 @@ $ aid resolve 4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
               -n resolver \
               -k /home/ubuntu/.ara/keyrings/test-keyring.pub
+
+{
+  "@context": "https://w3id.org/did/v1",
+  "id": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45",
+  "publicKey": [
+    {
+      "id": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45#owner",
+      "type": "Ed25519VerificationKey2018",
+      "owner": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45",
+      "publicKeyHex": "4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45",
+      "publicKeyBase58": "6DWUK3mwZEGEBjazCWxURuLKgtw3BH8dEs4QfQCJxK32",
+      "publicKeyBase64": "E1+uigJ5icWgFTK4Qo6CPvbn11YzQ4mpWXBwUxBV8tF"
+    },
+    {
+      "id": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45#eth",
+      "type": "Secp256k1VerificationKey2018",
+      "owner": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45",
+      "publicKeyHex": "6cc2eae7aa46f4fa81e06478b55db6e104e3cca5fbd30fef6254673475ce4b9c835ef60b1cf50bfe2d6c9112f6d8991634bc0027b63668906ff0cd11da06936a",
+      "publicKeyBase58": "3B7yqU1AUBJ3d9o1pQ28pzQFd8Am7MJ75UaJV4ecbWWAphwV8bjL9YkuZgCVxkbB68tMd2CEhnHoAZtDAse1LeEm",
+      "publicKeyBase64": "Bswurnqkb0+oHgZHi1XbbhBOPMpfvTD+9iVGc0dc5LnINe9gsc9Qv+LWyREvbYmRY0vAAntjZokG/wzRHaBpNq"
+    }
+  ],
+  "authentication": [
+    {
+      "publicKey": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45#owner",
+      "type": "Ed25519SignatureAuthentication2018"
+    },
+    {
+      "publicKey": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45#eth",
+      "type": "Secp256k1SignatureAuthentication2018"
+    }
+  ],
+  "service": [],
+  "created": "2018-09-20T18:05:49.347Z",
+  "updated": "2018-09-20T18:05:49.347Z",
+  "proof": {
+    "type": "Ed25519VerificationKey2018",
+    "nonce": "9bfb9a6a2c96a5c8fb579b6906e4d7eba93da51945e9923db15fa89493db79d9",
+    "domain": "ara",
+    "created": "2018-09-20T18:05:49.351Z",
+    "creator": "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45#owner",
+    "signatureValue": "f1bfaaed64ca2c19c1d25b3f9af31dc3b8a78cd2af9e73a218c3c76e0ac3d2fbd0656aaf4a00db6a4721132625cc2d9fe5e766fa07f3b93223d8cbaac7b4870b"
+  }
+}
+```
+
+### aid list
+Lists all identities present locally in a given path. Defaults to the Ara root folder
+
+```sh
+$ aid list -h
+usage: aid list [-D] [options]
+
+List Options:
+  --path, -p  Path to look for identities
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+
+$ aid list
+did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
+did:ara:a5619aac8ea814a3e0e3b50e54493a3933ddf0418e3da892fd2bfd1240d1b3ac
+did:ara:eafe6299d7d5c286bb50599f20efcd9906205ca772842242b0141f5c263ae7c0
+```
+
+### aid whoami
+Displays the default Ara ID Environment variable. Returns null is the environment variable is not set. Set the environment variable under [rc.js](https://github.com/AraBlocks/ara-identity/blob/master/rc.js)
+
+```sh
+$ aid whoami -h
+usage: aid whoami [-D] [options]
+
+Resolution Options:
+  --cache, -C    Enable or disable cache  [boolean] [default: true]
+  --timeout, -t  Resolution timeout
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+
+$ aid whoami
+did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
+```
+
+### aid recover
+Recover a lost Ara ID by providing a valid bip39 mnemonic provided during creation
+
+```
+$ aid recover -h
+usage: aid [-D] recover [options]
+
+Recovery Options:
+  --mnemonic, -m  Valid bip39 mnemonic  [required]
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+
+$ aid recover -m 'happy kangaroo coyote rich detail matrix grief spirit jeans owner heart net'
+? Your identity's keystore will be secured by a passphrase after recovery.
+Please provide a passphrase. Do not forget this as it will never be shown to you.
+Passphrase: [hidden]
+ ara: info:  Identity recovered : did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478
+ ara: warn:  Will write identity file: ddo.json
+ ara: warn:  Will write identity file: keystore/eth
+ ara: warn:  Will write identity file: keystore/ara
+ ara: warn:  Will write identity file: schema.proto
+ ara: warn:  Will write identity file: identity
+ ara: info:  Identity recovered successfully.
+```
+
+### aid keystore-dump
+Print eth or ara private key for a given an Ara ID. Requires a password for verification
+
+```
+$ aid keystore-dump -h
+usage: aid keystore-dump [-D] [options]
+
+Positionals:
+  did  [default: ""]
+  type  [default: "eth"]
+
+Options:
+  --path, -p  Path to look for did directory
+  --file
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 ara
+? Please enter the passphrase associated with the identity.
+Passphrase: [hidden]
+
+ ara: info:  Ara private key: 1845786828b7dfc7273d10617899306476756385bab550214647b8bd......
+
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth
+? Please enter the passphrase associated with the identity.
+Passphrase: [hidden]
+
+ ara: info:  Ara ID Ethereum private key: 17fa0d73db216ced1c5bf9ed93d9fe89e2875bb1255a1.....
+
 ```
 
 ## API
