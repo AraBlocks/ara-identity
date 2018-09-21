@@ -85,6 +85,80 @@ const identity = aid.recover({mnemonic: 'hello silver ......', password: 'qwerty
 
 ## CLI
 
+### aid create
+Create an Ara ID through the command line. Prompts the user to enter a password for encryption
+
+```sh
+$ aid create -h
+usage: aid create [-D] [options]
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+
+$ aid create
+? Your identitys keystore will be secured by a passphrase.
+Please provide a passphrase. Do not forget this as it will never be shown to you.
+Passphrase: [hidden]
+
+ ara: info:  New identity created: did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478
+ ara: warn:  Will write identity file: ddo.json
+ ara: warn:  Will write identity file: keystore/eth
+ ara: warn:  Will write identity file: keystore/ara
+ ara: warn:  Will write identity file: schema.proto
+ ara: warn:  Will write identity file: identity
+ ara: info:  Please safely store the following 12 word mnemonic phrase for this
+ ara: info:  Ara ID. This phrase will be required to restore your Ara ID.
+ ara: info:  It will never be shown again:
+ ara: info:
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║ glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+```
+
+### aid archive
+Archive an Ara ID to a remote server from the command line. Prompts the user to enter their password for verification
+
+```
+$ aid archive -h
+usage: aid archive [-D] [options]
+
+Positionals:
+  did  [default: ]
+
+Network Options:
+  --secret, -s   Shared secret key for the associated network keys  [required]
+  --keyring, -k  Path to Ara network keyring file  [required]
+  --network, -n  Human readable network name for keys in keyring  [required]
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+$ aid archive did:ara:d914852ea70409af1bdaa7fc0a13f3557dc49b9af09d8b4e36ae5248943010ec \
+              -s test-secret \
+              -n archiver \
+              -k /home/ubuntu/.ara/keyrings/test-keyring.pub
+
+? Please provide a passphrase for your identity. This is needed to archive your identity.
+Passphrase: [hidden]
+ ara: warn:  Archiving new identity for network /home/ubuntu/.ara/keyrings/test-keyring.pub.
+ ara: info:  Got hello from archiver node: key=35e2e3ec mac=5d8c8995
+ ara: info:  Authenticated with archiver node: keys=c9e1b5f4 signature=dbb8c339
+ ara: info:  Got okay from archiver node: signature=dbb8c339
+ ara: info:  1 connection made
+ ara: info:  Successfully archived identity to network archiver
+```
+
+### aid resolve
+Resolves an Ara ID to its DID document either locally or from a remote server
+
+```
+
+```
 
 ## API
 All functions exported by this module will check for input correctness. If given an invalid input, a function will throw a `TypeError` with the error message.
@@ -117,6 +191,7 @@ Archives an Ara ID into the Ara network where `identity` is the Ara Identity obj
 ```js
 // Learn more about archive() opts here:
 // https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
+const context = require('ara-context')
 const opts = {
   secret: 'test-secret',
   network: 'test',
