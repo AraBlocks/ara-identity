@@ -97,6 +97,7 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 
+
 $ aid create
 ? Your identitys keystore will be secured by a passphrase.
 Please provide a passphrase. Do not forget this as it will never be shown to you.
@@ -138,6 +139,8 @@ General Options:
   --help, -h     Show this help message
   --debug, -D    Enable debug output
   --version, -V  Show program version
+
+
 $ aid archive did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
               -n archiver \
@@ -176,6 +179,7 @@ General Options:
   --help, -h     Show this help message
   --debug, -D    Enable debug output
   --version, -V  Show program version
+
 
 $ aid resolve 4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
@@ -242,6 +246,7 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 
+
 $ aid list
 did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
 did:ara:a5619aac8ea814a3e0e3b50e54493a3933ddf0418e3da892fd2bfd1240d1b3ac
@@ -264,6 +269,7 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 
+
 $ aid whoami
 did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
 ```
@@ -282,6 +288,7 @@ General Options:
   --help, -h     Show this help message
   --debug, -D    Enable debug output
   --version, -V  Show program version
+
 
 $ aid recover -m 'happy kangaroo coyote rich detail matrix grief spirit jeans owner heart net'
 ? Your identity's keystore will be secured by a passphrase after recovery.
@@ -316,11 +323,13 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 
+
 $ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 ara
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
  ara: info:  Ara private key: 1845786828b7dfc7273d10617899306476756385bab550214647b8bd......
+
 
 $ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth
 ? Please enter the passphrase associated with the identity.
