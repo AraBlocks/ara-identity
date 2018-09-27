@@ -193,9 +193,9 @@ const didDocument = ddo.create({ id: didUri })
 
 <a name="fs"></a>
 ### `aid.fs`
-`aid.fs` is an an abstract file system access interface, or module will abstract reads (and writes) from the file system (or CFS/etc) to retrieve files like `ddo.json` or `keystore/ara`. This abstraction allows the caller to consume these files, even if they do not live on the same host machine. This allows services running on servers to bind themselves to identities, without the identity files living on the same machine.
+`aid.fs` is an an abstract file system access interface, or module, will abstract reads (and writes) from the file system (or CFS/etc) to retrieve files like `ddo.json` or `keystore/ara`. This abstraction allows the caller to consume these files, even if they do not live on the same host machine. This allows services running on servers to bind themselves to identities, without the identity files living on the same machine.
 
-To learn more about Ara remote machines, please refer to [archiver][archiver-readme] & [resolver][resolver-readme]
+To learn more about Ara remote machines, please refer to [archiver][Ara Identity Archiver] & [resolver][Ara Identity Resolver]
 
 <a name="fsWriteFile"></a>
 ### `aid.fs.writeFile(identifier, filename, buffer)`
@@ -273,7 +273,7 @@ console.log(fileInfo) // Displays information about the file if found
 
 <a name="list"></a>
 ### `aid.list()`
-Returns a list all identities present locally in a given path. Defaults to the root path if no path is provided
+Returns a list all identities present locally in a given path. Defaults to the environment's root path if no path is provided. To learn more about how `ara-identity` defines environment variable, please check in ara-runtime [docs][rc-docs]
 ```js
 const identities = await list()
 console.log(identities) // Displays an Array of identity strings
@@ -378,3 +378,4 @@ LGPL-3.0
 [Ara Identity Resolver]: https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
 [context-readme]: https://github.com/AraBlocks/ara-context/blob/master/README.md
 [cli-docs]: https://github.com/AraBlocks/ara-identity/blob/master/docs/cli.md
+[rc-docs]: https://github.com/AraBlocks/ara-identity/blob/master/docs/rc.md
