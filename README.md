@@ -183,7 +183,7 @@ console.log(didURI) // 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb8099437
 
 <a name="ddoCreate"></a>
 ### `aid.ddo.create({id})`
-Creates a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents
+Creates a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents. The `seed` value could be a optional random seed buffer or a deterministic seed buffer derived from a value
 ```js
 const { publicKey, secretKey } = crypto.keyPair(seed)
 const didUri = did.create(publicKey)
