@@ -33,6 +33,12 @@ This project is in active development.
 $ npm install arablocks/ara-identity
 ```
 
+### To install ara-identity globally,
+
+```sh
+$ npm install arablocks/ara-identity --global
+```
+
 ## Usage
 
 ```js
@@ -346,6 +352,7 @@ await writeIdentity(identity)
 ```
 
 ### CLI
+Please refer to the CLI [doc's][cli-docs] for the start-up guide on using `ara-identity` from the terminal
 
 ## Contributing
 To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
@@ -370,3 +377,4 @@ LGPL-3.0
 [Ara Identity Archiver]: https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
 [Ara Identity Resolver]: https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
 [context-readme]: https://github.com/AraBlocks/ara-context/blob/master/README.md
+[cli-docs]: https://github.com/AraBlocks/ara-identity/blob/master/docs/cli.md
