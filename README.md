@@ -79,7 +79,7 @@ const identity = aid.recover(recoverOpts)
 ```
 
 ## API
-All functions exported by this module will check for input correctness. If given an invalid input, a function will throw a `TypeError` with the error message.
+All functions exported by this module will check for input correctness. All functions check for input validity and throw an error if any of the required argument is found to be empty or invalid.
 
 * [aid.archive(identity, opts)](#archive)
 * [aid.create(opts)](#create)
