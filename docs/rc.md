@@ -1,3 +1,0 @@
-# Ara runtime configuration
-
-TODO
