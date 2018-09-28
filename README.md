@@ -378,4 +378,4 @@ LGPL-3.0
 [Ara Identity Resolver]: https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
 [context-readme]: https://github.com/AraBlocks/ara-context/blob/master/README.md
 [cli-docs]: https://github.com/AraBlocks/ara-identity/blob/master/docs/cli.md
-[rc-docs]: https://github.com/AraBlocks/ara-identity/blob/master/docs/rc.md
+[rc-docs]: https://github.com/AraBlocks/ara-runtime-configuration/blob/master/README.md
