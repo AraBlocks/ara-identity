@@ -380,7 +380,6 @@ To Contribute to Ara Identity, please look into our latest [issues](https://gith
 LGPL-3.0
 
 [ara-docs]: https://github.com/AraBlocks/papers/blob/master/ara-whitepaper.pdf
-[cli-docs]: https://github.com/AraBlocks/ara-identity/blob/master/README.md
 [did-document]: https://w3c-ccg.github.io/did-spec/#did-documents
 [stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index
 [Ara Identity Archiver]: https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
