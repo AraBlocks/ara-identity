@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.com/AraBlocks/ara-identity.svg?token=Ty4yTmKT8aELetQd1xZp&branch=master)](https://travis-ci.com/AraBlocks/ara-identity)
 
-Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/) which allows users to interact with services in the Ara network. It provides the users with an ability to access the services running on the Ara network.
+Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/) which allows users to interact with services in the Ara network. To learn more about Ara network, please refer to the Ara white paper [here][ara-docs]
 
 ## Table of Contents
 * [Status](#status)
@@ -21,7 +21,7 @@ This project is in active development.
 
 ## Stability
 
-> [Stability][stability-index]: 1 - Experimental. This feature is still under
+> [Stability][stability-index]: 1 - Experimental. These features are still under
 > active development and subject to non-backwards compatible changes, or even
 > removal, in any future version. Use of the feature is not recommended
 > in production environments. Experimental features are not subject to
@@ -58,7 +58,8 @@ const archiverOpts = {
   network: 'test-archiver',
   keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
 }
-// To learn more about archiverOpts see : https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
+// To learn about archiverOpts refer to the below document,
+// https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
 await aid.archive(identity, archiverOpts)
 
 // Resolve an Ara ID to get  DID-document
@@ -67,12 +68,14 @@ const resolverOpts = {
   network: 'test-resolver',
   keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
 }
-// To learn about resolverOpts see : https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
+// To learn about resolverOpts refer to the below document,
+// https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
 const ddo = aid.resolve(aid.identifier, resolverOpts)
 
 // Recover a lost Ara ID using your bip39 mnemonic
 const recoverOpts = {
-  mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net', // valid bip39 mnemonic of the Ara ID being recovered
+  // valid bip39 mnemonic of the Ara ID being recovered
+  mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net',
   password: 'qwerty' // New password to be used for encryption of the identity files
 }
 const identity = aid.recover(recoverOpts)
@@ -106,7 +109,7 @@ All functions exported by this module will check for input correctness. All func
 
 <a name="archive"></a>
 ### `aid.archive(identity, opts)`
-Archive an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method. See [ara archiver][archiver-readme]
+Archive an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method. To learn more about archiving, see [ara archiver][Ara Identity Archiver]
 ```js
 const context = require('ara-context')
 const opts = {
@@ -154,7 +157,7 @@ console.log(path) // Displays the local folder path of the identity
 
 <a name="didCreate"></a>
 ### `aid.did.create(publicKey)`
-Creates a DID reference document from a given publicKey of a key pair
+Create a DID reference document from a given publicKey of a key pair. The `seed` value could be either an optional random seed buffer or a deterministic seed buffer derived from a value
 ```js
 const { publicKey, secretKey } = crypto.keyPair(seed)
 const didUri = did.create(publicKey)
@@ -172,7 +175,7 @@ console.log(identifier) // '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb80994379489
 
 <a name="didNormalize"></a>
 ### `aid.did.normalize(identifier, method)`
-Recreate an DID URI from an identifier & method where `method` is the DID method
+Recreate a DID URI from an identifier & method where `method` is the DID method
 ```js
 const identifier = '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
 const method = 'ara'
@@ -183,7 +186,7 @@ console.log(didURI) // 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb8099437
 
 <a name="ddoCreate"></a>
 ### `aid.ddo.create({id})`
-Creates a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents. The `seed` value could be a optional random seed buffer or a deterministic seed buffer derived from a value
+Create a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents. The `seed` value could be either an optional random seed buffer or a deterministic seed buffer derived from a value
 ```js
 const { publicKey, secretKey } = crypto.keyPair(seed)
 const didUri = did.create(publicKey)
@@ -295,7 +298,7 @@ const identity = await aid.recover(opts)
 
 <a name="replicate"></a>
 ### `aid.replicate(did)`
-Replicates all identity files of a given Ara ID from a remote server(archiver/resolver). Make sure your `.ararc` file contains entries to the DNS & DHT server of the remote node
+Replicates all identity files of a given Ara ID as a Buffer array from a remote server(archiver/resolver). Make sure your `.ararc` file contains entries to the DNS & DHT server of the remote node
 ```js
 const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
 const identity = await aid.replicate(did)
@@ -371,6 +374,7 @@ To Contribute to Ara Identity, please look into our latest [issues](https://gith
 
 LGPL-3.0
 
+[ara-docs]: https://github.com/AraBlocks/papers/blob/master/ara-whitepaper.pdf
 [cli-docs]: https://github.com/AraBlocks/ara-identity/blob/master/README.md
 [did-document]: https://w3c-ccg.github.io/did-spec/#did-documents
 [stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index
