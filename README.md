@@ -33,7 +33,7 @@ This project is in active development.
 $ npm install arablocks/ara-identity
 ```
 
-### To install ara-identity globally,
+### To install globally,
 
 ```sh
 $ npm install arablocks/ara-identity --global
@@ -157,7 +157,7 @@ console.log(path) // Displays the local folder path of the identity
 
 <a name="didCreate"></a>
 ### `aid.did.create(publicKey)`
-Create a DID reference document from a given publicKey of a key pair. The `seed` value could be either an optional random seed buffer or a deterministic seed buffer derived from a value
+Create a DID reference document from a given publicKey of a key pair. The `seed` value could be either a random seed buffer or a deterministic seed buffer derived from a value
 ```js
 const { publicKey, secretKey } = crypto.keyPair(seed)
 const didUri = did.create(publicKey)
@@ -169,7 +169,7 @@ Retrieve the identifier from a DID URI
 ```js
 const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
 
-const identifier = aid.did.getIdentifier(didURI)
+const identifier = aid.did.getIdentifier(did)
 console.log(identifier) // '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
 ```
 
@@ -180,18 +180,21 @@ Recreate a DID URI from an identifier & method where `method` is the DID method
 const identifier = '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
 const method = 'ara'
 
-const didURI = aid.did.normalize(identifier, method)
+const did = aid.did.normalize(identifier, method)
 console.log(didURI) // 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
 ```
 
 <a name="ddoCreate"></a>
-### `aid.ddo.create({id})`
-Create a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents. The `seed` value could be either an optional random seed buffer or a deterministic seed buffer derived from a value
+### `aid.ddo.create(opts)`
+Create a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents. The `seed` value could be either a random seed buffer or a deterministic seed buffer derived from a value
 ```js
 const { publicKey, secretKey } = crypto.keyPair(seed)
 const didUri = did.create(publicKey)
+const opts = {
+  id: didUri
+}
 
-const didDocument = ddo.create({ id: didUri })
+const didDocument = ddo.create(opts)
 ```
 
 <a name="fs"></a>
@@ -206,11 +209,10 @@ Writes a given file to its identity folder based on a given identifier. This met
 ```js
 const context = require('ara-context')
 const opts = {
-  secret: 'test-secret',
-  network: 'test',
-  keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
+  context,
+  password: 'hello'
 }
-const identity = await aid.create({ context, password: 'hello' })
+const identity = await aid.create(opts)
 const files = identity.files
 
 for (let i = 0; i < files.length; i++) {
@@ -276,7 +278,7 @@ console.log(fileInfo) // Displays information about the file if found
 
 <a name="list"></a>
 ### `aid.list()`
-Returns a list all identities present locally in a given path. Defaults to the environment's root path if no path is provided. To learn more about how `ara-identity` defines environment variable, please check in ara-runtime [docs][rc-docs]
+Returns a list all identities present locally in a given path. Defaults to the env root path if no path is provided. To learn more about how `ara-identity` defines environment variables, please check in ara-runtime [docs][rc-docs]
 ```js
 const identities = await list()
 console.log(identities) // Displays an Array of identity strings
@@ -301,7 +303,7 @@ const identity = await aid.recover(opts)
 Replicates all identity files of a given Ara ID as a Buffer array from a remote server(archiver/resolver). Make sure your `.ararc` file contains entries to the DNS & DHT server of the remote node
 ```js
 const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
-const identity = await aid.replicate(did)
+const identityFiles = await aid.replicate(did)
 ```
 
 <a name="resolve"></a>
@@ -347,9 +349,12 @@ const hex = aid.util.toHex(buffer)
 Writes given Ara Identity files to the Ara root folder
 ```js
 const context = require('ara-context')
-const password = 'hello'
+const opts = {
+  context,
+  password: 'hello'
+}
 
-const identity = await aid.create({ context, password })
+const identity = await aid.create(opts)
 
 await writeIdentity(identity)
 ```
