@@ -33,12 +33,6 @@ This project is in active development.
 $ npm install arablocks/ara-identity
 ```
 
-### To install globally,
-
-```sh
-$ npm install arablocks/ara-identity --global
-```
-
 ## Usage
 
 ```js
@@ -56,7 +50,7 @@ const identity = aid.create(createOpts)
 const archiverOpts = {
   secret: 'test-secret',
   network: 'test-archiver',
-  keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
+  keyring: '~/.ara/keyrings/keyring.pub'
 }
 // To learn about archiverOpts refer to the below document,
 // https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
@@ -66,7 +60,7 @@ await aid.archive(identity, archiverOpts)
 const resolverOpts = {
   secret: 'test-secret',
   network: 'test-resolver',
-  keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
+  keyring: '~/.ara/keyrings/keyring.pub'
 }
 // To learn about resolverOpts refer to the below document,
 // https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
@@ -121,7 +115,7 @@ const identity = await aid.create(opts)
 const archiverOpts = {
   secret: 'test-secret',
   network: 'test-archiver',
-  keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
+  keyring: '~/.ara/keyrings/keyring.pub'
 }
 await aid.archive(identity, archiverOpts)
 ```
@@ -314,7 +308,7 @@ const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a
 const opts = {
   secret: 'test-secret',
   network: 'resolver',
-  keyring: '/home/ubuntu/.ara/keyrings/keyring.pub'
+  keyring: '~/.ara/keyrings/keyring.pub'
 }
 const ddo = await aid.resolve(did, opts)
 console.log(ddo) // Displays the DID document in JSON format
@@ -360,7 +354,7 @@ await writeIdentity(identity)
 ```
 
 ### CLI
-Please refer to the CLI [doc's][cli-docs] for the start-up guide on using `ara-identity` from the terminal
+Please refer to the [CLI Readme][cli-docs] for the start-up guide on using `ara-identity` from the command line
 
 ## Contributing
 To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
