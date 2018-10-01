@@ -371,9 +371,9 @@ To Contribute to Ara Identity, please look into our latest [issues](https://gith
 
 ## See Also
 - [W3C Decentralized ID specs](https://w3c-ccg.github.io/did-spec/)
-- [Ara archiving][archiver-readme]
-- [Ara resolving][resolver-readme]
-- [ara-context][context-readme]
+- [Ara Identity Archiver][Ara Identity Archiver]
+- [Ara Identity Resolver][Ara Identity Resolver]
+- [Ara Context][context-readme]
 
 ## License
 
