@@ -41,6 +41,11 @@ program
     alias: 'V',
     describe: 'Show program version'
   })
+  .option('quiet', {
+    alias: 'q',
+    default: false
+    describe: 'Only output errors and results'
+  })
 
 program.command(
   'create',
@@ -454,21 +459,22 @@ async function oncreate(argv) {
       new TypeError('A new passphrase is required to secure the identity.'))
   }
 
-  process.stdout.write('\n')
+  !argv.quiet && process.stdout.write('\n')
   const identity = await aid.create({ context, password })
 
-  info('New identity created: %s', identity.did)
+  !argv.quiet && info('New identity created: %s', identity.did)
 
   for (let i = 0; i < identity.files.length; ++i) {
-    warn('Will write identity file: %s', identity.files[i].path)
+    argv.quiet && warn('Will write identity file: %s', identity.files[i].path)
   }
 
   await writeIdentity(identity)
 
-  info('Please safely store the following 12 word mnemonic phrase for this')
-  info('Ara ID. This phrase will be required to restore your Ara ID.')
-  info('It will never be shown again:')
-  info('\n\n%s', table([ [ identity.mnemonic ] ]))
+  !argv.quiet && info('Please safely store the following 12 word mnemonic phrase for this')
+  !argv.quiet && info('Ara ID. This phrase will be required to restore your Ara ID.')
+  !argv.quiet && info('It will never be shown again:')
+  !argv.quiet && info('\n\n%s', table([ [ identity.mnemonic ] ]))
+  argv.quiet && process.stdout.write(identity.mnemonic + "\n")
 
   process.exit(0)
 }
