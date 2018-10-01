@@ -353,7 +353,7 @@ const identity = await aid.create(opts)
 await writeIdentity(identity)
 ```
 
-### CLI
+## CLI
 Please refer to the [CLI Readme][cli-docs] for the start-up guide on using `ara-identity` from the command line
 
 ## Contributing
