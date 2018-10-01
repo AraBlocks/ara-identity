@@ -1,12 +1,20 @@
-## CLI
+# CLI
 
-### Setup
+## Setup
+
+### Developer setup
 ```sh
 $ git clone git@github.com:AraBlocks/ara-identity.git
 $ cd ara-identity
 $ npm install && npm link
 ```
-### Usage
+
+### Install globally
+```sh
+$ npm install ara-identity --global
+```
+
+## Usage
 ```
 $ aid --help
 usage: aid [-hDV] <command> [options]
@@ -26,7 +34,7 @@ General Options:
   --version, -V  Show program version
 ```
 
-### Commands
+## Commands
 * [aid create](#aid-create)
 * [aid archive](#aid-archive)
 * [aid resolve](#aid-resolve)
@@ -36,7 +44,7 @@ General Options:
 * [aid keystore-dump](#aid-keystore-dump)
 
 <a name="aid-create"></a>
-#### aid create
+### 1. `aid create`
 Create an Ara ID through the command line. Prompts the user to enter a password for encryption.
 
 ```sh
@@ -48,7 +56,9 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 ```
-```
+
+#### Example
+```sh
 $ aid create
 ? Your identitys keystore will be secured by a passphrase.
 Please provide a passphrase. Do not forget this as it will never be shown to you.
@@ -68,14 +78,13 @@ Passphrase: [hidden]
 ╔════════════════════════════════════════════════════════════════════════════╗
 ║ glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net ║
 ╚════════════════════════════════════════════════════════════════════════════╝
-
 ```
 
 <a name="aid-archive"></a>
-#### aid archive
+### 2. `aid archive`
 Archive an Ara ID to a remote server from the command line. Prompts the user to enter their password for verification.
 
-```
+```sh
 $ aid archive -h
 usage: aid archive [-D] [options]
 
@@ -92,7 +101,10 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 ```
-```
+
+#### Example
+
+```sh
 $ aid archive did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
               -n archiver \
@@ -109,7 +121,7 @@ Passphrase: [hidden]
 ```
 
 <a name="aid-resolve"></a>
-#### aid resolve
+### 3. `aid resolve`
 Resolves an Ara ID to its DID document either locally or from a remote server.
 
 ```
@@ -133,6 +145,8 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 ```
+
+#### Example
 ```
 $ aid resolve 4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
@@ -185,7 +199,7 @@ $ aid resolve 4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
 ```
 
 <a name="aid-list"></a>
-#### aid list
+### 4. `aid list`
 Lists all identities present locally in a given path. Defaults to the Ara root folder.
 
 ```sh
@@ -200,6 +214,8 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 ```
+
+#### Example
 ```
 $ aid list
 did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
@@ -208,7 +224,7 @@ did:ara:eafe6299d7d5c286bb50599f20efcd9906205ca772842242b0141f5c263ae7c0
 ```
 
 <a name="aid-whoami"></a>
-#### aid whoami
+### 5. `aid whoami`
 Displays the default Ara ID Environment variable. Returns null is the environment variable is not set. Set the environment variable in [rc.js](https://github.com/AraBlocks/ara-identity/blob/master/rc.js).
 
 ```sh
@@ -224,13 +240,15 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 ```
+
+#### Example
 ```
 $ aid whoami
 did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
 ```
 
 <a name="aid-recover"></a>
-#### aid recover
+### 6. `aid recover`
 Recover a lost Ara ID by providing a valid bip39 mnemonic provided during creation.
 
 ```
@@ -245,6 +263,8 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 ```
+
+#### Example
 ```
 $ aid recover -m 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net'
 ? Your identity's keystore will be secured by a passphrase after recovery.
@@ -260,7 +280,7 @@ Passphrase: [hidden]
 ```
 
 <a name="aid-keystore-dump"></a>
-#### aid keystore-dump
+### aid keystore-dump
 Print eth or ara private key for a given an Ara ID. Requires a password for verification.
 
 ```
@@ -280,6 +300,8 @@ General Options:
   --debug, -D    Enable debug output
   --version, -V  Show program version
 ```
+
+#### Example (Ara keystore)
 ```
 $ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 ara
 ? Please enter the passphrase associated with the identity.
@@ -287,6 +309,8 @@ Passphrase: [hidden]
 
  ara: info:  Ara private key: 1845786828b7dfc7273d10617899306476756385bab550214647b8bd......
 ```
+
+#### Example (Eth keystore)
 ```
 $ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth
 ? Please enter the passphrase associated with the identity.
