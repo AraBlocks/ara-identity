@@ -1,15 +1,15 @@
-# CLI
+# Ara Identity Command Line Guide
 
 ## Setup
 
-### Developer setup
+### Ara Developer setup
 ```sh
 $ git clone git@github.com:AraBlocks/ara-identity.git
 $ cd ara-identity
 $ npm install && npm link
 ```
 
-### Install globally
+### Ara User setup
 ```sh
 $ npm install ara-identity --global
 ```

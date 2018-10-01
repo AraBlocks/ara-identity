@@ -37,7 +37,7 @@ $ npm install arablocks/ara-identity
 
 ```js
 const aid = require('ara-identity')
-const context = require('ara-context') // Required for web3 interactions
+const context = require('ara-context')
 
 // Create an Ara ID
 const createOpts = {
