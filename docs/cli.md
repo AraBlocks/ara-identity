@@ -280,7 +280,7 @@ Passphrase: [hidden]
 ```
 
 <a name="aid-keystore-dump"></a>
-### aid keystore-dump
+### 7. `aid keystore-dump`
 Print eth or ara private key for a given an Ara ID. Requires a password for verification.
 
 ```
