@@ -470,11 +470,14 @@ async function oncreate(argv) {
 
   await writeIdentity(identity)
 
-  !argv.quiet && info('Please safely store the following 12 word mnemonic phrase for this')
-  !argv.quiet && info('Ara ID. This phrase will be required to restore your Ara ID.')
-  !argv.quiet && info('It will never be shown again:')
-  !argv.quiet && info('\n\n%s', table([ [ identity.mnemonic ] ]))
-  argv.quiet && process.stdout.write(identity.mnemonic + "\n")
+  if (!argv.quiet) {
+    info('Please safely store the following 12 word mnemonic phrase for this')
+    info('Ara ID. This phrase will be required to restore your Ara ID.')
+    info('It will never be shown again:')
+    info('\n\n%s', table([ [ identity.mnemonic ] ]))
+  } else {
+    process.stdout.write(identity.mnemonic + "\n")
+  }
 
   process.exit(0)
 }
