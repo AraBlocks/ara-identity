@@ -1,3 +1,59 @@
+<a name="0.23.0"></a>
+# [0.23.0](https://github.com/AraBlocks/ara-identity/compare/0.22.0...0.23.0) (2018-10-01)
+
+
+### Features
+
+* **bin/aid:** Add quiet mode to create ([1037144](https://github.com/AraBlocks/ara-identity/commit/1037144))
+
+
+
+<a name="0.22.0"></a>
+# [0.22.0](https://github.com/AraBlocks/ara-identity/compare/0.21.0...0.22.0) (2018-09-19)
+
+
+
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/AraBlocks/ara-identity/compare/0.20.0...0.21.0) (2018-09-19)
+
+
+
+<a name="0.20.0"></a>
+# [0.20.0](https://github.com/AraBlocks/ara-identity/compare/0.19.0...0.20.0) (2018-09-19)
+
+
+
+<a name="0.19.0"></a>
+# [0.19.0](https://github.com/AraBlocks/ara-identity/compare/0.18.0...0.19.0) (2018-09-19)
+
+
+
+<a name="0.18.0"></a>
+# [0.18.0](https://github.com/AraBlocks/ara-identity/compare/0.17.0...0.18.0) (2018-09-19)
+
+
+
+<a name="0.17.0"></a>
+# [0.17.0](https://github.com/AraBlocks/ara-identity/compare/0.16.0...0.17.0) (2018-09-19)
+
+
+### Bug Fixes
+
+* **archive.js:** Fix broken replication streams ([8799418](https://github.com/AraBlocks/ara-identity/commit/8799418))
+* **fs.js:** Fix broken FS api over the network ([668ba28](https://github.com/AraBlocks/ara-identity/commit/668ba28))
+
+
+
+<a name="0.16.0"></a>
+# [0.16.0](https://github.com/AraBlocks/ara-identity/compare/0.15.1...0.16.0) (2018-09-18)
+
+
+
+<a name="0.15.1"></a>
+## [0.15.1](https://github.com/AraBlocks/ara-identity/compare/0.15.0...0.15.1) (2018-09-18)
+
+
+
 <a name="0.15.0"></a>
 # [0.15.0](https://github.com/AraBlocks/ara-identity/compare/0.14.0...0.15.0) (2018-09-18)
 
