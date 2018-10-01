@@ -103,7 +103,7 @@ All functions exported by this module will check for input correctness. All func
 
 <a name="archive"></a>
 ### `aid.archive(identity, opts)`
-Archive an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method. To learn more about archiving, see [ara archiver][Ara Identity Archiver]
+Archive an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method. To learn more about archiving, see [Ara Identity Archiver][Ara Identity Archiver]
 ```js
 const context = require('ara-context')
 const opts = {
@@ -302,7 +302,7 @@ const identityFiles = await aid.replicate(did)
 
 <a name="resolve"></a>
 ### `aid.resolve(did, opts)`
-Returns the DID document of an Ara ID either from a local copy or from a remote server. See [ara resolver][resolver-readme].
+Returns the DID document of an Ara ID either from a local copy or from a remote server. See [Ara Identity Resolver][Ara Identity Resolver] for more information.
 ```js
 const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
 const opts = {
