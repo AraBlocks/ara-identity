@@ -43,7 +43,7 @@ program
   })
   .option('quiet', {
     alias: 'q',
-    default: false
+    default: false,
     describe: 'Only output errors and results'
   })
 
@@ -464,8 +464,10 @@ async function oncreate(argv) {
 
   !argv.quiet && info('New identity created: %s', identity.did)
 
-  for (let i = 0; i < identity.files.length; ++i) {
-    argv.quiet && warn('Will write identity file: %s', identity.files[i].path)
+  if (!argv.quiet) {
+    for (let i = 0; i < identity.files.length; ++i) {
+      warn('Will write identity file: %s', identity.files[i].path)
+    }
   }
 
   await writeIdentity(identity)
