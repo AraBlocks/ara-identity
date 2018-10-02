@@ -231,6 +231,7 @@ Resolves an Ara identity based on the runtime configuration in the `.ararc` file
 [network.identity]
 whoami = did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
 ```
+where `[network.identity]` is the variable from which the runtime value for `whoami` is retrieved from.
 
 ```sh
 $ aid whoami -h
