@@ -37,8 +37,7 @@ $ npm install arablocks/ara-identity
 
 ```js
 const aid = require('ara-identity')
-const context = require('ara-context')
-
+const context = require('ara-context')()
 // Create an Ara ID
 const createOpts = {
   context,
@@ -64,7 +63,7 @@ const resolverOpts = {
 }
 // To learn about resolverOpts refer to the below document,
 // https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
-const ddo = aid.resolve(aid.identifier, resolverOpts)
+const ddo = aid.resolve(identity.identifier, resolverOpts)
 
 // Recover a lost Ara ID using your bip39 mnemonic
 const recoverOpts = {
@@ -96,16 +95,12 @@ All functions exported by this module will check for input correctness. All func
 * [aid.recover(opts)](#recover)
 * [aid.replicate(did)](#replicate)
 * [aid.resolve(did, opts)](#resolve)
-* [aid.util.ethHexToBuffer(hexValue)](#utilHexToBuffer)
-* [aid.util.toBuffer(value)](#utilToBuffer)
-* [aid.util.toHex(buffer)](#utilToHex)
-* [aid.util.writeIdentity(identity)](#utilWriteIdentity)
 
 <a name="archive"></a>
 ### `aid.archive(identity, opts)`
 Archive an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method. To learn more about archiving, see [Ara Identity Archiver][Ara Identity Archiver]
 ```js
-const context = require('ara-context')
+const context = require('ara-context')()
 const opts = {
   context,
   password: 'hello'
@@ -125,7 +120,7 @@ await aid.archive(identity, archiverOpts)
 Create an Ara identity encrypted using the provided `password`
 ```js
 //Used for web3 interactions
-const context = require('ara-context')
+const context = require('ara-context')()
 const opts = {
   context,
   password: 'hello'
@@ -138,7 +133,7 @@ const identity = await aid.create(opts)
 ### `aid.createIdentityKeyPath(identity)`
 Generate and retrieve the path to files of an identity stored locally
 ```js
-const context = require('ara-context')
+const context = require('ara-context')()
 const opts = {
   context,
   password: 'hello'
@@ -193,15 +188,15 @@ const didDocument = ddo.create(opts)
 
 <a name="fs"></a>
 ### `aid.fs`
-`aid.fs` is an an abstract file system access interface, or module, will abstract reads (and writes) from the file system (or CFS/etc) to retrieve files like `ddo.json` or `keystore/ara`. This abstraction allows the caller to consume these files, even if they do not live on the same host machine. This allows services running on servers to bind themselves to identities, without the identity files living on the same machine.
+`aid.fs` is an an abstract file system interface for reading and writing identity files for an identity on disk or from the network. It provides a familiar FS API exposing functions like `readFile` and `writeFile`. Most operations will use the `fs` module directly, but if a file is not found, it will ask the network for it. This allows services running on servers to bind themselves to identities, without the identity files living on the same machine.
 
-To learn more about Ara remote machines, please refer to [archiver][Ara Identity Archiver] & [resolver][Ara Identity Resolver]
+To learn more about Ara remote servers, please refer to [archiver][Ara Identity Archiver] & [resolver][Ara Identity Resolver]
 
 <a name="fsWriteFile"></a>
 ### `aid.fs.writeFile(identifier, filename, buffer)`
 Writes a given file to its identity folder based on a given identifier. This method can only be used to write locally
 ```js
-const context = require('ara-context')
+const context = require('ara-context')()
 const opts = {
   context,
   password: 'hello'
@@ -242,7 +237,7 @@ Check if a file is present in the identity directory of a given identifier. The 
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 try {
-  if(await aid.fs.access(did, 'ddo.json')) {
+  if( await aid.fs.access(did, 'ddo.json') ) {
     console.log('ddo.json file is present')
   }
 } catch(err) {
@@ -256,8 +251,8 @@ Retrieve information about a file from the identity directory of a given identif
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 
-const fileInfo = await aid.fs.lstat(did, 'ddo.json')
-console.log(fileInfo) // Displays information about the file if found
+const stats = await aid.fs.lstat(did, 'ddo.json')
+console.log(stats) // Displays information about the file if found
 ```
 
 <a name="fsStat"></a>
@@ -266,8 +261,8 @@ Same as `aid.fs.lstat()`. If the mentioned path is a symlink, this method follow
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 
-const fileInfo = await aid.fs.stat(did, 'ddo.json')
-console.log(fileInfo) // Displays information about the file if found
+const stats = await aid.fs.stat(did, 'ddo.json')
+console.log(stats) // Displays information about the file if found
 ```
 
 <a name="list"></a>
@@ -282,7 +277,7 @@ console.log(identities) // Displays an Array of identity strings
 ### `aid.recover(opts)`
 Recover a lost Ara identity by providing a valid bip39 mnemonic returned during creation
 ```js
-const context = require('ara-context')
+const context = require('ara-context')()
 
 const opts = {
   context,
@@ -312,45 +307,6 @@ const opts = {
 }
 const ddo = await aid.resolve(did, opts)
 console.log(ddo) // Displays the DID document in JSON format
-```
-
-<a name="utilHexToBuffer"></a>
-### `aid.util.ethHexToBuffer(hexValue)`
-Converts an ethereum style hex string into a buffer
-```js
-const hex = '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
-const hexBuffer = aid.util.ethHexToBuffer(hex)
-```
-
-<a name="utilToBuffer"></a>
-### `aid.util.toBuffer(value)`
-Converts any provided value to a buffer
-```js
-const value = 1234
-const buffer = aid.util.toBuffer(value)
-```
-
-<a name="utilToHex"></a>
-### `aid.util.toHex(buffer)`
-Converts a buffer to a hex string.
-```js
-const buffer = Buffer.from('hello')
-const hex = aid.util.toHex(buffer)
-```
-
-<a name="utilWriteIdentity"></a>
-### `aid.util.writeIdentity(identity)`
-Writes given Ara Identity files to the Ara root folder
-```js
-const context = require('ara-context')
-const opts = {
-  context,
-  password: 'hello'
-}
-
-const identity = await aid.create(opts)
-
-await writeIdentity(identity)
 ```
 
 ## CLI

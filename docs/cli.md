@@ -11,7 +11,7 @@ $ npm install && npm link
 
 ### Ara User setup
 ```sh
-$ npm install ara-identity --global
+$ npm install arablocks/ara-identity --global
 ```
 
 ## Usage
@@ -225,7 +225,7 @@ did:ara:eafe6299d7d5c286bb50599f20efcd9906205ca772842242b0141f5c263ae7c0
 
 <a name="aid-whoami"></a>
 ### 5. `aid whoami`
-Displays the default Ara ID Environment variable. Returns null is the environment variable is not set. Set the environment variable in [rc.js](https://github.com/AraBlocks/ara-identity/blob/master/rc.js).
+
 
 ```sh
 $ aid whoami -h
