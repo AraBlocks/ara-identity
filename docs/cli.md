@@ -108,7 +108,7 @@ General Options:
 $ aid archive did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
               -n archiver \
-              -k /home/ubuntu/.ara/keyrings/test-keyring.pub
+              -k ~/.ara/keyrings/test-keyring.pub
 
 ? Please provide a passphrase for your identity. This is needed to archive your identity.
 Passphrase: [hidden]
@@ -151,7 +151,7 @@ General Options:
 $ aid resolve 4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
               -s test-secret \
               -n resolver \
-              -k /home/ubuntu/.ara/keyrings/test-keyring.pub
+              -k ~/.ara/keyrings/test-keyring.pub
 
 {
   "@context": "https://w3id.org/did/v1",
