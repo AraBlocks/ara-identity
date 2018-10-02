@@ -225,7 +225,12 @@ did:ara:eafe6299d7d5c286bb50599f20efcd9906205ca772842242b0141f5c263ae7c0
 
 <a name="aid-whoami"></a>
 ### 5. `aid whoami`
+Resolves an Ara identity based on the runtime configuration in the `.ararc` file under `[network.identity]`. An example for defining runtime configuration in your `.ararc` is,
 
+```
+[network.identity]
+whoami = did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
+```
 
 ```sh
 $ aid whoami -h
