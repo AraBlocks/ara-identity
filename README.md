@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.com/AraBlocks/ara-identity.svg?token=Ty4yTmKT8aELetQd1xZp&branch=master)](https://travis-ci.com/AraBlocks/ara-identity)
 
-Ara Identity is an implementation of [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/) which allows users to interact with services in the Ara network.
+Ara Identity is an implementation of DIDs, or [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/), which allows users to interact with services in the Ara network. A DID document in JSON format is called a `DDO` (DID document object).
 
 ## Table of Contents
 * [Status](#status)
@@ -38,6 +38,7 @@ $ npm install arablocks/ara-identity
 ```js
 const aid = require('ara-identity')
 const context = require('ara-context')()
+
 // Create an Ara ID
 const createOpts = {
   context,
@@ -51,23 +52,18 @@ const archiverOpts = {
   network: 'test-archiver',
   keyring: '~/.ara/keyrings/keyring.pub'
 }
-// To learn about archiverOpts refer to the below document,
-// https://github.com/AraBlocks/ara-network-node-identity-archiver/blob/master/README.md
 await aid.archive(identity, archiverOpts)
 
-// Resolve an Ara ID to get  DID-document
+// Resolve an Ara ID to get DID-document
 const resolverOpts = {
   secret: 'test-secret',
   network: 'test-resolver',
   keyring: '~/.ara/keyrings/keyring.pub'
 }
-// To learn about resolverOpts refer to the below document,
-// https://github.com/AraBlocks/ara-identity-resolver/blob/master/README.md
 const ddo = aid.resolve(identity.identifier, resolverOpts)
 
-// Recover a lost Ara ID using your bip39 mnemonic
+// Recover a lost Ara ID using a valid bip39 mnemonic
 const recoverOpts = {
-  // valid bip39 mnemonic of the Ara ID being recovered
   mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net',
   password: 'qwerty' // New password to be used for encryption of the identity files
 }
@@ -75,7 +71,7 @@ const identity = aid.recover(recoverOpts)
 ```
 
 ## API
-All functions exported by this module will check for input correctness. All functions check for input validity and throw an error if any of the required argument is found to be empty or invalid.
+All functions check for input validity, input correctness, and throw an error if checks do not pass.
 
 * [aid.archive(identity, opts)](#archive)
 * [aid.create(opts)](#create)
@@ -98,7 +94,7 @@ All functions exported by this module will check for input correctness. All func
 
 <a name="archive"></a>
 ### `aid.archive(identity, opts)`
-Archive an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method. To learn more about archiving, see [Ara Identity Archiver][Ara Identity Archiver]
+Archive an Ara ID into the Ara network where `identity` is the Ara Identity object created using `create()` method. See also [Ara Identity Archiver][Ara Identity Archiver].
 ```js
 const context = require('ara-context')()
 const opts = {
@@ -112,15 +108,16 @@ const archiverOpts = {
   network: 'test-archiver',
   keyring: '~/.ara/keyrings/keyring.pub'
 }
+
 await aid.archive(identity, archiverOpts)
 ```
 
 <a name="create"></a>
 ### `aid.create(opts)`
-Create an Ara identity encrypted using the provided `password`
+Create an Ara identity encrypted using the provided `password`.
 ```js
-//Used for web3 interactions
 const context = require('ara-context')()
+
 const opts = {
   context,
   password: 'hello'
@@ -138,46 +135,48 @@ const opts = {
   context,
   password: 'hello'
 }
-
 const identity = await aid.create(opts)
+
 const path = aid.createIdentityKeyPath(identity)
-console.log(path) // Displays the local folder path of the identity
 ```
 
 <a name="didCreate"></a>
 ### `aid.did.create(publicKey)`
-Create a DID reference document from a given publicKey of a key pair. The `seed` value could be either a random seed buffer or a deterministic seed buffer derived from a value
+Create a DID reference document from a given publicKey of a key pair.
 ```js
-const { publicKey, secretKey } = crypto.keyPair(seed)
+const { publicKey, secretKey } = crypto.keyPair()
+
 const didUri = did.create(publicKey)
 ```
 
 <a name="didGetIdentifier"></a>
 ### `aid.did.getIdentifier(didURI)`
-Retrieve the identifier from a DID URI
+Retrieve the identifier from a DID URI.
 ```js
-const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 
 const identifier = aid.did.getIdentifier(did)
-console.log(identifier) // '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+
+console.log(identifier) // '4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 ```
 
 <a name="didNormalize"></a>
 ### `aid.did.normalize(identifier, method)`
-Recreate a DID URI from an identifier & method where `method` is the DID method
+Recreate a DID URI from an identifier and DID method.
 ```js
-const identifier = '8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const identifier = '4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 const method = 'ara'
 
-const did = aid.did.normalize(identifier, method)
-console.log(didURI) // 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const didURI = aid.did.normalize(identifier, method)
+
+console.log(didURI) // 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 ```
 
 <a name="ddoCreate"></a>
 ### `aid.ddo.create(opts)`
-Create a DID document for a given DID URI. See [did-spec][did-document] for more details on DID documents. The `seed` value could be either a random seed buffer or a deterministic seed buffer derived from a value
+Create a [DID document][did-document] for a given DID URI.
 ```js
-const { publicKey, secretKey } = crypto.keyPair(seed)
+const { publicKey, secretKey } = crypto.keyPair()
 const didUri = did.create(publicKey)
 const opts = {
   id: didUri
@@ -188,13 +187,11 @@ const didDocument = ddo.create(opts)
 
 <a name="fs"></a>
 ### `aid.fs`
-`aid.fs` is an an abstract file system interface for reading and writing identity files for an identity on disk or from the network. It provides a familiar FS API exposing functions like `readFile` and `writeFile`. Most operations will use the `fs` module directly, but if a file is not found, it will ask the network for it. This allows services running on servers to bind themselves to identities, without the identity files living on the same machine.
-
-To learn more about Ara remote servers, please refer to [archiver][Ara Identity Archiver] & [resolver][Ara Identity Resolver]
+`aid.fs` is an an abstract file system interface for reading and writing identity files for an identity on disk or from the network. It provides a familiar FS API exposing functions like `readFile` and `writeFile`. Most operations will use the `fs` module directly, but if a file is not found, it will ask the network for it. This allows services running on servers to bind themselves to identities, without the identity files living on the same machine. More information about remote servers can be found at [archiver][Ara Identity Archiver] & [resolver][Ara Identity Resolver].
 
 <a name="fsWriteFile"></a>
 ### `aid.fs.writeFile(identifier, filename, buffer)`
-Writes a given file to its identity folder based on a given identifier. This method can only be used to write locally
+Write a file to its local identity directory based on a given identifier.
 ```js
 const context = require('ara-context')()
 const opts = {
@@ -207,21 +204,31 @@ const files = identity.files
 for (let i = 0; i < files.length; i++) {
   await aid.fs.writeFile(identity.identifier, files[i].path, files[i].buffer)
 }
+
+/*
+Example resulting file structure:
+0b86f22e88e1be3c243f3604981683a3f51808103c98bcf99b6b72cfe9646cc1/
+├── ddo.json
+├── identity
+├── keystore
+│   ├── ara
+│   └── eth
+└── schema.proto
+*/
 ```
 
 <a name="fsReadFile"></a>
 ### `aid.fs.readFile(identifier, filename)`
-Reads a file for a given identifier either from its local copy or from a remote server
+Read a file for a given identifier from its local copy or a remote server.
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 
 const ddo = await aid.fs.readFile(did, 'ddo.json')
-console.log(ddo) // Displays the DID document of the given DID
 ```
 
 <a name="fsReaddir"></a>
 ### `aid.fs.readdir(identifier)`
-Reads the contents of the identity directory for a given identifier. The methods checks both locally and in a remote Ara server
+Read the contents of the identity directory for a given identifier. The identity directory may be located on a remote server.
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 
@@ -233,7 +240,7 @@ console.log(files) // Displays a list of all files present in that identity dire
 
 <a name="fsAccess"></a>
 ### `aid.fs.access(identifier, filename)`
-Check if a file is present in the identity directory of a given identifier. The methods checks both locally and in a remote Ara server
+Check if a file is present in the identity directory of a given identifier. The identity directory may be located on a remote server.
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 try {
@@ -247,73 +254,75 @@ try {
 
 <a name="fsLstat"></a>
 ### `aid.fs.lstat(identifier, filename)`
-Retrieve information about a file from the identity directory of a given identifier. The methods checks both locally and in a remote Ara server. Similar to fs.lstat, this method doesn't follow symlinks
+Retrieve information about a file from the identity directory of a given identifier. The identity directory may be located on a remote server. Throws error if file is not found.
+**Note**: This function does _not_ follow symlinks.
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 
 const stats = await aid.fs.lstat(did, 'ddo.json')
-console.log(stats) // Displays information about the file if found
+* TODO: put example print out here.
 ```
 
 <a name="fsStat"></a>
 ### `aid.fs.stat(identifier, filename)`
-Same as `aid.fs.lstat()`. If the mentioned path is a symlink, this method follows the symlink
+Retrieve information about a file from the identity directory of a given identifier. The identity directory may be located on a remote server. Throws error if file is not found. This function will follow symlinks.
 ```js
 const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 
 const stats = await aid.fs.stat(did, 'ddo.json')
-console.log(stats) // Displays information about the file if found
+* TODO: put example print out here.
 ```
 
 <a name="list"></a>
-### `aid.list()`
-Returns a list all identities present locally in a given path. Defaults to the env root path if no path is provided. To learn more about how `ara-identity` defines environment variables, please check in ara-runtime [docs][rc-docs]
+### `aid.list([path])`
+Return a list all identities present locally in a given path. `path` defaults to env root path if no path is provided. See [ara-runtime-configuration docs][rc-docs] for more information about environment variables.
 ```js
 const identities = await list()
-console.log(identities) // Displays an Array of identity strings
+* TODO: put example print out here.
 ```
 
 <a name="recover"></a>
 ### `aid.recover(opts)`
-Recover a lost Ara identity by providing a valid bip39 mnemonic returned during creation
+Recover a lost Ara identity by providing the valid bip39 mnemonic returned during creation.
 ```js
 const context = require('ara-context')()
 
 const opts = {
   context,
-  password: 'test',
-  mnemonic: 'soda inmate audit purpose logic raise put weasel child major cupboard daring'
+  password: 'newpassword',
+  mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net'
 }
+
 const identity = await aid.recover(opts)
 ```
 
 <a name="replicate"></a>
 ### `aid.replicate(did)`
-Replicates all identity files of a given Ara ID as a Buffer array from a remote server(archiver/resolver). Make sure your `.ararc` file contains entries to the DNS & DHT server of the remote node
+Replicate all identity files of a given Ara ID as a Buffer array from a remote server.
+**Note**: Ensure `.ararc` file contains entries to the DNS & DHT server of the remote node.
 ```js
-const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 const identityFiles = await aid.replicate(did)
 ```
 
 <a name="resolve"></a>
 ### `aid.resolve(did, opts)`
-Returns the DID document of an Ara ID either from a local copy or from a remote server. See [Ara Identity Resolver][Ara Identity Resolver] for more information.
+Return the DID document of an Ara ID from a local copy or a remote server. See [Ara Identity Resolver][Ara Identity Resolver] for more information.
 ```js
-const did = 'did:ara:8c1bfdd26dd7231a92f11ea29aea8ea32d2156cfb809943794896be643a467b2'
+const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 const opts = {
   secret: 'test-secret',
   network: 'resolver',
   keyring: '~/.ara/keyrings/keyring.pub'
 }
 const ddo = await aid.resolve(did, opts)
-console.log(ddo) // Displays the DID document in JSON format
+* TODO: put example print out here. (DID document in JSON format)
 ```
 
 ## CLI
-Please refer to the [CLI Readme][cli-docs] for the start-up guide on using `ara-identity` from the command line
+See [CLI Readme][cli-docs] to use `ara-identity` from the command line.
 
 ## Contributing
-To Contribute to Ara Identity, please look into our latest [issues](https://github.com/AraBlocks/ara-identity/issues) and also make sure to follow the below listed standards,
 - [Commit message format](/.github/COMMIT_FORMAT.md)
 - [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
 - [How to contribute](/.github/CONTRIBUTING.md)
@@ -324,11 +333,15 @@ To Contribute to Ara Identity, please look into our latest [issues](https://gith
 - [Ara Identity Archiver][Ara Identity Archiver]
 - [Ara Identity Resolver][Ara Identity Resolver]
 - [Ara Context][context-readme]
+- [ara-crypto][Ara Crypto]
+- [ara-context][Ara Context]
 
 ## License
 
 LGPL-3.0
 
+[Ara Context]: https://github.com/AraBlocks/ara-context/blob/master/README.md
+[Ara Crypto]: https://github.com/AraBlocks/ara-crypto/blob/master/README.md
 [ara-docs]: https://github.com/AraBlocks/papers/blob/master/ara-whitepaper.pdf
 [did-document]: https://w3c-ccg.github.io/did-spec/#did-documents
 [stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index

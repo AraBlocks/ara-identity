@@ -45,7 +45,7 @@ General Options:
 
 <a name="aid-create"></a>
 ### 1. `aid create`
-Create an Ara ID through the command line. Prompts the user to enter a password for encryption.
+Create an Ara ID through the command line. Prompts user for password for encryption.
 
 ```sh
 $ aid create -h
@@ -82,7 +82,7 @@ Passphrase: [hidden]
 
 <a name="aid-archive"></a>
 ### 2. `aid archive`
-Archive an Ara ID to a remote server from the command line. Prompts the user to enter their password for verification.
+Archive an Ara ID to a remote server from the command line. Prompts user for password for verification.
 
 ```sh
 $ aid archive -h
@@ -122,7 +122,7 @@ Passphrase: [hidden]
 
 <a name="aid-resolve"></a>
 ### 3. `aid resolve`
-Resolves an Ara ID to its DID document either locally or from a remote server.
+Resolve an Ara ID to its DID document from a local copy or from a remote server.
 
 ```
 $ aid resolver -h
@@ -200,7 +200,7 @@ $ aid resolve 4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45 \
 
 <a name="aid-list"></a>
 ### 4. `aid list`
-Lists all identities present locally in a given path. Defaults to the Ara root folder.
+List all identities present locally in a given path. Defaults to Ara root directory.
 
 ```sh
 $ aid list -h
@@ -225,13 +225,15 @@ did:ara:eafe6299d7d5c286bb50599f20efcd9906205ca772842242b0141f5c263ae7c0
 
 <a name="aid-whoami"></a>
 ### 5. `aid whoami`
-Resolves an Ara identity based on the runtime configuration in the `.ararc` file under `[network.identity]`. An example for defining runtime configuration in your `.ararc` is,
+Resolve an Ara identity based on the runtime configuration in the `.ararc` file under `[network.identity]`.
 
 ```
+;; Example .ararc
+
 [network.identity]
 whoami = did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
 ```
-where `[network.identity]` is the variable from which the runtime value for `whoami` is retrieved from.
+`[network.identity]` is the variable from which the runtime value from which `whoami` is retrieved.
 
 ```sh
 $ aid whoami -h
@@ -255,7 +257,7 @@ did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45
 
 <a name="aid-recover"></a>
 ### 6. `aid recover`
-Recover a lost Ara ID by providing a valid bip39 mnemonic provided during creation.
+Recover a lost Ara ID from a valid bip39 mnemonic provided during creation.
 
 ```
 $ aid recover -h
@@ -287,7 +289,7 @@ Passphrase: [hidden]
 
 <a name="aid-keystore-dump"></a>
 ### 7. `aid keystore-dump`
-Print eth or ara private key for a given an Ara ID. Requires a password for verification.
+Print `eth` or `ara` private key for a given an Ara ID. Requires a password for verification.
 
 ```
 $ aid keystore-dump -h
