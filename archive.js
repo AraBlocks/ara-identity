@@ -32,10 +32,9 @@ async function archive(identity, opts) {
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting options to be an object.')
   }
-  
+
   let conf
-  try { conf = rc.network.identity.archiver }
-  finally { conf = conf || {} }
+  try { conf = rc.network.identity.archiver } finally { conf = conf || {} }
   opts.secret = opts.secret || conf.secret
   opts.keyring = opts.keyring || conf.keyring
   opts.network = opts.network || conf.network
