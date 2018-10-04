@@ -7,6 +7,7 @@ const debug = require('debug')('ara:identity:resolve')
 const fetch = require('got')
 const pify = require('pify')
 const fs = require('./fs')
+const rc = require('./rc')()
 
 const kDIDIdentifierLength = 64
 // in milliseconds
@@ -25,6 +26,13 @@ async function resolve(uri, opts) {
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting options to be an object.')
   }
+
+  let conf
+  try { conf = rc.network.identity.resolver }
+  finally { conf = conf || {} }
+  opts.secret = opts.secret || conf.secret
+  opts.keyring = opts.keyring || conf.keyring
+  opts.network = opts.network || conf.network
 
   if (0 !== uri.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
