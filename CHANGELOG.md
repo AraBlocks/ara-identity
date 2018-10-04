@@ -1,3 +1,20 @@
+<a name="0.24.0"></a>
+# [0.24.0](https://github.com/AraBlocks/ara-identity/compare/0.23.0...0.24.0) (2018-10-04)
+
+
+### Bug Fixes
+
+* **README.md:** Address PR feedback ([596f209](https://github.com/AraBlocks/ara-identity/commit/596f209))
+* **README.md:** Address PR feedback ([8867f9e](https://github.com/AraBlocks/ara-identity/commit/8867f9e))
+* **README.md:** Fix method error check rule ([292902d](https://github.com/AraBlocks/ara-identity/commit/292902d))
+
+
+### Features
+
+* **archive/resolve:** added keyringOpts extraction from ararc ([03823ac](https://github.com/AraBlocks/ara-identity/commit/03823ac))
+
+
+
 <a name="0.23.0"></a>
 # [0.23.0](https://github.com/AraBlocks/ara-identity/compare/0.22.0...0.23.0) (2018-10-01)
 
