@@ -9,6 +9,7 @@ const debug = require('debug')('ara:identity:archive')
 const pump = require('pump')
 const ram = require('random-access-memory')
 const net = require('net')
+const rc = require('./rc')()
 
 const kDefaultTimeout = 5000
 
@@ -31,6 +32,13 @@ async function archive(identity, opts) {
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting options to be an object.')
   }
+  
+  let conf
+  try { conf = rc.network.identity.archiver }
+  finally { conf = conf || {} }
+  opts.secret = opts.secret || conf.secret
+  opts.keyring = opts.keyring || conf.keyring
+  opts.network = opts.network || conf.network
 
   if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
     throw new TypeError('Expecting shared secret to be a string or buffer.')
