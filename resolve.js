@@ -22,8 +22,8 @@ function notFound() {
   )
 }
 
-async function resolve(uri, opts) {
-  if (null == opts || 'object' !== typeof opts) {
+async function resolve(uri, opts = {}) {
+  if ('object' !== typeof opts) {
     throw new TypeError('Expecting options to be an object.')
   }
 
