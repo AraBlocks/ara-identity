@@ -59,6 +59,9 @@ async function create(opts) {
   if (null == opts.mnemonic) {
     mnemonic = bip39.generateMnemonic()
   } else {
+    if (!bip39.validateMnemonic(opts.mnemonic)) {
+      throw new TypeError('Expecting a valid bip39 mnemonic')
+    }
     // eslint-disable-next-line prefer-destructuring
     mnemonic = opts.mnemonic
   }
