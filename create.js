@@ -90,10 +90,11 @@ async function create(opts) {
   const didUri = did.create(publicKey)
   let didDocument
   if (opts.revoked) {
-    didDocument = ddo.create({ id: didUri, opts.revoked })
+    const { revoked } = opts
+    didDocument = ddo.create({ id: didUri, revoked })
   }
   else {
-    didDocument = ddo.create({ id: didUri, opts.revoked })
+    didDocument = ddo.create({ id: didUri })
   }
 
   const encryptionKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
