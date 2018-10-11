@@ -6,8 +6,11 @@ const defaults = () => ({
   network: {
     identity: {
       root: resolve(rc().data.root, 'identities'),
-      whoami: ''
-    }
+      whoami: '',
+
+      archiver: { },
+      resolver: { },
+    },
   }
 })
 
