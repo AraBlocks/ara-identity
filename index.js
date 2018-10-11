@@ -2,6 +2,7 @@ const { createIdentityKeyPath } = require('./key-path')
 const { archive } = require('./archive')
 const { resolve } = require('./resolve')
 const { recover } = require('./recover')
+const { revoke } = require('./revoke')
 const { create } = require('./create')
 const ethereum = require('./ethereum')
 const { list } = require('./list')
@@ -16,6 +17,7 @@ module.exports = {
   archive,
   recover,
   resolve,
+  revoke,
   create,
   list,
   util,
