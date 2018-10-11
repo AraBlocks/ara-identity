@@ -88,7 +88,13 @@ async function create(opts) {
   })
 
   const didUri = did.create(publicKey)
-  const didDocument = ddo.create({ id: didUri })
+  let didDocument
+  if (opts.revoked) {
+    didDocument = ddo.create({ id: didUri, opts.revoked })
+  }
+  else {
+    didDocument = ddo.create({ id: didUri, opts.revoked })
+  }
 
   const encryptionKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
   const encodedKeystore = protobuf.messages.KeyStore.encode(kstore)
