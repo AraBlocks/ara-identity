@@ -210,7 +210,7 @@ program.command(
 
 program.command(
   'revoke',
-  'revoke an Ara identity using a mnemonic',
+  'Revoke an Ara identity using a mnemonic',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 [-D] revoke [options]')
