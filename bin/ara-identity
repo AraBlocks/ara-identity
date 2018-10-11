@@ -213,7 +213,7 @@ program.command(
   'revoke an Ara identity using a mnemonic',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-D] recover [options]')
+    .usage('usage: $0 [-D] revoke [options]')
     .group([ 'mnemonic' ], 'Revoke Options:')
     .option('mnemonic', {
       alias: 'm',
