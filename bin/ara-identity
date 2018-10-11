@@ -63,7 +63,7 @@ program.command(
   program => program
     .usage('usage: $0 archive [-D] [options]')
     .positional('did', {
-      default: rc.network.identity.whoami,
+      default: rc.network.identity.whoami || rc.network.whoami,
     })
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
@@ -71,19 +71,24 @@ program.command(
       describe: 'Shared secret key for the associated network keys',
       required: true,
       requiresArg: true,
+      default: rc.network.identity.archiver.secret
     })
     .option('keyring', {
       alias: 'k',
-      default: rc.network.identity.keyring,
       describe: 'Path to Ara network keyring file',
       required: true,
       requiresArg: true,
+      default:
+        rc.network.identity.archiver.keyring ||
+        rc.network.identity.keyring ||
+        rc.network.keyring,
     })
     .option('network', {
       alias: 'n',
       describe: 'Human readable network name for keys in keyring',
       required: true,
       requiresArg: true,
+      default: rc.network.identity.archiver.network,
     })
   , onarchive
 )
@@ -95,7 +100,7 @@ program.command(
   program => program
     .usage('usage: $0 resolve [-D] [options]')
     .positional('did', {
-      default: rc.network.identity.whoami,
+      default: rc.network.identity.whoami || rc.network.whoami,
     })
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
@@ -107,12 +112,16 @@ program.command(
       alias: 'n',
       describe: 'Human readable network name for keys in keyring',
       requiresArg: true,
+      default: rc.network.identity.resolver.network,
     })
     .option('keyring', {
       alias: 'k',
-      default: rc.network.identity.keyring,
       describe: 'Path to Ara network keyring file',
       requiresArg: true,
+      default:
+        rc.network.identity.resolver.keyring ||
+        rc.network.identity.keyring ||
+        rc.network.keyring,
     })
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
     .option('cache', {
@@ -186,7 +195,7 @@ program.command(
   program => program
     .usage('usage: $0 keystore-dump [-D] [options]')
     .positional('did', {
-      default: rc.network.identity.whoami,
+      default: rc.network.identity.whoami || rc.network.whoami,
     })
     .positional('type', {
       default: 'eth',
@@ -206,8 +215,13 @@ program
 
 void program.getOptions().boolean.splice(-2)
 
-if (0 === program.argv._.length) {
-  program.showHelp()
+try {
+  if (0 === program.argv._.length) {
+    program.showHelp()
+    process.exit(1)
+  }
+} catch (err) {
+  debug(err)
   process.exit(1)
 }
 
@@ -556,7 +570,7 @@ async function onlist(argv) {
 }
 
 async function onwhoami(argv) {
-  let identifier = rc.network.identity.whoami
+  let identifier = rc.network.identity.whoami || rc.network.whoami
   let ddo = null
 
   if (identifier && 0 !== identifier.indexOf('did:ara:')) {
@@ -565,6 +579,7 @@ async function onwhoami(argv) {
   }
 
   if (!identifier) {
+    error('Identifier not given.')
     process.exit(1)
     return
   }
@@ -599,7 +614,7 @@ async function onwhoami(argv) {
 async function onkeystoredump(argv) {
   const identity = aid.did.getIdentifier(argv.did)
   const hash = toHex(crypto.blake2b(Buffer.from(identity, 'hex')))
-  let path = identity.path
+  let { path } = identity.path
   if (undefined === path) {
     // eslint-disable-next-line no-param-reassign
     path = resolve(rc.network.identity.root, hash, 'keystore')
