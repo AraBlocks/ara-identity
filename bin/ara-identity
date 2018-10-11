@@ -208,6 +208,22 @@ program.command(
   , onkeystoredump
 )
 
+program.command(
+  'revoke',
+  'revoke an Ara identity using a mnemonic',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 [-D] recover [options]')
+    .group([ 'mnemonic' ], 'Revoke Options:')
+    .option('mnemonic', {
+      alias: 'm',
+      describe: 'Valid bip39 mnemonic',
+      required: true,
+      requiresArg: true,
+    })
+  , onrevoke
+)
+
 program
   .recommendCommands()
   .completion('completion', false)
@@ -271,6 +287,44 @@ async function onrecover(argv) {
 
     await writeIdentity(identity)
     info('Identity recovered successfully.')
+  } catch (err) {
+    onfatal(err)
+  }
+
+  process.exit(0)
+}
+
+async function onrevoke(argv) {
+  const { mnemonic } = argv
+  let { password } = argv
+
+  if (!password) {
+    ({ password } = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please provide a passphrase. Do not forget this as it will never be ' +
+      'shown to you.\n' +
+      'Passphrase:'
+    } ]))
+  }
+
+  if (!password) {
+    // eslint-disable-next-line function-paren-newline
+    onfatal(
+      new TypeError('A passphrase is required to revoke your identity.'))
+  }
+
+  try {
+    const identity = await aid.revoke({ context, password, mnemonic })
+    info('Identity revoked : %s', identity.did)
+
+    for (let i = 0; i < identity.files.length; ++i) {
+      warn('Will write identity file: %s', identity.files[i].path)
+    }
+
+    await writeIdentity(identity)
+    info('Identity revoked successfully.')
   } catch (err) {
     onfatal(err)
   }
