@@ -1,4 +1,3 @@
-const { resolve } = require('path')
 const extend = require('extend')
 const rc = require('ara-runtime-configuration')
 
