@@ -1,3 +1,4 @@
+const { deprecate } = require('util')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
@@ -84,7 +85,7 @@ function getIdentifier(uri, method) {
 }
 
 module.exports = {
-  getIdentifier,
+  getIdentifier: deprecate(getIdentifier, 'getIdentifier() is deprecated.'),
   normalize,
   create,
 }
