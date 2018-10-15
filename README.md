@@ -77,7 +77,6 @@ All functions check for input validity, input correctness, and throw an error if
 * [aid.create(opts)](#create)
 * [aid.createIdentityKeyPath(identity)](#createIdPath)
 * [aid.did.create(publicKey)](#didCreate)
-* [aid.did.getIdentifier(didURI)](#didGetIdentifier)
 * [aid.did.normalize(identifier, method)](#didNormalize)
 * [aid.ddo.create(opts)](#ddoCreate)
 * [aid.fs](#fs)
@@ -147,17 +146,6 @@ Create a DID reference document from a given publicKey of a key pair.
 const { publicKey, secretKey } = crypto.keyPair()
 
 const didUri = did.create(publicKey)
-```
-
-<a name="didGetIdentifier"></a>
-### `aid.did.getIdentifier(didURI)`
-Retrieve the identifier from a DID URI.
-```js
-const did = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
-
-const identifier = aid.did.getIdentifier(did)
-
-console.log(identifier) // '4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
 ```
 
 <a name="didNormalize"></a>
