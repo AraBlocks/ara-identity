@@ -1,3 +1,8 @@
+<a name="0.26.0"></a>
+# [0.26.0](https://github.com/AraBlocks/ara-identity/compare/0.25.0...0.26.0) (2018-10-15)
+
+
+
 <a name="0.25.0"></a>
 # [0.25.0](https://github.com/AraBlocks/ara-identity/compare/0.23.0...0.25.0) (2018-10-11)
 
