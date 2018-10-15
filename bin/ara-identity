@@ -2,7 +2,6 @@
 
 const { info, warn, error } = require('ara-console')
 const { writeIdentity } = require('../util')
-const { resolve } = require('path')
 const { toHex } = require('../util')
 const { table } = require('table')
 const protobuf = require('../protobuf')
@@ -473,10 +472,11 @@ async function oncreate(argv) {
       new TypeError('A new passphrase is required to secure the identity.'))
   }
 
-  !argv.quiet && process.stdout.write('\n')
+  if (!argv.quiet) { process.stdout.write('\n') }
+
   const identity = await aid.create({ context, password })
 
-  !argv.quiet && info('New identity created: %s', identity.did)
+  if (!argv.quiet) { info('New identity created: %s', identity.did) }
 
   if (!argv.quiet) {
     for (let i = 0; i < identity.files.length; ++i) {
@@ -492,7 +492,8 @@ async function oncreate(argv) {
     info('It will never be shown again:')
     info('\n\n%s', table([ [ identity.mnemonic ] ]))
   } else {
-    process.stdout.write(identity.mnemonic + "\n")
+    process.stdout.write(identity.mnemonic)
+    process.stdout.write('\n')
   }
 
   process.exit(0)
@@ -612,89 +613,69 @@ async function onwhoami(argv) {
 }
 
 async function onkeystoredump(argv) {
-  const identity = aid.did.getIdentifier(argv.did)
-  const hash = toHex(crypto.blake2b(Buffer.from(identity, 'hex')))
-  let { path } = identity.path
-  if (undefined === path) {
+  let { password } = argv
+  let identifier = argv.did
+
+  if (identifier && 0 !== identifier.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
-    path = resolve(rc.network.identity.root, hash, 'keystore')
+    identifier = `did:ara:${identifier}`
   }
 
-  try {
-    await pify(fs.readdir)(path)
-  } catch (err) {
-    throw new Error(`Cannot read identity 'did:ara:${identity}'. ${err}`)
+  if (!identifier) {
+    error('Identifier not given.')
+    process.exit(1)
+    return
   }
 
-  const { password } = await inquirer.prompt([ {
-    type: 'password',
-    name: 'password',
-    message:
-    'Please enter the passphrase associated with the identity. \n' +
-    'Passphrase:'
-  } ])
+  if (!password) {
+    const res = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please enter the passphrase associated with the identity. \n' +
+      'Passphrase:'
+    } ])
 
-  process.stdout.write('\n')
-
-  const keystores = []
-  const visits = []
-
-  const araPath = resolve(path, 'ara')
-  const ethPath = resolve(path, 'eth')
-  const ara = await pify(visit)(araPath)
-  const eth = await pify(visit)(ethPath)
-
-  function visit(entry, cb) {
-    const file = resolve(entry)
-    fs.access(file, onaccess)
-    function onaccess(err) {
-      if (null === err) {
-        fs.readFile(file, onread)
-      } else {
-        cb(null)
-      }
-    }
-
-    function onread(err, buf) {
-      if (err) {
-        cb(err)
-      } else {
-        try {
-          if ('undefined' !== typeof buf) {
-            keystores.push(buf)
-          }
-
-          cb(null)
-        } catch (err2) {
-          debug('keystore dump: visit: onread: error:', err2)
-          cb(null)
-        }
-      }
-    }
+    // eslint-disable-next-line prefer-destructuring
+    password = res.password
+    process.stdout.write('\n')
   }
 
-  if ('ara' === argv.type) {
-    let secretKey
-    const keystore = JSON.parse(String(keystores[0]))
+  const secretKeys = { ara: null, eth: null }
+  const keystores = { ara: null, eth: null }
 
+  keystores.ara = await aid.fs.readFile(identifier, 'keystore/ara')
+
+  if ('eth' === argv.type || 'ara' === argv.type) {
     try {
       const passwordBuffer = crypto.blake2b(Buffer.from(password))
-      secretKey = ss.decrypt(keystore, { key: passwordBuffer.slice(0, 16) })
-      const publicKey = secretKey.slice(32)
+      const key = passwordBuffer.slice(0, 16)
+      secretKeys.ara = ss.decrypt(JSON.parse(keystores.ara), { key })
     } catch (err) {
       debug(err)
       onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
     }
+  } else {
+    onfatal(new Error(`Invalid keystore type: ${argv.type}`))
+  }
 
-    info('Ara private key: %s', toHex(secretKey))
-  } else { // Print Ethereum private Key
-    const privateKey = await aid
+  if ('eth' === argv.type) {
+    keystores.eth = await aid.fs.readFile(identifier, 'keystore/eth')
+    secretKeys.eth = await aid
       .ethereum
       .keystore
-      .recover(password, keystores[0], keystores[1])
-
-    info('Ara ID Ethereum private key: %s', toHex(privateKey))
+      .recover(password, keystores.ara, keystores.eth)
   }
+
+  if ('ara' === argv.type) {
+    process.stdout.write(toHex(secretKeys.ara))
+  }
+
+  if ('eth' === argv.type) {
+    process.stdout.write(toHex(secretKeys.eth))
+  }
+
+  process.stdout.write('\n')
 
   process.exit(0)
 }
