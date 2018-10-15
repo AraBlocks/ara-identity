@@ -32,7 +32,7 @@ function create(identifier, method) {
 }
 
 /**
- * Normalizes a given DID URI to Prefix & Identifier
+ * Normalizes a given DID URI
  * @public
  * @return {String}
  * @throws TypeError
@@ -59,32 +59,7 @@ function normalize(uri, method) {
   return uri
 }
 
-/**
- * Normalizes a given DID URI into just the identifier
- * @public
- * @return {String}
- * @throws TypeError
- */
-function getIdentifier(uri, method) {
-  if (!uri) {
-    throw new TypeError('Expecting URI.')
-  }
-
-  if ('string' !== typeof uri) {
-    throw new TypeError('Expecting URI to be a string or buffer.')
-  }
-
-  if (method && 'string' !== typeof method) {
-    throw new TypeError('Expecting method to be a string.')
-  }
-
-  const identifier = uri.replace('did:ara:', '')
-
-  return identifier
-}
-
 module.exports = {
-  getIdentifier,
   normalize,
   create,
 }
