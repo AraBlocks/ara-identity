@@ -93,10 +93,16 @@ async function dump(opts) {
  * @return {Promise<Buffer>}
  */
 function recover(password, araKeystore, ethereumKeystore) {
-  // eslint-disable-next-line no-param-reassign
-  ethereumKeystore = JSON.parse(ethereumKeystore)
-  // eslint-disable-next-line no-param-reassign
-  araKeystore = JSON.parse(araKeystore)
+  if ('string' === typeof ethereumKeystore || isBuffer(ethereumKeystore)) {
+    // eslint-disable-next-line no-param-reassign
+    ethereumKeystore = JSON.parse(ethereumKeystore)
+  }
+
+  if ('string' === typeof araKeystore || isBuffer(araKeystore)) {
+    // eslint-disable-next-line no-param-reassign
+    araKeystore = JSON.parse(araKeystore)
+  }
+
   // eslint-disable-next-line no-param-reassign
   password = crypto.blake2b(Buffer.from(password))
 
