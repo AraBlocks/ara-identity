@@ -317,7 +317,7 @@ async function onrevoke(argv) {
 
   try {
     const identity = await aid.revoke({ context, password, mnemonic })
-    info('Identity revoked : %s', identity.did)
+    info('Identity to be revoked : %s', identity.did)
 
     for (let i = 0; i < identity.files.length; ++i) {
       warn('Will write identity file: %s', identity.files[i].path)
