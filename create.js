@@ -1,5 +1,6 @@
 const { Authentication } = require('did-document')
 const { PublicKey } = require('did-document/public-key')
+const { Service } = require('did-document/service')
 const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
@@ -54,6 +55,10 @@ async function create(opts) {
     if (opts.ddo.publicKeys && !Array.isArray(opts.ddo.publicKeys)) {
       throw new TypeError('Expecting additional publicKey to be an array.')
     }
+
+    if (opts.ddo.service && !Array.isArray(opts.ddo.service)) {
+      throw new TypeError('Expecting service endpoints to be an array.')
+    }
   }
 
   if (null == opts.mnemonic) {
@@ -89,9 +94,9 @@ async function create(opts) {
 
   const didUri = did.create(publicKey)
   let didDocument
-  if (opts.revoked) {
-    const { revoked } = opts
-    didDocument = ddo.create({ id: didUri, created: opts.created, revoked })
+  if (opts.revoked && opts.created) {
+    const { created, revoked } = opts
+    didDocument = ddo.create({ id: didUri, created, revoked })
   }
   else {
     didDocument = ddo.create({ id: didUri })
@@ -154,6 +159,13 @@ async function create(opts) {
           value: pk.value,
           did: didUri.did,
         }))
+      }
+    }
+
+    // add service endpoints
+    if (Array.isArray(opts.ddo.service)) {
+      for (const service of opts.ddo.service) {
+        didDocument.addService()
       }
     }
   }
@@ -243,6 +255,19 @@ function createPublicKey(opts = {}) {
     publicKeyHex: toHex(opts.value),
     publicKeyBase64: crypto.base64.encode(opts.value).toString(),
     publicKeyBase58: crypto.base58.encode(opts.value).toString()
+  })
+}
+
+/**
+ * Creates a new service endpoint to be added to the service array.
+ * @param {Object} opts
+ * @return {Object}
+ */
+function createService(opts = {}) {
+
+  return new Service({
+    type: opts.type,
+    endpoint: opts.endpoint
   })
 }
 
