@@ -304,7 +304,7 @@ async function onrevoke(argv) {
       name: 'password',
       message:
       'Please provide a passphrase. Do not forget this as it will never be ' +
-      'shown to you.\n' +
+      'shown to you and will be required to archive your identity after revoking.\n'
       'Passphrase:'
     } ]))
   }
