@@ -2,7 +2,6 @@ const { resolve } = require('./resolve')
 const { create } = require('./create')
 const crypto = require('ara-crypto')
 const bip39 = require('bip39')
-const debug = require('debug')('ara:identity:revoke')
 
 /**
  * Revoke an identity using a bip39 mnemonic
@@ -29,7 +28,7 @@ async function revoke(opts) {
   }
 
   const seed = crypto.blake2b(bip39.mnemonicToSeed(opts.mnemonic))
-  const { publicKey, secretKey } = crypto.keyPair(seed)
+  const { publicKey } = crypto.keyPair(seed)
 
   let ddo
   try {
