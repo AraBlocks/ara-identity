@@ -90,6 +90,7 @@ All functions check for input validity, input correctness, and throw an error if
 * [aid.recover(opts)](#recover)
 * [aid.replicate(did)](#replicate)
 * [aid.resolve(did, opts)](#resolve)
+* [aid.revoke(opts)](#revoke)
 
 <a name="archive"></a>
 ### `aid.archive(identity, opts)`
@@ -305,6 +306,17 @@ const opts = {
 }
 const ddo = await aid.resolve(did, opts)
 * TODO: put example print out here. (DID document in JSON format)
+```
+
+<a name="revoke"></a>
+### `aid.revoke(opts)`
+Revoke an Ara ID using the the valid bip39 mnemonic returned during creation. This action cannot be reverted. Note: Please archive your identity after revoking to publish changes into the ara network.
+```js
+const opts = {
+  mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net',
+  password: 'newpassword'
+}
+const revokedIdentity = await aid.revoke(opts)
 ```
 
 ## CLI
