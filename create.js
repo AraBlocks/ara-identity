@@ -166,6 +166,7 @@ async function create(opts) {
     if (Array.isArray(opts.ddo.service)) {
       for (const service of opts.ddo.service) {
         didDocument.addService(createService({
+          id: `${didUri.did}#${service.id}`,
           type: service.type,
           endpoint: service.endpoint
         }))
@@ -267,8 +268,9 @@ function createPublicKey(opts = {}) {
  * @return {Object}
  */
 function createService(opts = {}) {
-  const { type, endpoint } = opts
+  const { id, type, endpoint } = opts
   return new Service(
+    id,
     type,
     endpoint
   )
