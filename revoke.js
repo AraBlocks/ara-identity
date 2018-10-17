@@ -31,9 +31,18 @@ async function revoke(opts) {
   const seed = crypto.blake2b(bip39.mnemonicToSeed(opts.mnemonic))
   const { publicKey, secretKey } = crypto.keyPair(seed)
 
-  const ddo = await resolve(publicKey)
+  let ddo
+  try {
+    ddo = await resolve(publicKey.toString('hex'))
+  } catch (err) {
+    throw new Error('Could not resolve DID for the provided mnemonic')
+  }
 
   opts.created = ddo.created
+
+  if (ddo.revoked && 'string' == typeof ddo.revoked) {
+    throw new Error('DID for the provided mnemonic has already been revoked')
+  }
   opts.revoked = true
 
   const identity = await create(opts)
