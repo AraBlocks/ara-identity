@@ -312,7 +312,9 @@ const ddo = await aid.resolve(did, opts)
 ### `aid.revoke(opts)`
 Revoke an Ara ID using the the valid bip39 mnemonic returned during creation. This action cannot be reverted. Note: Please archive your identity after revoking to publish changes into the ara network.
 ```js
+const context = require('ara-context')()
 const opts = {
+  context,
   mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net',
   password: 'newpassword'
 }
