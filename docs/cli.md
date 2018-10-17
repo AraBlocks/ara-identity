@@ -26,7 +26,8 @@ Commands:
   aid list                        Output local identities
   aid whoami                      Output current Ara identity in context (.ararc)
   aid recover                     Recover an Ara identity using a mnemonic
-  aid keystore-dump [did] [type]  Recover a private ethereum|ara key.
+  aid keystore-dump [did] [type]  Recover a private ethereum|ara key
+  aid revoke                      Revoke an Ara identity using a mnemonic
 
 General Options:
   --help, -h     Show this help message
@@ -42,6 +43,7 @@ General Options:
 * [aid whoami](#aid-whoami)
 * [aid recover](#aid-recover)
 * [aid keystore-dump](#aid-keystore-dump)
+* [aid revoke](#aid-revoke)
 
 <a name="aid-create"></a>
 ### 1. `aid create`
@@ -326,4 +328,40 @@ Passphrase: [hidden]
 
  ara: info:  Ara ID Ethereum private key: b50955c58c7e773da62b85e0e6a38f5c2283f4bfdad7d7ddaaa9d8b43f21991a
 
+```
+
+<a name="aid-revoke"></a>
+### 8. `aid revoke`
+Revoke your Ara identity by providing the valid bip39 mnemonic returned during creation. This action cannot be reverted once published into the network.
+
+Note: Once revoked, please archive your identity to publish the changes into the ara network
+
+```
+$ aid revoke -h
+usage: aid [-D] revoke [options]
+
+Revoke Options:
+  --mnemonic, -m  Valid bip39 mnemonic  [required]
+
+General Options:
+  --help, -h     Show this help message
+  --debug, -D    Enable debug output
+  --version, -V  Show program version
+
+Options:
+  --quiet, -q  Only output errors and results  [default: false]
+```
+
+#### Example
+```
+$ aid revoke -m 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net'
+? Please provide a passphrase. Do not forget this as it will never be shown to you.
+Passphrase: [hidden]
+ ara: info:  Identity to be revoked : did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478
+ ara: warn:  Will write identity file: ddo.json
+ ara: warn:  Will write identity file: keystore/eth
+ ara: warn:  Will write identity file: keystore/ara
+ ara: warn:  Will write identity file: schema.proto
+ ara: warn:  Will write identity file: identity
+ ara: info:  Identity revoked successfully.
 ```
