@@ -165,10 +165,10 @@ async function create(opts) {
     // add service endpoints
     if (Array.isArray(opts.ddo.service)) {
       for (const service of opts.ddo.service) {
-        didDocument.addService({
+        didDocument.addService(createService({
           type: service.type,
           endpoint: service.endpoint
-        })
+        }))
       }
     }
   }
@@ -267,11 +267,11 @@ function createPublicKey(opts = {}) {
  * @return {Object}
  */
 function createService(opts = {}) {
-
-  return new Service({
-    type: opts.type,
-    endpoint: opts.endpoint
-  })
+  const { type, endpoint } = opts
+  return new Service(
+    type,
+    endpoint
+  )
 }
 
 module.exports = {
