@@ -165,7 +165,10 @@ async function create(opts) {
     // add service endpoints
     if (Array.isArray(opts.ddo.service)) {
       for (const service of opts.ddo.service) {
-        didDocument.addService()
+        didDocument.addService({
+          type: service.type,
+          endpoint: service.endpoint
+        })
       }
     }
   }
