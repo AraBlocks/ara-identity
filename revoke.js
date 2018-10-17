@@ -9,6 +9,7 @@ const bip39 = require('bip39')
  * @public
  * @param {object} opts
  * @param {string} opts.mnemonic
+ * @param {string} opts.password
  * @throws TypeError
  * @return {object}
  */
