@@ -97,8 +97,7 @@ async function create(opts) {
   if (opts.revoked && opts.created) {
     const { created, revoked } = opts
     didDocument = ddo.create({ id: didUri, created, revoked })
-  }
-  else {
+  } else {
     didDocument = ddo.create({ id: didUri })
   }
 
