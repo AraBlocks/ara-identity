@@ -7,7 +7,7 @@ const util = require('../util')
 const test = require('ava')
 
 test('revoke() invalid opts', async (t) => {
-  t.plan(7)
+  t.plan(9)
   const mnemonic = bip39.generateMnemonic()
 
   await t.throws(
@@ -19,34 +19,46 @@ test('revoke() invalid opts', async (t) => {
   await t.throws(
     revoke({ }),
     TypeError,
+    'Expecting web3 context object.'
+  )
+
+  await t.throws(
+    revoke({ context: 'web3' }),
+    TypeError,
+    'Expecting web3 context object.'
+  )
+
+  await t.throws(
+    revoke({ context }),
+    TypeError,
     'Expecting mnemonic for revoking.'
   )
 
   await t.throws(
-    revoke({ mnemonic: 1234 }),
+    revoke({ context, mnemonic: 1234 }),
     TypeError,
     'Expecting mnemonic to be a string.'
   )
 
   await t.throws(
-    revoke({ mnemonic }),
+    revoke({ context, mnemonic }),
     TypeError, 'Expecting password.'
   )
 
   await t.throws(
-    revoke({ mnemonic: 'hello' }),
+    revoke({ context, mnemonic: 'hello' }),
     TypeError,
     'Expecting a valid bip39 mnemonic for revoking.'
   )
 
   await t.throws(
-    revoke({ mnemonic, password: 1234 }),
+    revoke({ context, mnemonic, password: 1234 }),
     TypeError,
     'Expecting password to be a string.'
   )
 
   await t.throws(
-    revoke({ mnemonic, password: 'test' }),
+    revoke({ context, mnemonic, password: 'test' }),
     Error,
     'Could not resolve DID for the provided mnemonic'
   )
@@ -58,7 +70,7 @@ test('revoke(opts)', async (t) => {
   const identity = await create({ context, password: 'test' })
   await util.writeIdentity(identity)
   const { mnemonic } = identity
-  const revokedIdentity = await revoke({ password: 'test2', mnemonic })
+  const revokedIdentity = await revoke({ context, password: 'test2', mnemonic })
   await util.writeIdentity(revokedIdentity)
 
   let ddo
