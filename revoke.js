@@ -1,6 +1,5 @@
 const { resolve } = require('./resolve')
 const { create } = require('./create')
-const context = require('ara-context')()
 const crypto = require('ara-crypto')
 const bip39 = require('bip39')
 
@@ -8,6 +7,7 @@ const bip39 = require('bip39')
  * Revoke an identity using a bip39 mnemonic
  * @public
  * @param {object} opts
+ * @param {object} opts.context
  * @param {string} opts.mnemonic
  * @param {string} opts.password
  * @throws TypeError
@@ -17,6 +17,12 @@ const bip39 = require('bip39')
 async function revoke(opts) {
   if (null == opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts to be an object.')
+  }
+
+  if (null == opts.context) {
+    throw new TypeError('Expecting web3 context object.')
+  } else if (opts.context && 'object' !== typeof opts.context) {
+    throw new TypeError('Expecting web3 context to be an object.')
   }
 
   if (null == opts.mnemonic) {
@@ -33,10 +39,6 @@ async function revoke(opts) {
     throw new TypeError('Expecting password.')
   } else if (opts.password && 'string' !== typeof opts.password) {
     throw new TypeError('Expecting password to be a string.')
-  }
-
-  if (!opts.context) {
-    opts.context = context
   }
 
   const seed = crypto.blake2b(bip39.mnemonicToSeed(opts.mnemonic))
