@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable global-require */
-const { fromMasterSeed } = require('ethereumjs-wallet/src/hdkey')
+const { fromMasterSeed } = require('ethereumjs-wallet/hdkey')
 const isZeroBuffer = require('is-zero-buffer')
 const isBuffer = require('is-buffer')
 
