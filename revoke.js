@@ -52,6 +52,7 @@ async function revoke(opts) {
   }
 
   opts.created = ddo.created
+  opts.ddo = ddo
 
   if (ddo.revoked && 'string' == typeof ddo.revoked) {
     throw new Error('DID for the provided mnemonic has already been revoked')
