@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "lint-fix": "eslint . --quiet --fix",
     "pkg": "sh ./scripts/package.sh",
-    "changelog": "conventional-changelog --same-file --preset angular --release-count 0 --infile CHANGELOG.md"
+    "changelog": "conventional-changelog --same-file --preset angular --release-count 0 --infile CHANGELOG.md",
+    "version": "npm run changelog && git add CHANGELOG.md"
   },
   "keywords": [
     "ara",
@@ -25,16 +26,16 @@
   "author": "Joseph Werle <werle@littlstar.com>",
   "license": "LGPL-3.0",
   "dependencies": {
-    "ara-console": "github:arablocks/ara-console",
-    "ara-context": "github:arablocks/ara-context",
-    "ara-crypto": "github:arablocks/ara-crypto",
-    "ara-network": "github:arablocks/ara-network",
-    "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration",
-    "ara-secret-storage": "github:arablocks/ara-secret-storage",
+    "ara-console": "github:arablocks/ara-console#semver:0.2.x",
+    "ara-context": "github:arablocks/ara-context#semver:0.3.x",
+    "ara-crypto": "github:arablocks/ara-crypto#semver:0.7.x",
+    "ara-network": "github:arablocks/ara-network#1.0.0-beta.3",
+    "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration#semver:0.6.x",
+    "ara-secret-storage": "github:arablocks/ara-secret-storage#semver:0.1.x",
     "bip39": "^2.5.0",
-    "cfsnet": "github:arablocks/cfsnet",
+    "cfsnet": "github:arablocks/cfsnet#semver:0.11.x",
     "debug": "^3.1.0",
-    "did-document": "github:AraBlocks/did-document",
+    "did-document": "github:AraBlocks/did-document#semver:0.4.x",
     "did-uri": "^0.2.4",
     "ethereumjs-wallet": "github:arablocks/ethereumjs-wallet",
     "extend": "^3.0.1",
@@ -62,7 +63,7 @@
     "ava": "^0.25.0",
     "conventional-changelog-cli": "^2.0.5",
     "eslint": "^4.19.1",
-    "eslint-config-ara": "github:arablocks/eslint-config-ara",
+    "eslint-config-ara": "github:arablocks/eslint-config-ara#semver:^2.1.1",
     "eslint-plugin-import": "^2.12.0",
     "pkg": "^4.3.4",
     "truffle": "^4.1.9"
