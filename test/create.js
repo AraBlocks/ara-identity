@@ -27,13 +27,13 @@ test('create() valid ARA id with service endpoints', async (t) => {
   service.push({
     id: 'arasite',
     type: 'ara-site.Service',
-    endpoint: 'http://www.ara.one',
+    serviceEndpoint: 'http://www.ara.one',
     description: 'This is our project site'
   })
   service.push({
     id: 'aradev',
     type: 'ara-dev.Service',
-    endpoint: 'http://www.ara.one/dev',
+    serviceEndpoint: 'http://www.ara.one/dev',
     description: 'This is our developer page',
     price: '10 Ara'
   })
