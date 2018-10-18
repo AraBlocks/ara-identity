@@ -167,8 +167,8 @@ async function create(opts) {
         didDocument.addService(createService({
           id: `${didUri.did}#${service.id}`,
           type: service.type,
-          endpoint: service.endpoint,
-          props: service
+          serviceEndpoint: service.serviceEndpoint,
+          service
         }))
       }
     }
@@ -268,12 +268,12 @@ function createPublicKey(opts = {}) {
  * @return {Object}
  */
 function createService(opts = {}) {
-  const { id, type, endpoint, props } = opts
+  const { id, type, serviceEndpoint, service } = opts
   return new Service(
     id,
     type,
-    endpoint,
-    props
+    serviceEndpoint,
+    service
   )
 }
 
