@@ -268,7 +268,9 @@ function createPublicKey(opts = {}) {
  * @return {Object}
  */
 function createService(opts = {}) {
-  const { id, type, serviceEndpoint, service } = opts
+  const {
+    id, type, serviceEndpoint, service
+  } = opts
   return new Service(
     id,
     type,
