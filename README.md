@@ -278,7 +278,7 @@ const context = require('ara-context')()
 
 const opts = {
   context,
-  password: 'newpassword',
+  password: 'password',
   mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net'
 }
 
@@ -316,7 +316,7 @@ const context = require('ara-context')()
 const opts = {
   context,
   mnemonic: 'glad kangaroo coyote rich detail grief matrix spirit jeans owner heart net',
-  password: 'newpassword'
+  password: 'password'
 }
 const revokedIdentity = await aid.revoke(opts)
 ```
