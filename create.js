@@ -73,14 +73,12 @@ async function create(opts) {
   }
 
   if (opts.ddo) {
-    if (opts.ddo.publicKeys) {
-      if (!opts.ddo.publicKey) {
-        opts.ddo.publicKey = opts.ddo.publicKeys
-      } else if (opts.ddo.publicKey && Array.isArray(opts.ddo.publicKey)) {
-        for (const pk of opts.ddo.publicKey) {
-          opts.ddo.publicKey.push(pk)
-        }
-      }
+    if (!opts.ddo.publicKey && opts.ddo.publicKeys) {
+      opts.ddo.publicKey = opts.ddo.publicKeys
+    }
+
+    if (opts.ddo.publicKey && !Array.isArray(opts.ddo.publicKey)) {
+      opts.ddo.publicKey  = [opts.ddo.publicKey]
     }
   }
 
