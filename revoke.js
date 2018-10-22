@@ -51,7 +51,7 @@ async function revoke(opts) {
     throw new Error('Could not resolve DID for the provided mnemonic')
   }
 
-  if (ddo.revoked && 'string' == typeof ddo.revoked) {
+  if (ddo.revoked && 'string' === typeof ddo.revoked) {
     throw new Error('DID for the provided mnemonic has already been revoked')
   }
 
