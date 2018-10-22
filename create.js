@@ -71,6 +71,12 @@ async function create(opts) {
     mnemonic = opts.mnemonic
   }
 
+  if (opts.ddo) {
+    if (opts.ddo.publicKeys) {
+      opts.ddo.publicKey = opts.ddo.publicKeys
+    }
+  }
+
   const seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic))
 
   const { context } = opts
@@ -150,7 +156,7 @@ async function create(opts) {
     }
 
     // additional keys
-    if (Array.isArray(opts.ddo.publicKeys)) {
+    if (Array.isArray(opts.ddo.publicKey)) {
       for (const pk of opts.ddo.publicKeys) {
         didDocument.addPublicKey(createPublicKey({
           id: pk.id,
