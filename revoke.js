@@ -57,27 +57,7 @@ async function revoke(opts) {
 
   opts.created = ddo.created
   opts.revoked = true
-
-  opts.ddo = {}
-
-  opts.ddo.publicKeys = []
-  for (const key of ddo.publicKey) {
-    if ('metadata' === key.id.split('#')[1]) {
-      const pk = {
-        id: 'metadata',
-        did: key.id.split('#')[0],
-        value: key.publicKeyHex
-      }
-      opts.ddo.publicKeys.push(pk)
-    }
-  }
-
-  opts.ddo.authentication = []
-  for (const auth of ddo.authentication) {
-    if ('owner' === auth.publicKey.split('#')[1] && 'Ed25519VerificationKey2018' === auth.type) {
-      opts.ddo.authentication.push(auth)
-    }
-  }
+  opts.ddo = ddo
 
   const identity = await create(opts)
   return identity
