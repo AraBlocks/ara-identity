@@ -1,3 +1,8 @@
+<a name="0.28.1"></a>
+## [0.28.1](https://github.com/AraBlocks/ara-identity/compare/0.28.0...0.28.1) (2018-10-22)
+
+
+
 <a name="0.28.0"></a>
 # [0.28.0](https://github.com/AraBlocks/ara-identity/compare/0.27.0...0.28.0) (2018-10-15)
 
@@ -14,12 +19,21 @@
 
 
 <a name="0.25.0"></a>
-# [0.25.0](https://github.com/AraBlocks/ara-identity/compare/0.23.0...0.25.0) (2018-10-11)
+# [0.25.0](https://github.com/AraBlocks/ara-identity/compare/0.24.0...0.25.0) (2018-10-11)
 
 
 ### Bug Fixes
 
 * **create.js:** Check validity of mnemonic ([9b58366](https://github.com/AraBlocks/ara-identity/commit/9b58366))
+
+
+
+<a name="0.24.0"></a>
+# [0.24.0](https://github.com/AraBlocks/ara-identity/compare/0.23.0...0.24.0) (2018-10-04)
+
+
+### Bug Fixes
+
 * **README.md:** Address PR feedback ([596f209](https://github.com/AraBlocks/ara-identity/commit/596f209))
 * **README.md:** Address PR feedback ([8867f9e](https://github.com/AraBlocks/ara-identity/commit/8867f9e))
 * **README.md:** Fix method error check rule ([292902d](https://github.com/AraBlocks/ara-identity/commit/292902d))
