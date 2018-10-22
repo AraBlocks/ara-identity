@@ -73,7 +73,14 @@ async function create(opts) {
 
   if (opts.ddo) {
     if (opts.ddo.publicKeys) {
-      opts.ddo.publicKey = opts.ddo.publicKeys
+      if (!opts.ddo.publicKey) {
+        opts.ddo.publicKey = opts.ddo.publicKeys
+      }
+      else if (opts.ddo.publicKey && Array.isArray(opts.ddo.publicKey)) {
+        for (const pk of opts.ddo.publicKey) {
+          opts.ddo.publicKey.push(pk)
+        }
+      }
     }
   }
 
@@ -148,6 +155,7 @@ async function create(opts) {
 
       for (const auth of opts.ddo.authentication) {
         // eslint-disable-next-line no-shadow
+        console.log(auth)
         didDocument.addAuthentication(new Authentication(
           auth.type,
           { publicKey: auth.publicKey }
@@ -157,13 +165,20 @@ async function create(opts) {
 
     // additional keys
     if (Array.isArray(opts.ddo.publicKey)) {
-      for (const pk of opts.ddo.publicKeys) {
-        didDocument.addPublicKey(createPublicKey({
-          id: pk.id,
-          type: pk.type || kEd25519VerificationKey2018,
-          value: pk.value,
-          did: didUri.did,
-        }))
+      for (const pk of opts.ddo.publicKey) {
+        if ('metdata' == pk.id) {
+          pk.id = `${didUri.did}#${pk.id}`
+        }
+        if (pk.value) {
+          if (!isBuffer(pk.value)) {
+            // eslint-disable-next-line no-param-reassign
+            pk.value = Buffer.from(pk.value, 'hex')
+          }
+          pk.publicKeyHex = toHex(pk.value)
+          pk.publicKeyBase64 = crypto.base64.encode(opts.value).toString()
+          pk.publicKeyBase58 = crypto.base58.encode(opts.value).toString()
+        }
+        didDocument.addPublicKey(pk)
       }
     }
 
