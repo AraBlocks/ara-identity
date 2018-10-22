@@ -164,7 +164,7 @@ async function create(opts) {
     // additional keys
     if (Array.isArray(opts.ddo.publicKey)) {
       for (const pk of opts.ddo.publicKey) {
-        if ('metdata' == pk.id) {
+        if ('metadata' == pk.id) {
           pk.id = `${didUri.did}#${pk.id}`
         }
         if (pk.value) {
@@ -173,9 +173,11 @@ async function create(opts) {
             pk.value = Buffer.from(pk.value, 'hex')
           }
           pk.publicKeyHex = toHex(pk.value)
-          pk.publicKeyBase64 = crypto.base64.encode(opts.value).toString()
-          pk.publicKeyBase58 = crypto.base58.encode(opts.value).toString()
+          pk.publicKeyBase64 = crypto.base64.encode(pk.value).toString()
+          pk.publicKeyBase58 = crypto.base58.encode(pk.value).toString()
         }
+        pk.type = pk.type || kEd25519VerificationKey2018
+        pk.owner = pk.owner || didUri.did
         didDocument.addPublicKey(pk)
       }
     }
