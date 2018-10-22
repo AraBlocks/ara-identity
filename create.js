@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 const { Authentication } = require('did-document')
 const { PublicKey } = require('did-document/public-key')
 const { Service } = require('did-document/service')
@@ -164,21 +165,22 @@ async function create(opts) {
     // additional keys
     if (Array.isArray(opts.ddo.publicKey)) {
       for (const pk of opts.ddo.publicKey) {
-        if ('metadata' == pk.id) {
-          pk.id = `${didUri.did}#${pk.id}`
+        const key = {}
+        if ('metadata' !== pk.id) {
+          const id = pk.id.split('#')
+          key.id = id[1]
+          key.did = id[0]
+        } else {
+          key.id = pk.id
+          key.did = didUri.did
         }
-        if (pk.value) {
-          if (!isBuffer(pk.value)) {
-            // eslint-disable-next-line no-param-reassign
-            pk.value = Buffer.from(pk.value, 'hex')
-          }
-          pk.publicKeyHex = toHex(pk.value)
-          pk.publicKeyBase64 = crypto.base64.encode(pk.value).toString()
-          pk.publicKeyBase58 = crypto.base58.encode(pk.value).toString()
+        if (!pk.value && pk.publicKeyHex) {
+          key.value = pk.publicKeyHex
+        } else {
+          key.value = pk.value
         }
-        pk.type = pk.type || kEd25519VerificationKey2018
-        pk.owner = pk.owner || didUri.did
-        didDocument.addPublicKey(pk)
+        key.type = pk.type || kEd25519VerificationKey2018
+        didDocument.addPublicKey(createPublicKey(key))
       }
     }
 
