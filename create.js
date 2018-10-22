@@ -75,8 +75,7 @@ async function create(opts) {
     if (opts.ddo.publicKeys) {
       if (!opts.ddo.publicKey) {
         opts.ddo.publicKey = opts.ddo.publicKeys
-      }
-      else if (opts.ddo.publicKey && Array.isArray(opts.ddo.publicKey)) {
+      } else if (opts.ddo.publicKey && Array.isArray(opts.ddo.publicKey)) {
         for (const pk of opts.ddo.publicKey) {
           opts.ddo.publicKey.push(pk)
         }
@@ -155,7 +154,6 @@ async function create(opts) {
 
       for (const auth of opts.ddo.authentication) {
         // eslint-disable-next-line no-shadow
-        console.log(auth)
         didDocument.addAuthentication(new Authentication(
           auth.type,
           { publicKey: auth.publicKey }
