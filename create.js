@@ -5,7 +5,6 @@ const { Service } = require('did-document/service')
 const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
-const isBuffer = require('is-buffer')
 const crypto = require('ara-crypto')
 const bip39 = require('bip39')
 const ddo = require('./ddo')
@@ -78,7 +77,7 @@ async function create(opts) {
     }
 
     if (opts.ddo.publicKey && !Array.isArray(opts.ddo.publicKey)) {
-      opts.ddo.publicKey  = [opts.ddo.publicKey]
+      opts.ddo.publicKey = [opts.ddo.publicKey]
     }
   }
 
@@ -119,31 +118,27 @@ async function create(opts) {
     iv: crypto.randomBytes(16),
   })
 
-  didDocument.addPublicKey(
-    new PublicKey({
-      id: `${didUri.did}#owner`,
-      type: kEd25519VerificationKey2018,
-      owner: didUri.did,
+  didDocument.addPublicKey(new PublicKey({
+    id: `${didUri.did}#owner`,
+    type: kEd25519VerificationKey2018,
+    owner: didUri.did,
 
-      // public key variants
-      publicKeyHex: toHex(publicKey),
-      publicKeyBase64: crypto.base64.encode(publicKey).toString(),
-      publicKeyBase58: crypto.base58.encode(publicKey).toString()
-    })
-  )
+    // public key variants
+    publicKeyHex: toHex(publicKey),
+    publicKeyBase64: crypto.base64.encode(publicKey).toString(),
+    publicKeyBase58: crypto.base58.encode(publicKey).toString()
+  }))
 
-  didDocument.addPublicKey(
-    new PublicKey({
-      id: `${didUri.did}#eth`,
-      type: kEd25519VerificationKey2018,
-      owner: didUri.did,
+  didDocument.addPublicKey(new PublicKey({
+    id: `${didUri.did}#eth`,
+    type: kSecp256k1VerificationKey2018,
+    owner: didUri.did,
 
-      // public key variants
-      publicKeyHex: toHex(wallet.getPublicKey()),
-      publicKeyBase64: crypto.base64.encode(wallet.getPublicKey()).toString(),
-      publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString()
-    })
-  )
+    // public key variants
+    publicKeyHex: toHex(wallet.getPublicKey()),
+    publicKeyBase64: crypto.base64.encode(wallet.getPublicKey()).toString(),
+    publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString()
+  }))
 
   didDocument.addAuthentication(new Authentication(
     kEd25519SignatureAuthentication2018,
@@ -179,18 +174,16 @@ async function create(opts) {
         if (!pk.id.startsWith('did:')) {
           pk.id = `${didUri.did}#${pk.id}`
         }
-        didDocument.addPublicKey(
-          new PublicKey({
-            id: pk.id,
-            type: pk.type || kEd25519VerificationKey2018,
-            owner: didUri.did,
+        didDocument.addPublicKey(new PublicKey({
+          id: pk.id,
+          type: pk.type || kEd25519VerificationKey2018,
+          owner: didUri.did,
 
-            // public key variants
-            publicKeyHex,
-            publicKeyBase64,
-            publicKeyBase58
-          })
-        )
+          // public key variants
+          publicKeyHex,
+          publicKeyBase64,
+          publicKeyBase58
+        }))
       }
     }
 
