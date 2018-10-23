@@ -119,19 +119,31 @@ async function create(opts) {
     iv: crypto.randomBytes(16),
   })
 
-  didDocument.addPublicKey(createPublicKey({
-    id: 'owner',
-    did: didUri.did,
-    type: kEd25519VerificationKey2018,
-    value: publicKey
-  }))
+  didDocument.addPublicKey(
+    new PublicKey({
+      id: `${didUri.did}#owner`,
+      type: kEd25519VerificationKey2018,
+      owner: didUri.did,
 
-  didDocument.addPublicKey(createPublicKey({
-    id: 'eth',
-    did: didUri.did,
-    type: kSecp256k1VerificationKey2018,
-    value: wallet.getPublicKey()
-  }))
+      // public key variants
+      publicKeyHex: toHex(publicKey),
+      publicKeyBase64: crypto.base64.encode(publicKey).toString(),
+      publicKeyBase58: crypto.base58.encode(publicKey).toString()
+    })
+  )
+
+  didDocument.addPublicKey(
+    new PublicKey({
+      id: `${didUri.did}#eth`,
+      type: kEd25519VerificationKey2018,
+      owner: didUri.did,
+
+      // public key variants
+      publicKeyHex: toHex(wallet.getPublicKey()),
+      publicKeyBase64: crypto.base64.encode(wallet.getPublicKey()).toString(),
+      publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString()
+    })
+  )
 
   didDocument.addAuthentication(new Authentication(
     kEd25519SignatureAuthentication2018,
@@ -163,20 +175,22 @@ async function create(opts) {
     // additional keys
     if (Array.isArray(opts.ddo.publicKey)) {
       for (const pk of opts.ddo.publicKey) {
-        const key = {}
-        if ('metadata' === pk.id.split('#')[1]) {
-          key.id = 'metadata'
-        } else {
-          key.id = pk.id
+        const { publicKeyHex, publicKeyBase64, publicKeyBase58 } = pk
+        if (!pk.id.startsWith('did:')) {
+          pk.id = `${didUri.did}#${pk.id}`
         }
-        if (!pk.value && pk.publicKeyHex) {
-          key.value = pk.publicKeyHex
-        } else {
-          key.value = pk.value
-        }
-        key.did = didUri.did
-        key.type = pk.type || kEd25519VerificationKey2018
-        didDocument.addPublicKey(createPublicKey(key))
+        didDocument.addPublicKey(
+          new PublicKey({
+            id: pk.id,
+            type: pk.type || kEd25519VerificationKey2018,
+            owner: didUri.did,
+
+            // public key variants
+            publicKeyHex,
+            publicKeyBase64,
+            publicKeyBase58
+          })
+        )
       }
     }
 
@@ -256,29 +270,6 @@ async function create(opts) {
     ddo: didDocument,
     did: didUri,
   }
-}
-
-/**
- * Creates a new public key to be added to the publicKey array.
- * @param  {Object} opts
- * @return {Object}
- */
-function createPublicKey(opts = {}) {
-  if (!isBuffer(opts.value)) {
-    // eslint-disable-next-line no-param-reassign
-    opts.value = Buffer.from(opts.value, 'hex')
-  }
-
-  return new PublicKey({
-    id: `${opts.did}#${opts.id}`,
-    type: opts.type,
-    owner: opts.did,
-
-    // public key variants
-    publicKeyHex: toHex(opts.value),
-    publicKeyBase64: crypto.base64.encode(opts.value).toString(),
-    publicKeyBase58: crypto.base58.encode(opts.value).toString()
-  })
 }
 
 /**
