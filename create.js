@@ -164,19 +164,17 @@ async function create(opts) {
     if (Array.isArray(opts.ddo.publicKey)) {
       for (const pk of opts.ddo.publicKey) {
         const key = {}
-        if ('metadata' !== pk.id) {
-          const id = pk.id.split('#')
-          key.id = id[1]
-          key.did = id[0]
+        if ('metadata' === pk.id.split('#')[1]) {
+          key.id = 'metadata'
         } else {
           key.id = pk.id
-          key.did = didUri.did
         }
         if (!pk.value && pk.publicKeyHex) {
           key.value = pk.publicKeyHex
         } else {
           key.value = pk.value
         }
+        key.did = didUri.did
         key.type = pk.type || kEd25519VerificationKey2018
         didDocument.addPublicKey(createPublicKey(key))
       }
