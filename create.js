@@ -190,8 +190,11 @@ async function create(opts) {
     // add service endpoints
     if (Array.isArray(opts.ddo.service)) {
       for (const service of opts.ddo.service) {
+        if (!service.id.startsWith('did:')) {
+          service.id = `${didUri.did}#${service.id}`
+        }
         didDocument.addService(createService({
-          id: `${didUri.did}#${service.id}`,
+          id: service.id,
           type: service.type,
           serviceEndpoint: service.serviceEndpoint,
           service
