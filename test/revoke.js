@@ -63,22 +63,3 @@ test('revoke() invalid opts', async (t) => {
     'Could not resolve DID for the provided mnemonic'
   )
 })
-
-test('revoke(opts)', async (t) => {
-  t.plan(1)
-
-  const identity = await create({ context, password: 'test' })
-  await util.writeIdentity(identity)
-  const { mnemonic } = identity
-  const revokedIdentity = await revoke({ context, password: 'test2', mnemonic })
-  await util.writeIdentity(revokedIdentity)
-
-  let ddo
-  try {
-    ddo = await resolve(revokedIdentity.publicKey.toString('hex'))
-  } catch (err) {
-    throw new Error('Could not resolve DID for the provided mnemonic')
-  }
-
-  t.true('string' === typeof ddo.revoked)
-})
