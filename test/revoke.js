@@ -1,9 +1,6 @@
-const { resolve } = require('../resolve')
-const { create } = require('../create')
 const { revoke } = require('../revoke')
 const context = require('ara-context')()
 const bip39 = require('bip39')
-const util = require('../util')
 const test = require('ava')
 
 test('revoke() invalid opts', async (t) => {
