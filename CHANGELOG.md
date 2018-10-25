@@ -1,3 +1,43 @@
+<a name="0.29.0"></a>
+# [0.29.0](https://github.com/AraBlocks/ara-identity/compare/0.28.1...0.29.0) (2018-10-25)
+
+
+### Bug Fixes
+
+* **bin/ara-identity:** Fix revoke method definition ([49fd578](https://github.com/AraBlocks/ara-identity/commit/49fd578))
+* **bin/ara-identity:** Fix typo ([fc60365](https://github.com/AraBlocks/ara-identity/commit/fc60365))
+* **bin/ara-identity:** Fix usage help ([16cba30](https://github.com/AraBlocks/ara-identity/commit/16cba30))
+* **bin/ara-identity:** fix usage message ([1f777d9](https://github.com/AraBlocks/ara-identity/commit/1f777d9))
+* **create.js:** add id property to service endpoints ([7e92671](https://github.com/AraBlocks/ara-identity/commit/7e92671))
+* **create.js:** Add method to create service endpoints in ddo ([ef054b5](https://github.com/AraBlocks/ara-identity/commit/ef054b5))
+* **create.js:** Add option to use created when revoking ([8facadb](https://github.com/AraBlocks/ara-identity/commit/8facadb))
+* **create.js:** Change opts property name ([c537d4b](https://github.com/AraBlocks/ara-identity/commit/c537d4b))
+* **create.js:** Fix adding service endpoints to ddo ([72b3f2c](https://github.com/AraBlocks/ara-identity/commit/72b3f2c))
+* **create.js:** fix how service endpoints are added ([a917d68](https://github.com/AraBlocks/ara-identity/commit/a917d68))
+* **create.js:** Fix how service endpoints are added ([933fb9e](https://github.com/AraBlocks/ara-identity/commit/933fb9e))
+* **create.js:** Fix linting issues ([6dc3621](https://github.com/AraBlocks/ara-identity/commit/6dc3621))
+* **create.js:** Fix revoke argument ([46317c1](https://github.com/AraBlocks/ara-identity/commit/46317c1))
+* **create.js:** Fix service endpoint class argument ([98c7e7e](https://github.com/AraBlocks/ara-identity/commit/98c7e7e))
+* **create.js:** Refactor code ([707f968](https://github.com/AraBlocks/ara-identity/commit/707f968))
+* **revoke.js:** Add checks for password ([c177a82](https://github.com/AraBlocks/ara-identity/commit/c177a82))
+* **revoke.js:** Add proper method definitio ([012d077](https://github.com/AraBlocks/ara-identity/commit/012d077))
+* **revoke.js:** Make web3 context as an arguement ([7188e78](https://github.com/AraBlocks/ara-identity/commit/7188e78))
+* **revoke.js:** Parse existing DDO to get publicKeys and authentication ([fe92734](https://github.com/AraBlocks/ara-identity/commit/fe92734))
+* **revoke.js:** Pass the entire ddo to create() ([a58b799](https://github.com/AraBlocks/ara-identity/commit/a58b799))
+* **revoke.js:** Read old DDO content to retrieve created time ([3aefeaa](https://github.com/AraBlocks/ara-identity/commit/3aefeaa))
+* **revoke.js:** Refactor ddo resolving ([bfa654f](https://github.com/AraBlocks/ara-identity/commit/bfa654f))
+
+
+### Features
+
+* **bin/ara-identity:** Add revoke command to the CLI ([8f64582](https://github.com/AraBlocks/ara-identity/commit/8f64582))
+* **create.js:** Add revoke property to DIDDocument creation ([96140bb](https://github.com/AraBlocks/ara-identity/commit/96140bb))
+* **create.js:** Allow arbitrary values in service endpoints ([0565199](https://github.com/AraBlocks/ara-identity/commit/0565199))
+* **index.js:** Add revoke() method ([9893b20](https://github.com/AraBlocks/ara-identity/commit/9893b20))
+* **revoke.js:** Add method to revoke identities ([9cd052b](https://github.com/AraBlocks/ara-identity/commit/9cd052b))
+
+
+
 <a name="0.28.1"></a>
 ## [0.28.1](https://github.com/AraBlocks/ara-identity/compare/0.28.0...0.28.1) (2018-10-22)
 
