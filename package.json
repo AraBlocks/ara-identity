@@ -30,7 +30,7 @@
     "ara-context": "github:arablocks/ara-context#semver:0.3.x",
     "ara-crypto": "github:arablocks/ara-crypto#semver:0.7.x",
     "ara-network": "github:arablocks/ara-network#1.0.0-beta.3",
-    "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration#semver:0.6.x",
+    "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration#semver:1.1.x",
     "ara-secret-storage": "github:arablocks/ara-secret-storage#semver:0.1.x",
     "bip39": "^2.5.0",
     "cfsnet": "github:arablocks/cfsnet#semver:0.11.x",
