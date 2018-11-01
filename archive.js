@@ -21,16 +21,13 @@ const kDefaultTimeout = 5000
  * @param {String|Buffer} opts.secret
  * @param {String} opts.keyring
  * @param {String} opts.network
+ * @param {Boolean} opts.shallow
  * @throws TypeError
  * @return {Promise}
  */
-async function archive(identity, opts) {
+async function archive(identity, opts = {}) {
   if (null == identity || 'object' !== typeof identity) {
     throw new TypeError('Expecting identity to be an object.')
-  }
-
-  if (null == opts || 'object' !== typeof opts) {
-    throw new TypeError('Expecting options to be an object.')
   }
 
   let conf
@@ -82,7 +79,10 @@ async function archive(identity, opts) {
     id: toHex(publicKey),
   })
 
-  await Promise.all(files.map(file => cfs.writeFile(file.path, file.buffer)))
+  const shallow = opts.shallow || false
+  await Promise.all(files.map(file => {
+    if (!shallow || 'ddo.json' === file.path) cfs.writeFile(file.path, file.buffer)
+  }))
 
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
