@@ -1,4 +1,9 @@
-## [0.29.1](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.29.1) (2018-11-01)
+## [0.29.2](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.29.2) (2018-11-02)
+
+
+### Features
+
+* **archive:** ability to shallow archive just a ddo ([92ec0c0](https://github.com/AraBlocks/ara-identity/commit/92ec0c0))
 
 
 
