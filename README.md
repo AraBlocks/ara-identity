@@ -106,7 +106,8 @@ const identity = await aid.create(opts)
 const archiverOpts = {
   secret: 'test-secret',
   network: 'test-archiver',
-  keyring: '~/.ara/keyrings/keyring.pub'
+  keyring: '~/.ara/keyrings/keyring.pub',
+  shallow: true
 }
 
 await aid.archive(identity, archiverOpts)
