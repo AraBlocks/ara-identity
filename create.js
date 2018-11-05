@@ -2,6 +2,7 @@
 const { Authentication } = require('did-document')
 const { PublicKey } = require('did-document/public-key')
 const { Service } = require('did-document/service')
+const createContext = require('ara-context')
 const { toHex } = require('./util')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
@@ -33,11 +34,11 @@ async function create(opts) {
     throw new TypeError('Expecting object.')
   }
 
-  if (null == opts.context || 'object' !== typeof opts.context) {
+  if (opts.context && 'object' !== typeof opts.context) {
     throw new TypeError('Expecting context object.')
   }
 
-  if (null == opts.context.web3 || 'object' !== typeof opts.context.web3) {
+  if (opts.context.web3 && 'object' !== typeof opts.context.web3) {
     throw new TypeError('Expecting web3 to be in context.')
   }
 
@@ -81,9 +82,9 @@ async function create(opts) {
     }
   }
 
-  const seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic))
+  const { seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic)) } = opts
 
-  const { context } = opts
+  const { context = createContext() } = opts
   const { web3 } = context
   const { publicKey, secretKey } = crypto.keyPair(seed)
   const password = crypto.blake2b(Buffer.from(opts.password))
@@ -255,6 +256,10 @@ async function create(opts) {
 
   encryptionKey.fill(0)
   seed.fill(0)
+
+  if (web3 && web3.currentProvider && web3.currentProvider.connection) {
+    context.web3.currentProvider.connection.close()
+  }
 
   return {
     account,
