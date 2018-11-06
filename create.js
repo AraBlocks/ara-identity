@@ -38,7 +38,7 @@ async function create(opts) {
     throw new TypeError('Expecting context object.')
   }
 
-  if (opts.context.web3 && 'object' !== typeof opts.context.web3) {
+  if (opts.context && 'object' !== typeof opts.context.web3) {
     throw new TypeError('Expecting web3 to be in context.')
   }
 
