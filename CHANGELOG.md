@@ -1,5 +1,19 @@
-<a name="0.30.0"></a>
-# [0.30.0](https://github.com/AraBlocks/ara-identity/compare/0.28.0...0.30.0) (2018-11-05)
+## [0.30.1](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.30.1) (2018-11-06)
+
+
+### Bug Fixes
+
+* **rc.js:** Remove default 'whoami' property causing rc conflicts ([c2040ad](https://github.com/AraBlocks/ara-identity/commit/c2040ad))
+
+
+### Features
+
+* **archive:** ability to shallow archive just a ddo ([06b01f7](https://github.com/AraBlocks/ara-identity/commit/06b01f7))
+* **create.js:** Use default context (that closes) if not given ([0a02654](https://github.com/AraBlocks/ara-identity/commit/0a02654))
+
+
+
+# [0.29.0](https://github.com/AraBlocks/ara-identity/compare/0.28.1...0.29.0) (2018-10-25)
 
 
 ### Bug Fixes
@@ -30,38 +44,44 @@
 
 ### Features
 
-* **archive:** ability to shallow archive just a ddo ([06b01f7](https://github.com/AraBlocks/ara-identity/commit/06b01f7))
 * **bin/ara-identity:** Add revoke command to the CLI ([8f64582](https://github.com/AraBlocks/ara-identity/commit/8f64582))
 * **create.js:** Add revoke property to DIDDocument creation ([96140bb](https://github.com/AraBlocks/ara-identity/commit/96140bb))
 * **create.js:** Allow arbitrary values in service endpoints ([0565199](https://github.com/AraBlocks/ara-identity/commit/0565199))
-* **create.js:** Use default context (that closes) if not given ([eceddd0](https://github.com/AraBlocks/ara-identity/commit/eceddd0))
 * **index.js:** Add revoke() method ([9893b20](https://github.com/AraBlocks/ara-identity/commit/9893b20))
 * **revoke.js:** Add method to revoke identities ([9cd052b](https://github.com/AraBlocks/ara-identity/commit/9cd052b))
 
 
 
-<a name="0.28.0"></a>
+## [0.28.1](https://github.com/AraBlocks/ara-identity/compare/0.28.0...0.28.1) (2018-10-22)
+
+
+
 # [0.28.0](https://github.com/AraBlocks/ara-identity/compare/0.27.0...0.28.0) (2018-10-15)
 
 
 
-<a name="0.27.0"></a>
 # [0.27.0](https://github.com/AraBlocks/ara-identity/compare/0.26.0...0.27.0) (2018-10-15)
 
 
 
-<a name="0.26.0"></a>
 # [0.26.0](https://github.com/AraBlocks/ara-identity/compare/0.25.0...0.26.0) (2018-10-15)
 
 
 
-<a name="0.25.0"></a>
-# [0.25.0](https://github.com/AraBlocks/ara-identity/compare/0.23.0...0.25.0) (2018-10-11)
+# [0.25.0](https://github.com/AraBlocks/ara-identity/compare/0.24.0...0.25.0) (2018-10-11)
 
 
 ### Bug Fixes
 
 * **create.js:** Check validity of mnemonic ([9b58366](https://github.com/AraBlocks/ara-identity/commit/9b58366))
+
+
+
+# [0.24.0](https://github.com/AraBlocks/ara-identity/compare/0.23.0...0.24.0) (2018-10-04)
+
+
+### Bug Fixes
+
 * **README.md:** Address PR feedback ([596f209](https://github.com/AraBlocks/ara-identity/commit/596f209))
 * **README.md:** Address PR feedback ([8867f9e](https://github.com/AraBlocks/ara-identity/commit/8867f9e))
 * **README.md:** Fix method error check rule ([292902d](https://github.com/AraBlocks/ara-identity/commit/292902d))
@@ -73,7 +93,6 @@
 
 
 
-<a name="0.23.0"></a>
 # [0.23.0](https://github.com/AraBlocks/ara-identity/compare/0.22.0...0.23.0) (2018-10-01)
 
 
@@ -83,32 +102,26 @@
 
 
 
-<a name="0.22.0"></a>
 # [0.22.0](https://github.com/AraBlocks/ara-identity/compare/0.21.0...0.22.0) (2018-09-19)
 
 
 
-<a name="0.21.0"></a>
 # [0.21.0](https://github.com/AraBlocks/ara-identity/compare/0.20.0...0.21.0) (2018-09-19)
 
 
 
-<a name="0.20.0"></a>
 # [0.20.0](https://github.com/AraBlocks/ara-identity/compare/0.19.0...0.20.0) (2018-09-19)
 
 
 
-<a name="0.19.0"></a>
 # [0.19.0](https://github.com/AraBlocks/ara-identity/compare/0.18.0...0.19.0) (2018-09-19)
 
 
 
-<a name="0.18.0"></a>
 # [0.18.0](https://github.com/AraBlocks/ara-identity/compare/0.17.0...0.18.0) (2018-09-19)
 
 
 
-<a name="0.17.0"></a>
 # [0.17.0](https://github.com/AraBlocks/ara-identity/compare/0.16.0...0.17.0) (2018-09-19)
 
 
@@ -119,22 +132,18 @@
 
 
 
-<a name="0.16.0"></a>
 # [0.16.0](https://github.com/AraBlocks/ara-identity/compare/0.15.1...0.16.0) (2018-09-18)
 
 
 
-<a name="0.15.1"></a>
 ## [0.15.1](https://github.com/AraBlocks/ara-identity/compare/0.15.0...0.15.1) (2018-09-18)
 
 
 
-<a name="0.15.0"></a>
 # [0.15.0](https://github.com/AraBlocks/ara-identity/compare/0.14.0...0.15.0) (2018-09-18)
 
 
 
-<a name="0.14.0"></a>
 # [0.14.0](https://github.com/AraBlocks/ara-identity/compare/0.13.0...0.14.0) (2018-09-18)
 
 
@@ -145,7 +154,6 @@
 
 
 
-<a name="0.13.0"></a>
 # [0.13.0](https://github.com/AraBlocks/ara-identity/compare/0.12.0...0.13.0) (2018-09-14)
 
 
@@ -155,7 +163,6 @@
 
 
 
-<a name="0.12.0"></a>
 # [0.12.0](https://github.com/AraBlocks/ara-identity/compare/0.11.1...0.12.0) (2018-09-14)
 
 
@@ -166,7 +173,6 @@
 
 
 
-<a name="0.11.1"></a>
 ## [0.11.1](https://github.com/AraBlocks/ara-identity/compare/0.10.0...0.11.1) (2018-09-13)
 
 
@@ -177,12 +183,10 @@
 
 
 
-<a name="0.10.0"></a>
 # [0.10.0](https://github.com/AraBlocks/ara-identity/compare/0.9.0...0.10.0) (2018-09-13)
 
 
 
-<a name="0.9.0"></a>
 # [0.9.0](https://github.com/AraBlocks/ara-identity/compare/0.8.0...0.9.0) (2018-09-13)
 
 
@@ -192,7 +196,6 @@
 
 
 
-<a name="0.8.0"></a>
 # [0.8.0](https://github.com/AraBlocks/ara-identity/compare/0.7.1...0.8.0) (2018-09-11)
 
 
@@ -205,12 +208,10 @@
 
 
 
-<a name="0.7.1"></a>
 ## [0.7.1](https://github.com/AraBlocks/ara-identity/compare/0.7.0...0.7.1) (2018-09-11)
 
 
 
-<a name="0.7.0"></a>
 # [0.7.0](https://github.com/AraBlocks/ara-identity/compare/0.6.0...0.7.0) (2018-09-11)
 
 
@@ -226,7 +227,6 @@
 
 
 
-<a name="0.6.0"></a>
 # [0.6.0](https://github.com/AraBlocks/ara-identity/compare/0.5.1...0.6.0) (2018-09-10)
 
 
@@ -237,12 +237,10 @@
 
 
 
-<a name="0.5.1"></a>
 ## [0.5.1](https://github.com/AraBlocks/ara-identity/compare/0.4.0...0.5.1) (2018-09-06)
 
 
 
-<a name="0.4.0"></a>
 # [0.4.0](https://github.com/AraBlocks/ara-identity/compare/0.3.1...0.4.0) (2018-08-28)
 
 
@@ -252,22 +250,18 @@
 
 
 
-<a name="0.3.1"></a>
 ## [0.3.1](https://github.com/AraBlocks/ara-identity/compare/0.3.0...0.3.1) (2018-08-22)
 
 
 
-<a name="0.3.0"></a>
 # [0.3.0](https://github.com/AraBlocks/ara-identity/compare/0.2.0...0.3.0) (2018-08-22)
 
 
 
-<a name="0.2.0"></a>
 # [0.2.0](https://github.com/AraBlocks/ara-identity/compare/0.1.0...0.2.0) (2018-08-22)
 
 
 
-<a name="0.1.0"></a>
 # [0.1.0](https://github.com/AraBlocks/ara-identity/compare/fc4cbe8...0.1.0) (2018-08-21)
 
 
