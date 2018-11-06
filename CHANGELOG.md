@@ -1,9 +1,10 @@
-## [0.30.1](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.30.1) (2018-11-06)
+## [0.30.2](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.30.2) (2018-11-06)
 
 
 ### Bug Fixes
 
-* **rc.js:** Remove default 'whoami' property causing rc conflicts ([c2040ad](https://github.com/AraBlocks/ara-identity/commit/c2040ad))
+* **create.js:** Fix broken logic for optional contexts ([7fa68c3](https://github.com/AraBlocks/ara-identity/commit/7fa68c3))
+* **rc.js:** Remove default 'whoami' property causing rc conflicts ([fa26cfd](https://github.com/AraBlocks/ara-identity/commit/fa26cfd))
 
 
 ### Features
