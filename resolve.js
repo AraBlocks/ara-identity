@@ -33,6 +33,15 @@ async function resolve(uri, opts = {}) {
   opts.keyring = opts.keyring || conf.keyring
   opts.network = opts.network || conf.network
 
+  // is DID ?
+  if (uri && 'object' === typeof uri && uri.did) {
+    if ('string' === typeof uri.did) {
+      uri = uri.did
+    } else if ('object' === typeof uri.did) {
+      uri = uri.did.reference
+    }
+  }
+
   if (0 !== uri.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
     uri = `did:ara:${uri}`

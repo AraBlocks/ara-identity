@@ -84,7 +84,6 @@ async function writeIdentity(identity) {
       identity.files[i].buffer
     )
   }
-  return null
 }
 
 module.exports = {

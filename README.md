@@ -75,6 +75,7 @@ All functions check for input validity, input correctness, and throw an error if
 
 * [aid.archive(identity, opts)](#archive)
 * [aid.create(opts)](#create)
+* [aid.save(identity)](#save)
 * [aid.createIdentityKeyPath(identity)](#createIdPath)
 * [aid.did.create(publicKey)](#didCreate)
 * [aid.did.normalize(identifier, method)](#didNormalize)
@@ -125,6 +126,23 @@ const opts = {
 }
 
 const identity = await aid.create(opts)
+```
+
+<a name="save"></a>
+### `aid.save(identity)`
+Save an Ara identity to disk. Does not work in browser.
+```js
+const context = require('ara-context')()
+
+const opts = {
+  context,
+  password: 'hello'
+}
+
+const identity = await aid.create(opts)
+if (await aid.save(identity)) {
+  console.log(await aid.resolve(identity))
+}
 ```
 
 <a name="createIdPath"></a>

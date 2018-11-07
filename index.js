@@ -4,6 +4,7 @@ const { resolve } = require('./resolve')
 const { recover } = require('./recover')
 const { revoke } = require('./revoke')
 const { create } = require('./create')
+const { save } = require('./save')
 const ethereum = require('./ethereum')
 const { list } = require('./list')
 const util = require('./util')
@@ -19,6 +20,7 @@ module.exports = {
   resolve,
   revoke,
   create,
+  save,
   list,
   util,
   ddo,
