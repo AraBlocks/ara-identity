@@ -78,7 +78,7 @@ async function create(opts) {
     }
 
     if (opts.ddo.publicKey && !Array.isArray(opts.ddo.publicKey)) {
-      opts.ddo.publicKey = [opts.ddo.publicKey]
+      opts.ddo.publicKey = [ opts.ddo.publicKey ]
     }
   }
 
