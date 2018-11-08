@@ -8,9 +8,9 @@ test('archive() Invalid opts', async (t) => {
 
   await t.throws(archive(), TypeError, 'Expecting identity to be an object.')
 
-  // TODO: Find a way to ignore $HOME/.ararc when runnnig locally 
-  //await t.throws(archive(identity), TypeError, 'Expecting options to be an object.')
-  //await t.throws(archive(identity, {}), TypeError, 'Shared secret cannot be empty.')
+  // TODO: Find a way to ignore $HOME/.ararc when runnnig locally
+  // await t.throws(archive(identity), TypeError, 'Expecting options to be an object.')
+  // await t.throws(archive(identity, {}), TypeError, 'Shared secret cannot be empty.')
 
   await t.throws(archive(identity, { secret: 1234 }), TypeError, 'Expecting shared secret to be a string or buffer.')
   await t.throws(archive(identity, { secret: 'test-node', keyring: './fixtures/keyring.pub' }), TypeError, 'Expecting network name for the archiver.')
