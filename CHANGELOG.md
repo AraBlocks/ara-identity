@@ -1,3 +1,12 @@
+## [0.30.3](https://github.com/AraBlocks/ara-identity/compare/0.30.2...0.30.3) (2018-11-08)
+
+
+### Features
+
+* **.:** Implement porcelain 'aid.save()' ([88285e8](https://github.com/AraBlocks/ara-identity/commit/88285e8))
+
+
+
 ## [0.30.2](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.30.2) (2018-11-06)
 
 
