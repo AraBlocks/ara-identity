@@ -104,20 +104,28 @@ function recover(password, araKeystore, ethereumKeystore) {
   }
 
   // eslint-disable-next-line no-param-reassign
-  password = crypto.blake2b(Buffer.from(password))
+  const passwordHash = crypto.blake2b(Buffer.from(password))
 
-  const secretKey = ss.decrypt(araKeystore, { key: password.slice(0, 16) })
+  const secretKey = ss.decrypt(araKeystore, { key: passwordHash.slice(0, 16) })
   const keystore = protobuf.messages.KeyStore.decode(ss.decrypt(
     ethereumKeystore,
     { key: secretKey.slice(0, 16) }
   ))
 
   return new Promise((resolve, reject) => {
-    try {
-      ks.recover(password, keystore, resolve)
-    } catch (err) {
-      reject(err)
-    }
+    ks.recover(password, keystore, function (key) {
+      if (key instanceof Error) {
+        ks.recover(passwordHash, keystore, function (key) {
+          if (key instanceof Error) {
+            reject(err)
+          } else {
+            resolve(key)
+          }
+        })
+      } else {
+        resolve(key)
+      }
+    })
   })
 }
 
