@@ -194,7 +194,7 @@ program.command(
 )
 
 program.command(
-  'keystore-dump [did]',
+  'keystore-dump [did] [type]',
   'Recover secret keys and secret storages for Ara and Web3',
   // eslint-disable-next-line no-shadow
   program => program
@@ -202,14 +202,14 @@ program.command(
     .positional('did', {
       default: rc.network.identity.whoami || rc.network.whoami,
     })
-    .group([ 'type', 'secret-storage', 'path' ], 'Options:')
-    .option('type', {
-      alias: 't',
-      optional: true,
-      describe: 'Type of private key to be recovered'
+    .positional('type', {
+      default: 'eth',
     })
+    .group([ 'secret-storage', 'path' ], 'Options:')
     .option('secret-storage', {
-      alias: 's',
+      alias: 'S',
+      type: 'boolean',
+      default: false,
       optional: true,
       describe: 'Type of secret storage keystore to be recovered'
     })
@@ -724,44 +724,40 @@ async function onkeystoredump(argv) {
     onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
   }
 
-  if ('eth' === argv.type || 'ara' === argv.type) {
-      if ('eth' === argv.type) {
-        try {
-          secretKeys.eth = await aid
-            .ethereum
-            .keystore
-            .recover(password, keystores.ara, keystores.eth)
-          process.stdout.write(toHex(secretKeys.eth))
-        } catch(err) {
-          debug(err)
-          onfatal(new Error('Error while decrypting the ethereum keystore'))
-        }
+  if (secretStorage) {
+    if ('ara' === argv.type) {
+      process.stdout.write(keystores.ara)
+    } else {
+      try {
+        const ethKeystore = await protobuf.messages.KeyStore.decode(ss.decrypt(
+          JSON.parse(keystores.eth),
+          { key: secretKeys.ara.slice(0,16) }
+        ))
+        process.stdout.write(JSON.stringify(ethKeystore))
+      } catch (err) {
+        debug(err)
+        onfatal(new Error('Error while decoding the web3 ethereum keystore'))
       }
-
-      if ('ara' === argv.type) {
-        process.stdout.write(toHex(secretKeys.ara))
+    }
+  } else {
+    if ('ara' === argv.type) {
+      process.stdout.write(toHex(secretKeys.ara))
+    }
+    if ('eth' === argv.type) {
+      try {
+        secretKeys.eth = await aid
+          .ethereum
+          .keystore
+          .recover(password, keystores.ara, keystores.eth)
+        process.stdout.write(toHex(secretKeys.eth))
+      } catch(err) {
+        debug(err)
+        onfatal(new Error('Error while decrypting the ethereum keystore'))
       }
-  }
-
-  if ('eth' === secretStorage) {
-    try {
-      const ethKeystore = await protobuf.messages.KeyStore.decode(ss.decrypt(
-        JSON.parse(keystores.eth),
-        { key: secretKeys.ara.slice(0,16) }
-      ))
-      process.stdout.write(JSON.stringify(ethKeystore))
-    } catch (err) {
-      debug(err)
-      onfatal(new Error('Error while decoding the web3 ethereum keystore'))
     }
   }
 
-  if ('ara' === secretStorage) {
-    process.stdout.write(keystores.ara)
-  }
-
   process.stdout.write('\n')
-
   process.exit(0)
 }
 
