@@ -194,23 +194,29 @@ program.command(
 )
 
 program.command(
-  'keystore-dump [did] [type]',
-  'Recover a private ethereum-key, ara-key or the web3 ethereum key-store',
+  'keystore-dump [did]',
+  'Recover secret keys and secret storages for Ara and Web3',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 keystore-dump [-D] [options]')
     .positional('did', {
       default: rc.network.identity.whoami || rc.network.whoami,
     })
-    .positional('type', {
-      default: 'eth',
-      describe: 'eth for ethereum private key \nara for ara private key\neth-keystore for web3 ethereum keystore\n'
+    .group([ 'type', 'secret-storage', 'path' ], 'Options:')
+    .option('type', {
+      alias: 't',
+      optional: true,
+      describe: 'Type of private key to be recovered'
     })
-    .group([ 'path', 'file' ], 'Options:')
+    .option('secret-storage', {
+      alias: 's',
+      optional: true,
+      describe: 'Type of secret storage keystore to be recovered'
+    })
     .option('path', {
       alias: 'p',
-      describe: 'Path to look for did directory',
-      optional: true
+      optional: true,
+      describe: 'Path to look for did directory'
     })
   , onkeystoredump
 )
@@ -675,7 +681,7 @@ async function onwhoami(argv) {
 }
 
 async function onkeystoredump(argv) {
-  let { password } = argv
+  let { 'secret-storage': secretStorage, password } = argv
   let identifier = argv.did
 
   if (identifier && 0 !== identifier.indexOf('did:ara:')) {
@@ -709,38 +715,49 @@ async function onkeystoredump(argv) {
   keystores.ara = await aid.fs.readFile(identifier, 'keystore/ara')
   keystores.eth = await aid.fs.readFile(identifier, 'keystore/eth')
 
-  if ('eth' === argv.type || 'ara' === argv.type || 'eth-keystore' === argv.type) {
+  try {
+    const passwordBuffer = crypto.blake2b(Buffer.from(password))
+    const key = passwordBuffer.slice(0, 16)
+    secretKeys.ara = ss.decrypt(JSON.parse(keystores.ara), { key })
+  } catch (err) {
+    debug(err)
+    onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
+  }
+
+  if ('eth' === argv.type || 'ara' === argv.type) {
+      if ('eth' === argv.type) {
+        try {
+          secretKeys.eth = await aid
+            .ethereum
+            .keystore
+            .recover(password, keystores.ara, keystores.eth)
+          process.stdout.write(toHex(secretKeys.eth))
+        } catch(err) {
+          debug(err)
+          onfatal(new Error('Error while decrypting the ethereum keystore'))
+        }
+      }
+
+      if ('ara' === argv.type) {
+        process.stdout.write(toHex(secretKeys.ara))
+      }
+  }
+
+  if ('eth' === secretStorage) {
     try {
-      const passwordBuffer = crypto.blake2b(Buffer.from(password))
-      const key = passwordBuffer.slice(0, 16)
-      secretKeys.ara = ss.decrypt(JSON.parse(keystores.ara), { key })
+      const ethKeystore = await protobuf.messages.KeyStore.decode(ss.decrypt(
+        JSON.parse(keystores.eth),
+        { key: secretKeys.ara.slice(0,16) }
+      ))
+      process.stdout.write(JSON.stringify(ethKeystore))
     } catch (err) {
       debug(err)
-      onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
+      onfatal(new Error('Error while decoding the web3 ethereum keystore'))
     }
-  } else {
-    onfatal(new Error(`Invalid keystore type: ${argv.type}`))
-  }
-  if ('eth' === argv.type) {
-    secretKeys.eth = await aid
-      .ethereum
-      .keystore
-      .recover(password, keystores.ara, keystores.eth)
-  }
-  if ('eth-keystore' === argv.type) {
-    const ethKeystore = await protobuf.messages.KeyStore.decode(ss.decrypt(
-      JSON.parse(keystores.eth),
-      { key: secretKeys.ara.slice(0,16) }
-    ))
-    process.stdout.write(JSON.stringify(ethKeystore))
   }
 
-  if ('ara' === argv.type) {
-    process.stdout.write(toHex(secretKeys.ara))
-  }
-
-  if ('eth' === argv.type) {
-    process.stdout.write(toHex(secretKeys.eth))
+  if ('ara' === secretStorage) {
+    process.stdout.write(keystores.ara)
   }
 
   process.stdout.write('\n')
