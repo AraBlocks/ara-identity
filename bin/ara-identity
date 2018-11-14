@@ -6,7 +6,6 @@ const { toHex } = require('../util')
 const { table } = require('table')
 const protobuf = require('../protobuf')
 const inquirer = require('inquirer')
-const context = require('ara-context')()
 const program = require('yargs')
 const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity')
@@ -291,7 +290,7 @@ async function onrecover(argv) {
   }
 
   try {
-    const identity = await aid.recover({ context, password, mnemonic })
+    const identity = await aid.recover({ password, mnemonic })
     info('Identity recovered : %s', identity.did)
 
     for (let i = 0; i < identity.files.length; ++i) {
@@ -329,7 +328,7 @@ async function onrevoke(argv) {
   }
 
   try {
-    const identity = await aid.revoke({ context, password, mnemonic })
+    const identity = await aid.revoke({ password, mnemonic })
     info('Identity to be revoked : %s', identity.did)
 
     for (let i = 0; i < identity.files.length; ++i) {
@@ -542,7 +541,7 @@ async function oncreate(argv) {
 
   if (!argv.quiet) { process.stdout.write('\n') }
 
-  const identity = await aid.create({ context, password })
+  const identity = await aid.create({ password })
 
   if (!argv.quiet) { info('New identity created: %s', identity.did) }
 

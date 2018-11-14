@@ -22,11 +22,11 @@ async function recover(opts) {
     throw new TypeError('Expecting password for recovery.')
   }
 
-  if (null == opts.context || 'object' !== typeof opts.context) {
+  if (opts.context && 'object' !== typeof opts.context) {
     throw new TypeError('Expecting context object.')
   }
 
-  if (null == opts.context.web3 || 'object' !== typeof opts.context.web3) {
+  if (opts.context && 'object' !== typeof opts.context.web3) {
     throw new TypeError('Expecting web3 to be in context.')
   }
 

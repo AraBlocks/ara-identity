@@ -19,10 +19,12 @@ async function revoke(opts) {
     throw new TypeError('Expecting opts to be an object.')
   }
 
-  if (null == opts.context) {
-    throw new TypeError('Expecting web3 context object.')
-  } else if (opts.context && 'object' !== typeof opts.context) {
-    throw new TypeError('Expecting web3 context to be an object.')
+  if (opts.context && 'object' !== typeof opts.context) {
+    throw new TypeError('Expecting context object.')
+  }
+
+  if (opts.context && 'object' !== typeof opts.context.web3) {
+    throw new TypeError('Expecting web3 to be in context.')
   }
 
   if (null == opts.mnemonic) {
