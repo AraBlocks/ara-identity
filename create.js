@@ -84,11 +84,7 @@ async function create(opts) {
 
   const { seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic)) } = opts
   const { context = createContext() } = opts
-  await new Promise((resolve, reject) => {
-    context.once('ready', () => {
-      resolve()
-    })
-  })
+  await context.ready()
   const { web3 } = context
   const { publicKey, secretKey } = crypto.keyPair(seed)
 
