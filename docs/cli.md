@@ -291,19 +291,20 @@ Passphrase: [hidden]
 
 <a name="aid-keystore-dump"></a>
 ### 7. `aid keystore-dump`
-Print `eth` or `ara` private key or the Ethereum keystore for a given an Ara ID. Requires a password for verification.
+Recover secret keys and secret storages for Ara and Web3 for a given an Ara ID. Requires a password for verification.
 
 ```
 $ aid keystore-dump -h
 usage: aid keystore-dump [-D] [options]
 
 Positionals:
-  did  [default: "did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45"]
-  type  [default: "eth"]
+  did  [default: "did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478"]
 
 Options:
-  --path, -p  Path to look for did directory
-  --file
+  --type, -t            Type of private key to be recovered
+  --secret-storage, -s  Type of secret storage keystore to be recovered
+  --path, -p            Path to look for did directory
+  --quiet, -q           Only output errors and results  [default: false]
 
 General Options:
   --help, -h     Show this help message
@@ -313,7 +314,7 @@ General Options:
 
 #### Example (Ara keystore)
 ```
-$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 ara
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --type ara
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
@@ -322,7 +323,7 @@ Passphrase: [hidden]
 
 #### Example (Eth keystore)
 ```
-$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --type eth
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
@@ -330,15 +331,26 @@ Passphrase: [hidden]
 
 ```
 
-#### Example (Eth keystore)
+#### Example (Ethereum secret storage keystore)
 ```
-$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth-keystore
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --secret-storage eth
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
 {"version":3,"address":"311d83ccb3718217bd6c21ae1d165bc63e4a88fa","id":"20799912-4bf3-463d-b43f-ad7974462b7e","crypto":{"cipher":"aes-128-ctr","ciphertext":"90061e72b00d3c8ff8492dad4145b56dea19f90836be4bddb4c7bb4cae26a8aa","cipherparams":{"iv":"e9d95a5b0d63309f10506a5a8f20d7e0"},"mac":"a6e1ff68b1e9731ffdf1a2462ea4ec9e0733f7a462778b8f992f0e8af5c651fb","kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"r":1,"p":8,"c":0,"prf":"","salt":"587f6a27f3dd2fc4a7377b22df2dc1035d91669a417a0327dbe971e45939adac"}}}
 
 ```
+
+#### Example (Ara secret storage keystore)
+```
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --secret-storage ara
+? Please enter the passphrase associated with the identity.
+Passphrase: [hidden]
+
+{"id":"a38fb9da-5635-4005-ad69-48c9ca8b5df3","version":"0000000000000101","crypto":{"cipherparams":{"iv":"3dcbb1fd38dde5977f5974e7fa0efd9d"},"ciphertext":"64a5db3b0ca928868af1f69270109a3b5e42f847b9f67adb26d767c548a9705a11218ff4a4e449f202c34d4a2d6f5a69277addf3e3abaa53a092799cf1872abe","cipher":"aes-128-ctr","digest":"sha1","mac":"6c1e1d5912d0cdf272b77ae3d4531e6ffc16ca97"}}
+
+```
+
 
 <a name="aid-revoke"></a>
 ### 8. `aid revoke`
