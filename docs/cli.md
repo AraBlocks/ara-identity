@@ -314,7 +314,7 @@ General Options:
 
 #### Example (Ara keystore)
 ```
-$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --type ara
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 ara
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
@@ -323,7 +323,7 @@ Passphrase: [hidden]
 
 #### Example (Eth keystore)
 ```
-$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --type eth
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
@@ -333,7 +333,7 @@ Passphrase: [hidden]
 
 #### Example (Ethereum secret storage keystore)
 ```
-$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --secret-storage eth
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth --secret-storage true
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
@@ -343,7 +343,7 @@ Passphrase: [hidden]
 
 #### Example (Ara secret storage keystore)
 ```
-$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 --secret-storage ara
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 ara --secret-storage true
 ? Please enter the passphrase associated with the identity.
 Passphrase: [hidden]
 
