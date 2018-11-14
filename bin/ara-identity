@@ -195,7 +195,7 @@ program.command(
 
 program.command(
   'keystore-dump [did] [type]',
-  'Recover a private ethereum-key|ara-key or the ethereum key-store',
+  'Recover a private ethereum-key, ara-key or the web3 ethereum key-store',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 keystore-dump [-D] [options]')
@@ -204,8 +204,9 @@ program.command(
     })
     .positional('type', {
       default: 'eth',
+      describe: 'eth for ethereum private key \nara for ara private key\neth-keystore for web3 ethereum keystore\n'
     })
-    .group([ 'path', 'file' ], 'keystore-dump Options:')
+    .group([ 'path', 'file' ], 'Options:')
     .option('path', {
       alias: 'p',
       describe: 'Path to look for did directory',
@@ -720,14 +721,12 @@ async function onkeystoredump(argv) {
   } else {
     onfatal(new Error(`Invalid keystore type: ${argv.type}`))
   }
-
   if ('eth' === argv.type) {
     secretKeys.eth = await aid
       .ethereum
       .keystore
       .recover(password, keystores.ara, keystores.eth)
   }
-
   if ('eth-keystore' === argv.type) {
     const ethKeystore = await protobuf.messages.KeyStore.decode(ss.decrypt(
       JSON.parse(keystores.eth),
