@@ -113,13 +113,13 @@ function recover(password, araKeystore, ethereumKeystore) {
   ))
 
   return new Promise((resolve, reject) => {
-    ks.recover(password, keystore, function (key) {
+    ks.recover(password, keystore, (key) => {
       if (key instanceof Error) {
-        ks.recover(passwordHash, keystore, function (key) {
-          if (key instanceof Error) {
-            reject(err)
+        ks.recover(passwordHash, keystore, (value) => {
+          if (value instanceof Error) {
+            reject(value)
           } else {
-            resolve(key)
+            resolve(value)
           }
         })
       } else {
