@@ -291,7 +291,7 @@ Passphrase: [hidden]
 
 <a name="aid-keystore-dump"></a>
 ### 7. `aid keystore-dump`
-Print `eth` or `ara` private key for a given an Ara ID. Requires a password for verification.
+Print `eth` or `ara` private key or the Ethereum keystore for a given an Ara ID. Requires a password for verification.
 
 ```
 $ aid keystore-dump -h
@@ -327,6 +327,16 @@ $ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13
 Passphrase: [hidden]
 
  ara: info:  Ara ID Ethereum private key: b50955c58c7e773da62b85e0e6a38f5c2283f4bfdad7d7ddaaa9d8b43f21991a
+
+```
+
+#### Example (Eth keystore)
+```
+$ aid keystore-dump did:ara:c293cfc3f1bb21c5dec7e6273961aa2e3565f3db4d896851dd13612b02918478 eth-keystore
+? Please enter the passphrase associated with the identity.
+Passphrase: [hidden]
+
+{"version":3,"address":"311d83ccb3718217bd6c21ae1d165bc63e4a88fa","id":"20799912-4bf3-463d-b43f-ad7974462b7e","crypto":{"cipher":"aes-128-ctr","ciphertext":"90061e72b00d3c8ff8492dad4145b56dea19f90836be4bddb4c7bb4cae26a8aa","cipherparams":{"iv":"e9d95a5b0d63309f10506a5a8f20d7e0"},"mac":"a6e1ff68b1e9731ffdf1a2462ea4ec9e0733f7a462778b8f992f0e8af5c651fb","kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"r":1,"p":8,"c":0,"prf":"","salt":"587f6a27f3dd2fc4a7377b22df2dc1035d91669a417a0327dbe971e45939adac"}}}
 
 ```
 
