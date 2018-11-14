@@ -87,7 +87,6 @@ async function create(opts) {
   const { context = createContext() } = opts
   const { web3 } = context
   const { publicKey, secretKey } = crypto.keyPair(seed)
-  const password = crypto.blake2b(Buffer.from(opts.password))
 
   const { salt, iv } = await ethereum.keystore.create()
   const wallet = await ethereum.wallet.load({ seed })
@@ -97,11 +96,13 @@ async function create(opts) {
   })
 
   const kstore = await ethereum.keystore.dump({
-    password,
+    password: opts.password,
     salt,
     iv,
     privateKey: wallet.getPrivateKey(),
   })
+
+  const password = crypto.blake2b(Buffer.from(opts.password))
 
   const didUri = did.create(publicKey)
   let didDocument
