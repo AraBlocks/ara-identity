@@ -15,10 +15,7 @@ async function load(opts) {
     throw new TypeError('Expecting seed to create wallet.')
   }
 
-  let index = 0
-  if (0 < opts.index) {
-    index = opts.index
-  }
+  const index = 0 < opts.index ? opts.index : 0
 
   if (false === isBuffer(opts.seed) || true === isZeroBuffer(opts.seed)) {
     throw new TypeError('Expecting seed to be a non-zero buffer.')

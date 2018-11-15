@@ -95,6 +95,8 @@ async function create(opts) {
     privateKey: wallet.getPrivateKey()
   })
 
+  console.log(account)
+
   const kstore = await ethereum.keystore.dump({
     password,
     salt,
