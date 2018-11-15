@@ -1,18 +1,19 @@
-# [0.31.0](https://github.com/AraBlocks/ara-identity/compare/0.30.3...0.31.0) (2018-11-15)
+## [0.31.1](https://github.com/AraBlocks/ara-identity/compare/0.30.3...0.31.1) (2018-11-15)
 
 
 ### Bug Fixes
 
-* **bin/ara-identity:** Address PR feedback ([8f09b86](https://github.com/AraBlocks/ara-identity/commit/8f09b86))
-* **bin/ara-identity:** Address PR feedback ([e6a1ab4](https://github.com/AraBlocks/ara-identity/commit/e6a1ab4))
-* **create.js:** Use plain text password to encrypt web3 Eth keystore ([8395ad4](https://github.com/AraBlocks/ara-identity/commit/8395ad4))
-* **ethereum/keystore.js:** Add fallback for old Ara ID's to recover method ([f036baf](https://github.com/AraBlocks/ara-identity/commit/f036baf))
+* **bin/ara-identity:** Add validation for keystore-dump arguement ([d24511a](https://github.com/AraBlocks/ara-identity/commit/d24511a))
+* **bin/ara-identity:** Address PR feedback ([98be9ad](https://github.com/AraBlocks/ara-identity/commit/98be9ad))
+* **bin/ara-identity:** Address PR feedback ([c9fb4aa](https://github.com/AraBlocks/ara-identity/commit/c9fb4aa))
+* **create.js:** Use plain text password to encrypt web3 Eth keystore ([ba873ef](https://github.com/AraBlocks/ara-identity/commit/ba873ef))
+* **ethereum/keystore.js:** Add fallback for old Ara ID's to recover method ([03c4546](https://github.com/AraBlocks/ara-identity/commit/03c4546))
 
 
 ### Features
 
-* **bin/ara-identity:** Add method to retrieve web3 Ethereum keystore ([393c7a5](https://github.com/AraBlocks/ara-identity/commit/393c7a5))
-* **bin/ara-identity:** Fix keystore-dump options ([dd38580](https://github.com/AraBlocks/ara-identity/commit/dd38580))
+* **bin/ara-identity:** Add method to retrieve web3 Ethereum keystore ([d63165f](https://github.com/AraBlocks/ara-identity/commit/d63165f))
+* **bin/ara-identity:** Fix keystore-dump options ([0f31b93](https://github.com/AraBlocks/ara-identity/commit/0f31b93))
 
 
 
