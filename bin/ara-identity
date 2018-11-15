@@ -211,7 +211,7 @@ program.command(
       type: 'boolean',
       default: false,
       optional: true,
-      describe: 'Type of secret storage keystore to be recovered'
+      describe: 'Set true if secret storage needs to be retrieved'
     })
     .option('path', {
       alias: 'p',
@@ -683,6 +683,10 @@ async function onwhoami(argv) {
 async function onkeystoredump(argv) {
   let { 'secret-storage': secretStorage, password } = argv
   let identifier = argv.did
+
+  if ('ara' !== argv.type && 'eth' !== argv.type) {
+    onfatal(new Error('Invalid type passed. Type should be either eth or ara'))
+  }
 
   if (identifier && 0 !== identifier.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
