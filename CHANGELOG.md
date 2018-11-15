@@ -1,3 +1,21 @@
+# [0.31.0](https://github.com/AraBlocks/ara-identity/compare/0.30.3...0.31.0) (2018-11-15)
+
+
+### Bug Fixes
+
+* **bin/ara-identity:** Address PR feedback ([8f09b86](https://github.com/AraBlocks/ara-identity/commit/8f09b86))
+* **bin/ara-identity:** Address PR feedback ([e6a1ab4](https://github.com/AraBlocks/ara-identity/commit/e6a1ab4))
+* **create.js:** Use plain text password to encrypt web3 Eth keystore ([8395ad4](https://github.com/AraBlocks/ara-identity/commit/8395ad4))
+* **ethereum/keystore.js:** Add fallback for old Ara ID's to recover method ([f036baf](https://github.com/AraBlocks/ara-identity/commit/f036baf))
+
+
+### Features
+
+* **bin/ara-identity:** Add method to retrieve web3 Ethereum keystore ([393c7a5](https://github.com/AraBlocks/ara-identity/commit/393c7a5))
+* **bin/ara-identity:** Fix keystore-dump options ([dd38580](https://github.com/AraBlocks/ara-identity/commit/dd38580))
+
+
+
 ## [0.30.3](https://github.com/AraBlocks/ara-identity/compare/0.30.2...0.30.3) (2018-11-08)
 
 
@@ -7,23 +25,7 @@
 
 
 
-## [0.30.2](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.30.2) (2018-11-06)
-
-
-### Bug Fixes
-
-* **create.js:** Fix broken logic for optional contexts ([7fa68c3](https://github.com/AraBlocks/ara-identity/commit/7fa68c3))
-* **rc.js:** Remove default 'whoami' property causing rc conflicts ([fa26cfd](https://github.com/AraBlocks/ara-identity/commit/fa26cfd))
-
-
-### Features
-
-* **archive:** ability to shallow archive just a ddo ([06b01f7](https://github.com/AraBlocks/ara-identity/commit/06b01f7))
-* **create.js:** Use default context (that closes) if not given ([0a02654](https://github.com/AraBlocks/ara-identity/commit/0a02654))
-
-
-
-# [0.29.0](https://github.com/AraBlocks/ara-identity/compare/0.28.1...0.29.0) (2018-10-25)
+## [0.30.2](https://github.com/AraBlocks/ara-identity/compare/0.28.1...0.30.2) (2018-11-06)
 
 
 ### Bug Fixes
@@ -37,12 +39,14 @@
 * **create.js:** Add option to use created when revoking ([8facadb](https://github.com/AraBlocks/ara-identity/commit/8facadb))
 * **create.js:** Change opts property name ([c537d4b](https://github.com/AraBlocks/ara-identity/commit/c537d4b))
 * **create.js:** Fix adding service endpoints to ddo ([72b3f2c](https://github.com/AraBlocks/ara-identity/commit/72b3f2c))
+* **create.js:** Fix broken logic for optional contexts ([7fa68c3](https://github.com/AraBlocks/ara-identity/commit/7fa68c3))
 * **create.js:** fix how service endpoints are added ([a917d68](https://github.com/AraBlocks/ara-identity/commit/a917d68))
 * **create.js:** Fix how service endpoints are added ([933fb9e](https://github.com/AraBlocks/ara-identity/commit/933fb9e))
 * **create.js:** Fix linting issues ([6dc3621](https://github.com/AraBlocks/ara-identity/commit/6dc3621))
 * **create.js:** Fix revoke argument ([46317c1](https://github.com/AraBlocks/ara-identity/commit/46317c1))
 * **create.js:** Fix service endpoint class argument ([98c7e7e](https://github.com/AraBlocks/ara-identity/commit/98c7e7e))
 * **create.js:** Refactor code ([707f968](https://github.com/AraBlocks/ara-identity/commit/707f968))
+* **rc.js:** Remove default 'whoami' property causing rc conflicts ([fa26cfd](https://github.com/AraBlocks/ara-identity/commit/fa26cfd))
 * **revoke.js:** Add checks for password ([c177a82](https://github.com/AraBlocks/ara-identity/commit/c177a82))
 * **revoke.js:** Add proper method definitio ([012d077](https://github.com/AraBlocks/ara-identity/commit/012d077))
 * **revoke.js:** Make web3 context as an arguement ([7188e78](https://github.com/AraBlocks/ara-identity/commit/7188e78))
@@ -54,9 +58,11 @@
 
 ### Features
 
+* **archive:** ability to shallow archive just a ddo ([06b01f7](https://github.com/AraBlocks/ara-identity/commit/06b01f7))
 * **bin/ara-identity:** Add revoke command to the CLI ([8f64582](https://github.com/AraBlocks/ara-identity/commit/8f64582))
 * **create.js:** Add revoke property to DIDDocument creation ([96140bb](https://github.com/AraBlocks/ara-identity/commit/96140bb))
 * **create.js:** Allow arbitrary values in service endpoints ([0565199](https://github.com/AraBlocks/ara-identity/commit/0565199))
+* **create.js:** Use default context (that closes) if not given ([0a02654](https://github.com/AraBlocks/ara-identity/commit/0a02654))
 * **index.js:** Add revoke() method ([9893b20](https://github.com/AraBlocks/ara-identity/commit/9893b20))
 * **revoke.js:** Add method to revoke identities ([9cd052b](https://github.com/AraBlocks/ara-identity/commit/9cd052b))
 
