@@ -1,3 +1,13 @@
+## [0.30.4](https://github.com/AraBlocks/ara-identity/compare/0.30.3...0.30.4) (2018-11-15)
+
+
+### Bug Fixes
+
+* context update ([b3c74df](https://github.com/AraBlocks/ara-identity/commit/b3c74df))
+* context updates ([7fe7c01](https://github.com/AraBlocks/ara-identity/commit/7fe7c01))
+
+
+
 ## [0.30.3](https://github.com/AraBlocks/ara-identity/compare/0.30.2...0.30.3) (2018-11-08)
 
 
