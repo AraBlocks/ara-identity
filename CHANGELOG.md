@@ -1,11 +1,14 @@
-## [0.31.1](https://github.com/AraBlocks/ara-identity/compare/0.31.0...0.31.1) (2018-11-15)
+## [0.31.2](https://github.com/AraBlocks/ara-identity/compare/0.31.0...0.31.2) (2018-11-15)
 
 
 ### Bug Fixes
 
-* derive wallet key ([ccd9479](https://github.com/AraBlocks/ara-identity/commit/ccd9479))
+* **create.js:** remove log ([6b2a518](https://github.com/AraBlocks/ara-identity/commit/6b2a518))
 * **ethereum/wallet.js:** make linter happy ([4f5e206](https://github.com/AraBlocks/ara-identity/commit/4f5e206))
 * **ethereum/wallet.js:** replace redundant index check ([16d619e](https://github.com/AraBlocks/ara-identity/commit/16d619e))
+* context update ([2c5d9d4](https://github.com/AraBlocks/ara-identity/commit/2c5d9d4))
+* context updates ([5119548](https://github.com/AraBlocks/ara-identity/commit/5119548))
+* derive wallet key ([ccd9479](https://github.com/AraBlocks/ara-identity/commit/ccd9479))
 
 
 ### Features
@@ -19,6 +22,8 @@
 
 ### Bug Fixes
 
+* context update ([b3c74df](https://github.com/AraBlocks/ara-identity/commit/b3c74df))
+* context updates ([7fe7c01](https://github.com/AraBlocks/ara-identity/commit/7fe7c01))
 * **bin/ara-identity:** Address PR feedback ([98be9ad](https://github.com/AraBlocks/ara-identity/commit/98be9ad))
 * **bin/ara-identity:** Address PR feedback ([c9fb4aa](https://github.com/AraBlocks/ara-identity/commit/c9fb4aa))
 * **create.js:** Use plain text password to encrypt web3 Eth keystore ([ba873ef](https://github.com/AraBlocks/ara-identity/commit/ba873ef))

@@ -1,6 +1,6 @@
 {
   "name": "ara-identity",
-  "version": "0.31.1",
+  "version": "0.31.2",
   "description": "Create and resolve decentralized identity based Ara identifiers.",
   "main": "index.js",
   "bin": {
@@ -27,7 +27,7 @@
   "license": "LGPL-3.0",
   "dependencies": {
     "ara-console": "github:arablocks/ara-console#semver:0.2.x",
-    "ara-context": "github:arablocks/ara-context#semver:0.4.x",
+    "ara-context": "github:arablocks/ara-context#semver:0.5.x",
     "ara-crypto": "github:arablocks/ara-crypto#semver:0.7.x",
     "ara-network": "github:arablocks/ara-network#1.0.0-beta.3",
     "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration#semver:1.1.x",
