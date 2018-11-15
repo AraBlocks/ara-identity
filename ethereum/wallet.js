@@ -18,9 +18,9 @@ async function load(opts) {
   }
 
   const { seed } = opts
-  const master = fromMasterSeed(seed)
+  const hdWallet = fromMasterSeed(seed)
 
-  return master.getWallet()
+  return hdWallet.derivePath("m/44'/60'/0'/0/0").getWallet()
 }
 
 module.exports = {
