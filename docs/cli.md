@@ -302,7 +302,7 @@ Positionals:
 
 Options:
   --type, -t            Type of private key to be recovered
-  --secret-storage, -s  Type of secret storage keystore to be recovered
+  --secret-storage, -s  Set true if secret storage needs to be retrieved [boolean] [default: false]
   --path, -p            Path to look for did directory
   --quiet, -q           Only output errors and results  [default: false]
 
