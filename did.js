@@ -3,6 +3,7 @@ const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
 
 const DID_ARA_METHOD = 'ara'
+const IDENTIFIER_LENGTH = 64
 
 /**
  * Creates a DID document (DDO) from an identifier.
@@ -48,6 +49,10 @@ function normalize(uri, method) {
 
   if (method && 'string' !== typeof method) {
     throw new TypeError('Expecting method to be a string.')
+  }
+
+  if (uri.length !== IDENTIFIER_LENGTH) {
+    throw new Error(`Expecting URI to be of length ${IDENTIFIER_LENGTH}. Got ${uri}. Ensure URI is a valid hex string.`)
   }
 
   const prefix = `did:${method || DID_ARA_METHOD}:`
