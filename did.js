@@ -51,10 +51,12 @@ function normalize(uri, method) {
     throw new TypeError('Expecting method to be a string.')
   }
 
-  const prefix = `did:${method || DID_ARA_METHOD}:`
+  method = method || DID_ARA_METHOD
+
+  const prefix = `did:${method}:`
 
   if (prefix !== uri.slice(0, prefix.length)) {
-    if (uri.length !== IDENTIFIER_LENGTH) {
+    if (DID_ARA_METHOD === method && uri.length !== IDENTIFIER_LENGTH) {
       throw new Error(`Expecting URI to be of length ${IDENTIFIER_LENGTH}. Got ${uri}. Ensure URI is a valid hex string.`)
     }
     return prefix + uri
