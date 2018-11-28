@@ -57,7 +57,7 @@ function normalize(uri, method) {
 
   if (prefix !== uri.slice(0, prefix.length)) {
     if (DID_ARA_METHOD === method && uri.length !== IDENTIFIER_LENGTH) {
-      throw new Error(`Expecting URI to be of length ${IDENTIFIER_LENGTH}. Got ${uri}. Ensure URI is a valid hex string.`)
+      throw new Error(`Expecting Ara URI to be of length ${IDENTIFIER_LENGTH}. Got ${uri}. Ensure Ara URI is a valid hex string.`)
     }
     return prefix + uri
   }
