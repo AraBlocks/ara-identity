@@ -5,6 +5,7 @@ const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
+const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:archive')
 const pump = require('pump')
 const ram = require('random-access-memory')
@@ -92,6 +93,7 @@ async function archive(identity, opts = {}) {
 
   await keyring.ready()
 
+  const peers = []
   const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
@@ -158,6 +160,22 @@ async function archive(identity, opts = {}) {
     socket.on('close', onclose)
 
     function onhello(hello) {
+      try {
+        const key = Buffer.concat([ hello.publicKey, hello.mac ])
+        const id = crypto.shash(key, secretKey).toString('hex')
+
+        if (peers.includes(id)) {
+          timeout(false)
+          socket.destroy()
+          handshake.destroy()
+          return
+        }
+
+        peers.push(id)
+      } catch (err) {
+        debug(err)
+      }
+
       timeout()
 
       if ('function' === typeof opts.onhello) {
