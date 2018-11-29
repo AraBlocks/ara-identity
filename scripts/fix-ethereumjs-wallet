@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+/* eslint-disable */
+const filename = require.resolve('ethereumjs-wallet/package.json')
+const json = require(filename)
+const fs = require('fs')
+
+let needsWrite = false
+
+if (json && Array.isArray(json.files)) {
+  for (let i = 0 ; i < json.files.length; ++i) {
+    const file = json.files[i]
+
+    if ('/' == file[0]) {
+      json.files[i] = `.${file}`
+      needsWrite = true
+    }
+  }
+
+  if (needsWrite) {
+    fs.writeFileSync(filename, JSON.stringify(json, null, '  '))
+  }
+}
