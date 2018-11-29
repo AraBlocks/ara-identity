@@ -1,4 +1,4 @@
-# [0.32.0](https://github.com/AraBlocks/ara-identity/compare/0.31.3...0.32.0) (2018-11-29)
+## [0.32.1](https://github.com/AraBlocks/ara-identity/compare/0.31.3...0.32.1) (2018-11-29)
 
 
 ### Bug Fixes
@@ -6,13 +6,13 @@
 * check did.normalize input length ([af8c186](https://github.com/AraBlocks/ara-identity/commit/af8c186))
 * check if method is ara first ([590d0b0](https://github.com/AraBlocks/ara-identity/commit/590d0b0))
 * move inside prefix check ([789d8be](https://github.com/AraBlocks/ara-identity/commit/789d8be))
-* **archive.js:** Fix duplicate peer connections ([5abd852](https://github.com/AraBlocks/ara-identity/commit/5abd852))
-* **bin/ara-identity:** Fix typo ([e366ac2](https://github.com/AraBlocks/ara-identity/commit/e366ac2))
+* **archive.js:** Fix duplicate peer connections ([6e15813](https://github.com/AraBlocks/ara-identity/commit/6e15813))
+* **bin/ara-identity:** Fix typo ([b35b628](https://github.com/AraBlocks/ara-identity/commit/b35b628))
 
 
 ### Features
 
-* **scripts/install.sh:** Add install script for binary builds ([ba2b18f](https://github.com/AraBlocks/ara-identity/commit/ba2b18f))
+* **scripts/install.sh:** Add install script for binary builds ([f4246a3](https://github.com/AraBlocks/ara-identity/commit/f4246a3))
 
 
 
