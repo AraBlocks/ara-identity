@@ -478,7 +478,7 @@ async function onarchive(argv) {
 
   function onauth(auth) {
     info(
-      'Authenticated with archiver node: keys=%s signature=%s',
+      'Authenticated with archiver node: key=%s signature=%s',
       toHex(ellipsis(auth.publicKey)),
       toHex(ellipsis(auth.signature)),
     )
