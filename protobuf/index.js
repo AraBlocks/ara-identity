@@ -1,11 +1,8 @@
-const { resolve } = require('path')
 const messages = require('./messages')
 const fs = require('fs')
 
-const kProtocolBufferSchema = fs.readFileSync(resolve(
-  __dirname,
-  'schema.proto'
-))
+// eslint-disable-next-line prefer-template,no-path-concat
+const kProtocolBufferSchema = fs.readFileSync(__dirname + '/schema.proto')
 
 module.exports = {
   kProtocolBufferSchema,
