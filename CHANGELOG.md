@@ -1,3 +1,12 @@
+## [0.32.5](https://github.com/AraBlocks/ara-identity/compare/0.32.4...0.32.5) (2018-11-29)
+
+
+### Bug Fixes
+
+* **protobuf/index.js:** Use browserify friendly path ([7e9dcc4](https://github.com/AraBlocks/ara-identity/commit/7e9dcc4))
+
+
+
 ## [0.32.4](https://github.com/AraBlocks/ara-identity/compare/0.32.3...0.32.4) (2018-11-29)
 
 
