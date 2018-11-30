@@ -162,7 +162,7 @@ async function archive(identity, opts = {}) {
     function onhello(hello) {
       try {
         const key = Buffer.concat([ hello.publicKey, hello.mac ])
-        const id = crypto.shash(key, secretKey).toString('hex')
+        const id = crypto.shash(key, secretKey.slice(0, 16)).toString('hex')
 
         if (peers.includes(id)) {
           timeout(false)
