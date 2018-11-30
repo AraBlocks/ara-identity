@@ -1,3 +1,12 @@
+## [0.32.7](https://github.com/AraBlocks/ara-identity/compare/0.32.6...0.32.7) (2018-11-30)
+
+
+### Bug Fixes
+
+* **archive.js:** Use first 16 bytes of secret key for siphash id ([375d7e3](https://github.com/AraBlocks/ara-identity/commit/375d7e3))
+
+
+
 ## [0.32.6](https://github.com/AraBlocks/ara-identity/compare/0.32.5...0.32.6) (2018-11-29)
 
 
