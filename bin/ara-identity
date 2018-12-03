@@ -111,6 +111,7 @@ program.command(
       alias: 's',
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
+      default: rc.network.identity.resolver.secret,
     })
     .option('network', {
       alias: 'n',
