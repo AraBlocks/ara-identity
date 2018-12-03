@@ -44,6 +44,7 @@
     "debug": "^3.1.0",
     "did-document": "github:AraBlocks/did-document#semver:0.5.x",
     "did-uri": "^0.2.4",
+    "dns-identity-resolution": "github:arablocks/dns-identity-resolution#semver:0.1.x",
     "ethereumjs-wallet": "^0.6.2",
     "extend": "^3.0.1",
     "got": "^8.3.1",

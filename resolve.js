@@ -1,5 +1,6 @@
 const { createChannel } = require('ara-network/discovery/channel')
 const { unpack, keyRing } = require('ara-network/keys')
+const { getDID } = require('dns-identity-resolution')
 const protobuf = require('./protobuf')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
@@ -40,6 +41,8 @@ async function resolve(uri, opts = {}) {
     } else if ('object' === typeof uri.did) {
       uri = uri.did.reference
     }
+  } else {
+    uri = await getDID({ domain: uri })
   }
 
   if (0 !== uri.indexOf('did:ara:')) {
