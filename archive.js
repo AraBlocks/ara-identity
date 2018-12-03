@@ -1,6 +1,5 @@
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
-const { createSwarm } = require('ara-network/discovery/swarm')
 const { Handshake } = require('ara-network/handshake')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
@@ -103,10 +102,6 @@ async function archive(identity, opts = {}) {
   let totalConnections = 0
 
   let channel = createChannel()
-  let discovery = createSwarm({ id: cfs.discoveryKey })
-
-  discovery.join(cfs.discoveryKey, { announce: true })
-  discovery.on('connection', onconnection)
 
   channel.join(discoveryKey)
   channel.on('peer', onpeer)
@@ -116,17 +111,39 @@ async function archive(identity, opts = {}) {
 
   await new Promise((resolve, reject) => {
     channel.once('error', reject)
-    discovery.once('error', reject)
-    discovery.once('close', resolve)
+    channel.once('close', resolve)
   })
 
   return didArchive
 
-  function onconnection(connection, peer) {
-    void peer
+  function onhandshakeconfirmed(chan, peer) {
+    timeout()
+
+    const socket = net.connect(peer.port, peer.host)
+
     const stream = cfs.replicate({ live: false })
-    stream.on('error', onerror)
-    pump(connection, stream, connection)
+    stream.on('error', onerror(new Error('Archiver cfs replicate failed.')))
+    pump(socket, stream, socket)
+
+    socket.on('close', onclose)
+
+    function onclose() {
+      if (didArchive) {
+        channel.destroy(() => {
+          debug(`Channels destroyed for ${chan}.`)
+        })
+        channel = null
+      }
+
+      if ('function' === typeof opts.onclose) {
+        opts.onclose({
+          totalConnections,
+          discoveryKey,
+          peerIndex,
+          peer,
+        })
+      }
+    }
   }
 
   function timeout(again) {
@@ -223,29 +240,15 @@ async function archive(identity, opts = {}) {
         writer.destroy()
         socket.destroy()
         handshake.destroy()
+
       })
     }
 
     function onclose() {
       if (didArchive) {
-        if (channel) {
-          channel.destroy()
-          channel = null
-        }
-
-        if (discovery) {
-          discovery.destroy()
-          discovery = null
-        }
-      }
-
-      if ('function' === typeof opts.onclose) {
-        opts.onclose({
-          totalConnections,
-          discoveryKey,
-          peerIndex,
-          peer,
-        })
+        channel.leave(discoveryKey, peer.port)
+        channel.join(cfs.discoveryKey)
+        channel.on('peer', onhandshakeconfirmed)
       }
     }
   }
