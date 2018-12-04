@@ -63,6 +63,7 @@
     "random-access-memory": "^3.0.0",
     "randombytes": "^2.0.6",
     "rimraf": "^2.6.2",
+    "split-buffer": "^1.0.0",
     "table": "^4.0.3",
     "web3": "^1.0.0-beta.34",
     "yargs": "^11.0.0"

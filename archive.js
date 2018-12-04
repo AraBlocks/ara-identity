@@ -1,15 +1,16 @@
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
 const { Handshake } = require('ara-network/handshake')
-const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
 const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:archive')
+const split = require('split-buffer')
 const pump = require('pump')
 const ram = require('random-access-memory')
 const net = require('net')
 const rc = require('./rc')()
+const fs = require('fs')
 
 const kDefaultTimeout = 5000
 
@@ -71,21 +72,13 @@ async function archive(identity, opts = {}) {
 
   const { publicKey, secretKey, files } = identity
 
-  const cfs = await createCFS({
-    secretKey,
-    storage: ram,
-    shallow: true,
-    key: publicKey,
-    id: toHex(publicKey),
-  })
+  let identityFile = null
 
-  const shallow = opts.shallow || false
-  await Promise.all(files.map((file) => {
-    if (!shallow || 'ddo.json' === file.path) {
-      return cfs.writeFile(file.path, file.buffer)
+  files.forEach((file) => {
+    if ('identity' === file.path){
+      identityFile = file.buffer
     }
-    return {}
-  }))
+  })
 
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
@@ -116,36 +109,6 @@ async function archive(identity, opts = {}) {
 
   return didArchive
 
-  function onhandshakeconfirmed(chan, peer) {
-    timeout()
-
-    const socket = net.connect(peer.port, peer.host)
-
-    const stream = cfs.replicate({ live: false })
-    stream.on('error', onerror(new Error('Archiver cfs replicate failed.')))
-    pump(socket, stream, socket)
-
-    socket.on('close', onclose)
-
-    function onclose() {
-      if (didArchive) {
-        channel.destroy(() => {
-          debug(`Channels destroyed for ${chan}.`)
-        })
-        channel = null
-      }
-
-      if ('function' === typeof opts.onclose) {
-        opts.onclose({
-          totalConnections,
-          discoveryKey,
-          peerIndex,
-          peer,
-        })
-      }
-    }
-  }
-
   function timeout(again) {
     clearTimeout(timeout.timer)
     if (false !== again && false !== timeout.timer) {
@@ -168,6 +131,7 @@ async function archive(identity, opts = {}) {
       domain: { publicKey: unpacked.domain.publicKey }
     })
 
+    //handshake.pipe(socket).pipe(handshake)
     pump(handshake, socket, handshake)
 
     handshake.hello()
@@ -217,38 +181,30 @@ async function archive(identity, opts = {}) {
         opts.onokay(okay)
       }
 
-      const reader = handshake.createReadStream()
       const writer = handshake.createWriteStream()
-      const msg = Buffer.concat([
-        cfs.key,
-        cfs.discoveryKey,
-        cfs.identifier
-      ])
-
-      writer.end(msg)
-
-      reader.once('data', (data) => {
-        if ('ACK' === data.toString()) {
-          void totalConnections++
-          didArchive = true
-        } else {
-          onerror(new Error('Archiver handshake failed.'))
-        }
-
-        timeout(false)
-        reader.destroy()
-        writer.destroy()
-        socket.destroy()
-        handshake.destroy()
-
+      console.log(identityFile.length)
+      const parts = split(identityFile, 64)
+      parts.forEach((part)=>{
+        process.nextTick(() => writer.write(part))
       })
+      //writer.end()
     }
 
     function onclose() {
       if (didArchive) {
-        channel.leave(discoveryKey, peer.port)
-        channel.join(cfs.discoveryKey)
-        channel.on('peer', onhandshakeconfirmed)
+        if (channel) {
+          channel.destroy()
+          channel = null
+        }
+      }
+
+      if ('function' === typeof opts.onclose) {
+        opts.onclose({
+          totalConnections,
+          discoveryKey,
+          peerIndex,
+          peer,
+        })
       }
     }
   }
