@@ -584,11 +584,6 @@ async function onresolve(argv) {
     onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
-  if (0 !== argv.did.indexOf('did:ara:')) {
-    // eslint-disable-next-line no-param-reassign
-    argv.did = `did:ara:${argv.did}`
-  }
-
   try {
     let cache
 
