@@ -15,6 +15,9 @@ const aid = require('../')
 const rc = require('../rc')()
 const ss = require('ara-secret-storage')
 const fs = require('fs')
+const os = require('os')
+
+const DEFAULT_MAX_CONNECTIONS = os.cpus().length
 
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
@@ -88,6 +91,12 @@ program.command(
       requiresArg: true,
       default: rc.network.identity.archiver.network,
     })
+    .option('maxConnections', {
+      describe: 'Maximum number of Archivers to find',
+      required: true,
+      requiresArg: true,
+      default: DEFAULT_MAX_CONNECTIONS,
+    })
     .option('shallow', {
       describe: 'Only archive the ddo',
       required: true,
@@ -133,7 +142,7 @@ program.command(
       type: 'boolean',
       alias: 'C',
       describe: 'Enable or disable cache',
-      default: true,
+      default: maxConnections,
     })
     .option('timeout', {
       alias: 't',
@@ -393,7 +402,7 @@ async function onarchive(argv) {
     totalConnections: 0
   }
 
-  const { keyring, network, secret, shallow } = argv
+  const { keyring, network, secret, maxConnections, shallow } = argv
 
   let secretKey = null
   let publicKey = null
@@ -441,6 +450,7 @@ async function onarchive(argv) {
       network,
       secret,
       keyring,
+      maxConnections,
       shallow,
 
       onhello,
