@@ -1,5 +1,6 @@
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
+const { createCFS } = require('cfsnet/create')
 const { Handshake } = require('ara-network/handshake')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
@@ -72,6 +73,22 @@ async function archive(identity, opts = {}) {
 
   const { publicKey, secretKey, files } = identity
 
+  const cfs = await createCFS({
+    secretKey,
+    storage: ram,
+    shallow: true,
+    key: publicKey,
+    id: toHex(publicKey),
+  })
+
+  const shallow = opts.shallow || false
+  await Promise.all(files.map((file) => {
+    if (!shallow || 'ddo.json' === file.path) {
+      return cfs.writeFile(file.path, file.buffer)
+    }
+    return {}
+  }))
+
   let identityFile = null
 
   files.forEach((file) => {
@@ -131,8 +148,9 @@ async function archive(identity, opts = {}) {
       domain: { publicKey: unpacked.domain.publicKey }
     })
 
-    //handshake.pipe(socket).pipe(handshake)
-    pump(handshake, socket, handshake)
+socket.on('end', () => console.log('end'))
+    handshake.pipe(socket).pipe(handshake)
+    // pump(handshake, socket, handshake)
 
     handshake.hello()
     handshake.on('hello', onhello)
@@ -181,13 +199,21 @@ async function archive(identity, opts = {}) {
         opts.onokay(okay)
       }
 
-      const writer = handshake.createWriteStream()
+      // socket.pause()
+      // handshake.unpipe(socket).unpipe(handshake)
+      socket.pause()
+      socket.unpipe(handshake).unpipe(socket)
 
-      writer.end(identityFile)
+      pump(socket, cfs.replicate(), socket, (err) => {
+        timeout(false)
+        if (err) {
+          onerror(err)
+        } else {
+          didArchive = true
+        }
+      })
 
-      didArchive = true
-      handshake.destroy()
-      socket.destroy()
+      socket.resume()
     }
 
     function onclose() {
