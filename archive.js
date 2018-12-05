@@ -75,7 +75,7 @@ async function archive(identity, opts = {}) {
   let identityFile = null
 
   files.forEach((file) => {
-    if ('identity' === file.path){
+    if ('ddo.json' === file.path){
       identityFile = file.buffer
     }
   })
@@ -174,7 +174,7 @@ async function archive(identity, opts = {}) {
       }
     }
 
-    function onokay(okay) {
+    async function onokay(okay) {
       timeout()
 
       if ('function' === typeof opts.onokay) {
@@ -182,12 +182,12 @@ async function archive(identity, opts = {}) {
       }
 
       const writer = handshake.createWriteStream()
-      console.log(identityFile.length)
-      const parts = split(identityFile, 64)
-      parts.forEach((part)=>{
-        process.nextTick(() => writer.write(part))
-      })
-      //writer.end()
+
+      writer.end(identityFile)
+
+      didArchive = true
+      handshake.destroy()
+      socket.destroy()
     }
 
     function onclose() {
