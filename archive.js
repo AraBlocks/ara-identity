@@ -158,6 +158,8 @@ async function archive(identity, opts = {}) {
     })
 
     activeConnections++
+    totalConnections++
+    socket.on('error', onerror)
     socket.on('close', () => { activeConnections-- })
     handshake.pipe(socket).pipe(handshake)
 
@@ -227,6 +229,7 @@ async function archive(identity, opts = {}) {
   }
 
   function onerror(err) {
+    totalConnections--
     debug(err)
     if ('function' === typeof opts.onerror) {
       opts.onerror(err)
