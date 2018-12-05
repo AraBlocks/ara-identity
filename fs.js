@@ -33,9 +33,10 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     debug('network: open: %s: %s', did.identifier, filename)
 
     const cfs = await createCFS({
-      sparseMetadata: true,
+      sparseMetadata: false,
       shallow: true,
       storage: () => ram(),
+      latest: true,
       sparse: true,
       key: Buffer.from(did.identifier, 'hex'),
       id: did.identifier,
