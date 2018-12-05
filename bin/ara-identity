@@ -142,7 +142,7 @@ program.command(
       type: 'boolean',
       alias: 'C',
       describe: 'Enable or disable cache',
-      default: maxConnections,
+      default: false,
     })
     .option('timeout', {
       alias: 't',
@@ -516,7 +516,6 @@ async function onarchive(argv) {
   function onerror(err) {
     debug(err.stack || err)
     error('Got error in archiver:', err.message)
-    process.nextTick(() => process.exit(1))
   }
 }
 
