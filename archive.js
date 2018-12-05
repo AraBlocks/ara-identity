@@ -93,14 +93,6 @@ async function archive(identity, opts = {}) {
     return {}
   }))
 
-  let identityFile = null
-
-  files.forEach((file) => {
-    if ('ddo.json' === file.path){
-      identityFile = file.buffer
-    }
-  })
-
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
 
