@@ -11,9 +11,11 @@ const pump = require('pump')
 const ram = require('random-access-memory')
 const net = require('net')
 const rc = require('./rc')()
+const os = require('os')
 const fs = require('fs')
 
 const kDefaultTimeout = 5000
+const DEFAULT_MAX_CONNECTIONS = os.cpus().length
 
 /**
  * Archive an identity into the network
@@ -71,6 +73,8 @@ async function archive(identity, opts = {}) {
     opts.timeout = kDefaultTimeout
   }
 
+  const { maxConnections = DEFAULT_MAX_CONNECTIONS } = opts
+
   const { publicKey, secretKey, files } = identity
 
   const cfs = await createCFS({
@@ -110,6 +114,7 @@ async function archive(identity, opts = {}) {
   let peerCount = 0
   let didArchive = false
   let totalConnections = 0
+  let activeConnections = 0
 
   let channel = createChannel()
 
@@ -136,6 +141,10 @@ async function archive(identity, opts = {}) {
   }
 
   function onpeer(chan, peer) {
+    if (activeConnections >= maxConnections) {
+      return
+    }
+
     timeout()
 
     const socket = net.connect(peer.port, peer.host)
@@ -148,9 +157,9 @@ async function archive(identity, opts = {}) {
       domain: { publicKey: unpacked.domain.publicKey }
     })
 
-socket.on('end', () => console.log('end'))
+    activeConnections++
+    socket.on('close', () => { activeConnections-- })
     handshake.pipe(socket).pipe(handshake)
-    // pump(handshake, socket, handshake)
 
     handshake.hello()
     handshake.on('hello', onhello)
@@ -159,22 +168,6 @@ socket.on('end', () => console.log('end'))
     socket.on('close', onclose)
 
     function onhello(hello) {
-      try {
-        const key = Buffer.concat([ hello.publicKey, hello.mac ])
-        const id = crypto.shash(key, secretKey.slice(0, 16)).toString('hex')
-
-        if (peers.includes(id)) {
-          timeout(false)
-          socket.destroy()
-          handshake.destroy()
-          return
-        }
-
-        peers.push(id)
-      } catch (err) {
-        debug(err)
-      }
-
       timeout()
 
       if ('function' === typeof opts.onhello) {
@@ -199,8 +192,6 @@ socket.on('end', () => console.log('end'))
         opts.onokay(okay)
       }
 
-      // socket.pause()
-      // handshake.unpipe(socket).unpipe(handshake)
       socket.pause()
       socket.unpipe(handshake).unpipe(socket)
 
