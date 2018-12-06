@@ -1,21 +1,21 @@
-# [0.34.0](https://github.com/AraBlocks/ara-identity/compare/0.33.2...0.34.0) (2018-12-06)
+## [0.34.1](https://github.com/AraBlocks/ara-identity/compare/0.33.2...0.34.1) (2018-12-06)
 
 
 ### Bug Fixes
 
-* Change resolve cache default to true ([b9d2709](https://github.com/AraBlocks/ara-identity/commit/b9d2709))
-* **archive.js:** Export default archive method options ([e5d60f1](https://github.com/AraBlocks/ara-identity/commit/e5d60f1))
-* Use default options from archiver method ([f13df52](https://github.com/AraBlocks/ara-identity/commit/f13df52))
-* **archive.js:** Fix how archiver default variable name ([ada6d19](https://github.com/AraBlocks/ara-identity/commit/ada6d19))
-* **archive.js:** Refactor archive method ([65e2be1](https://github.com/AraBlocks/ara-identity/commit/65e2be1))
-* **archive.js:** Track total archiver connections ([41f87ee](https://github.com/AraBlocks/ara-identity/commit/41f87ee))
-* **bin/ara-identity:** Fix onfatal error exit statement ([ce56cbd](https://github.com/AraBlocks/ara-identity/commit/ce56cbd))
-* **fs.js:** fix cfs config for resolve method calls ([afdb721](https://github.com/AraBlocks/ara-identity/commit/afdb721))
+* Change resolve cache default to true ([1a1ce9e](https://github.com/AraBlocks/ara-identity/commit/1a1ce9e))
+* **archive.js:** Export default archive method options ([c846846](https://github.com/AraBlocks/ara-identity/commit/c846846))
+* Use default options from archiver method ([fa92efb](https://github.com/AraBlocks/ara-identity/commit/fa92efb))
+* **archive.js:** Fix how archiver default variable name ([4c886bf](https://github.com/AraBlocks/ara-identity/commit/4c886bf))
+* **archive.js:** Refactor archive method ([09783a4](https://github.com/AraBlocks/ara-identity/commit/09783a4))
+* **archive.js:** Track total archiver connections ([3aaae48](https://github.com/AraBlocks/ara-identity/commit/3aaae48))
+* **bin/ara-identity:** Fix onfatal error exit statement ([e291e5e](https://github.com/AraBlocks/ara-identity/commit/e291e5e))
+* **fs.js:** fix cfs config for resolve method calls ([25137f1](https://github.com/AraBlocks/ara-identity/commit/25137f1))
 
 
 ### Features
 
-* **bin/ara-identity:** Allow maxConnections to passed ([312371e](https://github.com/AraBlocks/ara-identity/commit/312371e))
+* **bin/ara-identity:** Allow maxConnections to passed ([8f607a3](https://github.com/AraBlocks/ara-identity/commit/8f607a3))
 
 
 
