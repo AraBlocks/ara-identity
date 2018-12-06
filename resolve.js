@@ -1,4 +1,3 @@
-const { resolve: dnsResolve } = require('ara-identity-dns')
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
 const protobuf = require('./protobuf')
@@ -7,6 +6,7 @@ const { DID } = require('did-uri')
 const debug = require('debug')('ara:identity:resolve')
 const fetch = require('got')
 const pify = require('pify')
+const dns = require('ara-identity-dns')
 const fs = require('./fs')
 const rc = require('./rc')()
 
@@ -41,9 +41,18 @@ async function resolve(uri, opts = {}) {
     } else if ('object' === typeof uri.did) {
       uri = uri.did.reference
     }
-  } else {
-    uri = await dnsResolve(uri)
-    uri = uri[0].identifier
+  } else if ('string' === typeof uri && -1 === uri.indexOf('did:ara')) {
+    try {
+      const url = uri
+      const resolution = await dns.resolve(url)
+      if (resolution && resolution.length) {
+        if (resolution[0] && resolution[0].identifier) {
+          uri = resolution[0].identifier
+        }
+      }
+    } catch (err) {
+      debug(err)
+    }
   }
 
   if (0 !== uri.indexOf('did:ara:')) {
