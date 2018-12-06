@@ -70,7 +70,7 @@ async function archive(identity, opts = {}) {
     opts.timeout = DEFAULT_ARCHIVER_CONNECTION_TIMEOUT
   }
 
-  const { maxConnections = DEFAULT_MAX_CONNECTIONS } = opts
+  const { maxConnections = DEFAULT_ARCHIVER_MAX_CONNECTIONS } = opts
 
   const { publicKey, secretKey, files } = identity
 
