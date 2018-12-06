@@ -658,7 +658,7 @@ async function onwhoami(argv) {
       }
     } catch (err2) {
       debug(err2)
-      onfatal(err)
+      onfatal(new Error(`Unable to resolve identity: ${identifier}.`))
     }
   }
 
