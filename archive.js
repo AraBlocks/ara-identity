@@ -11,8 +11,8 @@ const net = require('net')
 const rc = require('./rc')()
 const os = require('os')
 
-const kDefaultTimeout = 5000
-const DEFAULT_MAX_CONNECTIONS = os.cpus().length
+const DEFAULT_ARCHIVER_CONNECTION_TIMEOUT = 5000
+const DEFAULT_ARCHIVER_MAX_CONNECTIONS = os.cpus().length
 
 /**
  * Archive an identity into the network
@@ -67,7 +67,7 @@ async function archive(identity, opts = {}) {
 
   if (!opts.timeout) {
     // eslint-disable-next-line no-param-reassign
-    opts.timeout = kDefaultTimeout
+    opts.timeout = DEFAULT_ARCHIVER_CONNECTION_TIMEOUT
   }
 
   const { maxConnections = DEFAULT_MAX_CONNECTIONS } = opts
@@ -230,5 +230,7 @@ async function archive(identity, opts = {}) {
 }
 
 module.exports = {
+  DEFAULT_ARCHIVER_CONNECTION_TIMEOUT,
+  DEFAULT_ARCHIVER_MAX_CONNECTIONS,
   archive
 }
