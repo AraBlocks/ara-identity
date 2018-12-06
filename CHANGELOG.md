@@ -1,3 +1,24 @@
+# [0.34.0](https://github.com/AraBlocks/ara-identity/compare/0.33.2...0.34.0) (2018-12-06)
+
+
+### Bug Fixes
+
+* Change resolve cache default to true ([b9d2709](https://github.com/AraBlocks/ara-identity/commit/b9d2709))
+* **archive.js:** Export default archive method options ([e5d60f1](https://github.com/AraBlocks/ara-identity/commit/e5d60f1))
+* Use default options from archiver method ([f13df52](https://github.com/AraBlocks/ara-identity/commit/f13df52))
+* **archive.js:** Fix how archiver default variable name ([ada6d19](https://github.com/AraBlocks/ara-identity/commit/ada6d19))
+* **archive.js:** Refactor archive method ([65e2be1](https://github.com/AraBlocks/ara-identity/commit/65e2be1))
+* **archive.js:** Track total archiver connections ([41f87ee](https://github.com/AraBlocks/ara-identity/commit/41f87ee))
+* **bin/ara-identity:** Fix onfatal error exit statement ([ce56cbd](https://github.com/AraBlocks/ara-identity/commit/ce56cbd))
+* **fs.js:** fix cfs config for resolve method calls ([afdb721](https://github.com/AraBlocks/ara-identity/commit/afdb721))
+
+
+### Features
+
+* **bin/ara-identity:** Allow maxConnections to passed ([312371e](https://github.com/AraBlocks/ara-identity/commit/312371e))
+
+
+
 ## [0.33.2](https://github.com/AraBlocks/ara-identity/compare/0.33.1...0.33.2) (2018-12-06)
 
 
