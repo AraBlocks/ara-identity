@@ -70,7 +70,10 @@ program.command(
       describe: 'Shared secret key for the associated network keys',
       required: true,
       requiresArg: true,
-      default: rc.network.identity.archiver.secret
+      default:
+        rc.network.identity.archiver.secret ||
+        rc.network.identity.secret ||
+        rc.network.secret
     })
     .option('keyring', {
       alias: 'k',
@@ -118,7 +121,10 @@ program.command(
       alias: 's',
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
-      default: rc.network.identity.resolver.secret,
+      default:
+        rc.network.identity.resolver.secret ||
+        rc.network.identity.secret ||
+        rc.network.secret
     })
     .option('network', {
       alias: 'n',
