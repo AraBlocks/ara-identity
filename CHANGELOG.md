@@ -1,3 +1,12 @@
+## [0.33.1](https://github.com/AraBlocks/ara-identity/compare/0.33.0...0.33.1) (2018-12-06)
+
+
+### Bug Fixes
+
+* **resolve.js:** Handle resolution failure for domains ([ba3f2e5](https://github.com/AraBlocks/ara-identity/commit/ba3f2e5))
+
+
+
 # [0.33.0](https://github.com/AraBlocks/ara-identity/compare/0.32.8...0.33.0) (2018-12-06)
 
 
