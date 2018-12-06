@@ -142,7 +142,7 @@ program.command(
       type: 'boolean',
       alias: 'C',
       describe: 'Enable or disable cache',
-      default: false,
+      default: true,
     })
     .option('timeout', {
       alias: 't',
