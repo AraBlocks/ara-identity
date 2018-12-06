@@ -90,7 +90,10 @@ async function create(opts) {
   const { publicKey, secretKey } = crypto.keyPair(seed)
 
   const { salt, iv } = await ethereum.keystore.create()
-  const wallet = await ethereum.wallet.load({ seed: bip39.mnemonicToSeed(mnemonic) })
+  const wallet = await ethereum.wallet.load({
+    seed: bip39.mnemonicToSeed(mnemonic)
+  })
+
   const account = await ethereum.account.create({
     web3,
     privateKey: wallet.getPrivateKey()
