@@ -63,12 +63,16 @@ async function resolve(uri, opts = {}) {
   const did = new DID(uri)
 
   if (kDIDMethod !== did.method) {
-    throw new TypeError(`resolve: Invalid DID method (${did.method}). ` +
+    throw new TypeError(`Invalid DID method (${did.method}). ` +
       `Expecting 'did:${kDIDMethod}:...'.`)
   }
 
+  if (did.identifier && -1 !== did.identifier.indexOf('.')) {
+    throw new TypeError(`Unable to resolve DID for domain: ${did.identifier}`)
+  }
+
   if (!did.identifier || kDIDIdentifierLength !== did.identifier.length) {
-    throw new TypeError('resolve: Invalid DID identifier length.')
+    throw new TypeError('Invalid DID identifier length.')
   }
 
   const resolutions = []
