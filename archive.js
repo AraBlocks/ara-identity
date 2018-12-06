@@ -4,15 +4,12 @@ const { createCFS } = require('cfsnet/create')
 const { Handshake } = require('ara-network/handshake')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
-const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:archive')
-const split = require('split-buffer')
 const pump = require('pump')
 const ram = require('random-access-memory')
 const net = require('net')
 const rc = require('./rc')()
 const os = require('os')
-const fs = require('fs')
 
 const kDefaultTimeout = 5000
 const DEFAULT_MAX_CONNECTIONS = os.cpus().length
@@ -98,7 +95,6 @@ async function archive(identity, opts = {}) {
 
   await keyring.ready()
 
-  const peers = []
   const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
