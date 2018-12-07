@@ -1,3 +1,12 @@
+## [0.34.3](https://github.com/AraBlocks/ara-identity/compare/0.34.2...0.34.3) (2018-12-07)
+
+
+### Bug Fixes
+
+* **bin/aid:** Use correct ararc property value cascade for arguments ([f79677f](https://github.com/AraBlocks/ara-identity/commit/f79677f))
+
+
+
 ## [0.34.2](https://github.com/AraBlocks/ara-identity/compare/0.34.1...0.34.2) (2018-12-07)
 
 
