@@ -4,7 +4,7 @@ CWD="$(pwd)"
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 PKG=${PKG:-$(which pkg)}
 BUILD=${BUILD:-build}
-TARGET=${TARGET:-bin/ara-identity}
+TARGET=${TARGET:-bin/aid}
 
 if [ -z "$PKG" ]; then
   PKG="node_modules/.bin/pkg"
@@ -36,9 +36,9 @@ build
 
 mkdir $BUILD/{macos,linux,win}
 
-mv $BUILD/ara-identity-macos $BUILD/macos/aid
-mv $BUILD/ara-identity-linux $BUILD/linux/aid
-mv $BUILD/ara-identity-win.exe $BUILD/win/aid.exe
+mv $BUILD/aid-macos $BUILD/macos/aid
+mv $BUILD/aid-linux $BUILD/linux/aid
+mv $BUILD/aid-win.exe $BUILD/win/aid.exe
 
 cp $BUILD/*.node $BUILD/macos
 cp $BUILD/*.node $BUILD/linux
