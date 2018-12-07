@@ -23,14 +23,18 @@ process.on('uncaughtException', onfatal)
 const ellipsis = (s, x, y) => s.slice(x || 0, y || 4)
 
 program
-  .usage('usage: $0 [-hDV] <command> [options]')
+  .usage('usage: $0 [-hqDV] <command> [options]')
   .wrap(null)
 
 program
-  .group([ 'help', 'debug', 'version' ], 'General Options:')
+  .group([ 'help', 'quiet', 'debug', 'version' ], 'General Options:')
   .option('help', {
     alias: 'h',
     describe: 'Show this help message',
+  })
+  .option('quiet', {
+    alias: 'q',
+    describe: 'Only output errors and results'
   })
   .option('debug', {
     alias: 'D',
@@ -39,11 +43,6 @@ program
   .option('version', {
     alias: 'V',
     describe: 'Show program version'
-  })
-  .option('quiet', {
-    alias: 'q',
-    default: false,
-    describe: 'Only output errors and results'
   })
 
 program.command(
@@ -62,7 +61,10 @@ program.command(
   program => program
     .usage('usage: $0 archive [-D] [options]')
     .positional('did', {
-      default: rc.network.identity.whoami || rc.network.whoami,
+      default:
+        rc.network.identity.archiver.whoami ||
+        rc.network.identity.whoami ||
+        rc.network.whoami,
     })
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
@@ -114,7 +116,10 @@ program.command(
   program => program
     .usage('usage: $0 resolve [-D] [options]')
     .positional('did', {
-      default: rc.network.identity.whoami || rc.network.whoami,
+      default:
+        rc.network.identity.resolver.whoami ||
+        rc.network.identity.whoami ||
+        rc.network.whoami,
     })
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
