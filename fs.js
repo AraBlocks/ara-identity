@@ -1,5 +1,4 @@
 const { createSwarm } = require('ara-network/discovery')
-const { destroyCFS } = require('cfsnet/destroy')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
 const { resolve } = require('path')
@@ -28,27 +27,49 @@ const CFS_UPDATE_TIMEOUT = 3 * 1000
  */
 async function joinNetwork(identifier, filename, opts, onjoin) {
   return pify(async (done) => {
-    const did = new DID(normalize(identifier))
+    let cfs = null
+    let did = null
+    let swarm = null
+    let timeout = null
+
+    try {
+      did = new DID(normalize(identifier))
+    } catch (err) {
+      return close(err)
+    }
 
     debug('network: open: %s: %s', did.identifier, filename)
 
-    const cfs = await createCFS({
-      sparseMetadata: false,
-      shallow: true,
-      storage: () => ram(),
-      latest: true,
-      sparse: true,
-      key: Buffer.from(did.identifier, 'hex'),
-      id: did.identifier,
-    })
+    try {
+      cfs = await createCFS({
+        sparseMetadata: false,
+        shallow: true,
+        storage: () => ram(),
+        latest: true,
+        sparse: true,
+        key: Buffer.from(did.identifier, 'hex'),
+        id: did.identifier,
+      })
+    } catch (err) {
+      return close(err)
+    }
 
-    let timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
-    const swarm = createSwarm(Object.assign({
-      utp: false,
-      id: cfs.discoveryKey
-    }, opts))
+    try {
+      swarm = createSwarm(Object.assign({
+        utp: false,
+        id: cfs.discoveryKey
+      }, opts))
+    } catch (err) {
+      return close(err)
+    }
 
-    swarm.join(cfs.discoveryKey, { announce: false })
+    try {
+      swarm.join(cfs.discoveryKey, { announce: false })
+    } catch (err) {
+      return close(err)
+    }
+
+    timeout = setTimeout(ontimeout, DISCOVERY_TIMEOUT)
     swarm.on('connection', onconnection)
     swarm.on('error', onerror)
 
@@ -74,8 +95,18 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
 
     async function close(err, result) {
       try {
-        await destroyCFS({ cfs })
-        swarm.close()
+        if (null !== timeout) {
+          clearTimeout(timeout)
+        }
+
+        if (null !== cfs) {
+          await cfs.close()
+        }
+
+        if (null !== swarm) {
+          swarm.close()
+        }
+
         done(err, result)
         debug('network: close: %s: %s', did.identifier, filename)
       } catch (err2) {
