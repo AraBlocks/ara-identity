@@ -1,3 +1,12 @@
+## [0.34.2](https://github.com/AraBlocks/ara-identity/compare/0.34.1...0.34.2) (2018-12-07)
+
+
+### Bug Fixes
+
+* **fs.js:** Handle errors better ([0578403](https://github.com/AraBlocks/ara-identity/commit/0578403))
+
+
+
 ## [0.34.1](https://github.com/AraBlocks/ara-identity/compare/0.33.2...0.34.1) (2018-12-06)
 
 
