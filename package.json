@@ -4,8 +4,7 @@
   "description": "Create and resolve decentralized identity based Ara identifiers.",
   "main": "index.js",
   "bin": {
-    "ara-identity": "bin/ara-identity",
-    "aid": "bin/ara-identity"
+    "aid": "bin/aid"
   },
   "scripts": {
     "truffle": "truffle develop",
