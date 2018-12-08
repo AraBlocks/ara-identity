@@ -1,3 +1,12 @@
+## [0.34.4](https://github.com/AraBlocks/ara-identity/compare/0.34.3...0.34.4) (2018-12-08)
+
+
+### Bug Fixes
+
+* **package:** fix for windows ([f636350](https://github.com/AraBlocks/ara-identity/commit/f636350))
+
+
+
 ## [0.34.3](https://github.com/AraBlocks/ara-identity/compare/0.34.2...0.34.3) (2018-12-07)
 
 
