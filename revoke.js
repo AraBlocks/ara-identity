@@ -1,3 +1,4 @@
+const { normalize } = require('./did')
 const { resolve } = require('./resolve')
 const { create } = require('./create')
 const crypto = require('ara-crypto')
@@ -48,7 +49,7 @@ async function revoke(opts) {
 
   let ddo
   try {
-    ddo = await resolve(publicKey.toString('hex'))
+    ddo = await resolve(normalize(publicKey.toString('hex')))
   } catch (err) {
     throw new Error('Could not resolve DID for the provided mnemonic')
   }
