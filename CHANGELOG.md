@@ -1,3 +1,13 @@
+# [0.35.0](https://github.com/AraBlocks/ara-identity/compare/0.34.5...0.35.0) (2018-12-08)
+
+
+### Bug Fixes
+
+* **archive.js:** Support updates through proxy replication ([1d964f0](https://github.com/AraBlocks/ara-identity/commit/1d964f0))
+* **revoke.js:** Normalize DID before passing to 'resolve()' ([ce5f7a9](https://github.com/AraBlocks/ara-identity/commit/ce5f7a9))
+
+
+
 ## [0.34.5](https://github.com/AraBlocks/ara-identity/compare/0.34.3...0.34.5) (2018-12-08)
 
 
