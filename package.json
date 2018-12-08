@@ -14,7 +14,7 @@
     "pkg": "sh ./scripts/package.sh",
     "changelog": "conventional-changelog --same-file --preset angular --release-count 0 --infile CHANGELOG.md",
     "version": "npm run changelog && git add CHANGELOG.md",
-    "postinstall": "./scripts/fix-ethereumjs-wallet"
+    "postinstall": "node ./scripts/fix-ethereumjs-wallet"
   },
   "browserify": {
     "transform": [
