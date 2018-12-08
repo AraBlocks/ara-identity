@@ -71,24 +71,7 @@ async function archive(identity, opts = {}) {
   }
 
   const { maxConnections = DEFAULT_ARCHIVER_MAX_CONNECTIONS } = opts
-
   const { publicKey, secretKey, files } = identity
-
-  const cfs = await createCFS({
-    secretKey,
-    storage: ram,
-    shallow: true,
-    key: publicKey,
-    id: toHex(publicKey),
-  })
-
-  const shallow = opts.shallow || false
-  await Promise.all(files.map((file) => {
-    if (!shallow || 'ddo.json' === file.path) {
-      return cfs.writeFile(file.path, file.buffer)
-    }
-    return {}
-  }))
 
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
@@ -185,7 +168,60 @@ async function archive(identity, opts = {}) {
       socket.pause()
       socket.unpipe(handshake).unpipe(socket)
 
-      pump(socket, cfs.replicate(), socket, (err) => {
+      const proxy = await createCFS({
+        storage: ram,
+        shallow: true,
+        key: publicKey,
+        id: toHex(publicKey),
+      })
+
+      const cfs = await createCFS({
+        secretKey,
+        storage: ram,
+        shallow: true,
+        key: publicKey,
+        id: toHex(publicKey),
+      })
+
+      const stream = proxy.replicate({ live: true })
+      const shallow = opts.shallow || false
+
+      await Promise.all(files.map((file) => {
+        if (!shallow || 'ddo.json' === file.path) {
+          return cfs.writeFile(file.path, file.buffer)
+        }
+
+        return {}
+      }))
+
+      timeout()
+
+      const origin = cfs.replicate()
+      const wire = proxy.replicate()
+      let blocks = 0
+
+      if (proxy.partitions.home.content) {
+        oncontent()
+      } else {
+        proxy.partitions.home.once('content', oncontent)
+      }
+
+      pump(wire, origin, wire)
+
+      function oncontent() {
+        proxy.partitions.home.content.on('upload', onupload)
+      }
+
+      function onupload() {
+        blocks++
+
+        // each "upload" tick could be a "progress" event/callback :shrug:
+        if (blocks === files.length) {
+          stream.end()
+        }
+      }
+
+      pump(socket, stream, socket, (err) => {
         timeout(false)
         if (err) {
           onerror(err)
