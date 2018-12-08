@@ -694,7 +694,8 @@ async function onwhoami(argv) {
 }
 
 async function onkeystoredump(argv) {
-  let { 'secret-storage': secretStorage, password } = argv
+  const secretStorage = argv['secret-storage']
+  let { password } = argv
   let identifier = argv.did
 
   if ('ara' !== argv.type && 'eth' !== argv.type) {
@@ -748,8 +749,9 @@ async function onkeystoredump(argv) {
       try {
         const ethKeystore = await protobuf.messages.KeyStore.decode(ss.decrypt(
           JSON.parse(keystores.eth),
-          { key: secretKeys.ara.slice(0,16) }
+          { key: secretKeys.ara.slice(0, 16) }
         ))
+
         process.stdout.write(JSON.stringify(ethKeystore))
       } catch (err) {
         debug(err)
@@ -760,14 +762,16 @@ async function onkeystoredump(argv) {
     if ('ara' === argv.type) {
       process.stdout.write(toHex(secretKeys.ara))
     }
+
     if ('eth' === argv.type) {
       try {
         secretKeys.eth = await aid
           .ethereum
           .keystore
           .recover(password, keystores.ara, keystores.eth)
+
         process.stdout.write(toHex(secretKeys.eth))
-      } catch(err) {
+      } catch (err) {
         debug(err)
         onfatal(new Error('Error while decrypting the ethereum keystore'))
       }
