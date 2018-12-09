@@ -255,8 +255,10 @@ async function archive(identity, opts = {}) {
   function onerror(err) {
     totalConnections--
     debug(err)
-    if ('function' === typeof opts.onerror) {
-      opts.onerror(err)
+    if (err && err.code !== 'ECONNREFUSED') {
+      if ('function' === typeof opts.onerror) {
+        opts.onerror(err)
+      }
     }
   }
 
