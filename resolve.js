@@ -75,6 +75,7 @@ async function resolve(uri, opts = {}) {
     throw new TypeError('Invalid DID identifier length.')
   }
 
+  const state = { aborted: false }
   const resolutions = []
 
   resolutions.push((async function local() {
@@ -83,10 +84,11 @@ async function resolve(uri, opts = {}) {
       const buffer = await fs.readFile(did.identifier, 'identity', opts)
       const identity = protobuf.messages.Identity.decode(buffer)
       for (const k in identity.files) {
+        if (state.aborted) { return null }
         // eslint-disable-next-line no-shadow
         const { path, buffer } = identity.files[k]
         if ('ddo.json' === path) {
-          return JSON.parse(buffer)
+          return JSON.parse(String(buffer))
         }
       }
     } catch (err) {
@@ -122,7 +124,7 @@ async function resolve(uri, opts = {}) {
       opts.timeout = kResolutionTimeout
     }
 
-    return findResolution(did, opts)
+    return findResolution(did, opts, state)
   })())
 
   return pify(async (done) => {
@@ -148,13 +150,18 @@ async function resolve(uri, opts = {}) {
     function onthen(result) {
       if (result) {
         resolved = true
-        done(null, result)
+        state.aborted = true
+        try {
+          done(null, result)
+        } catch (err) {
+          debug(err)
+        }
       }
     }
   })()
 }
 
-async function findResolution(did, opts) {
+async function findResolution(did, opts, state) {
   const resolvers = []
   const secret = Buffer.from(opts.secret)
   const keyring = keyRing(opts.keyring, { secret })
@@ -173,7 +180,7 @@ async function findResolution(did, opts) {
     timeout = setTimeout(doResolution, opts.timeout)
 
     function onpeer(id, peer, type) {
-      if (resolvers.push({ id, peer, type }) < kMaxPeers) {
+      if (!state.aborted && resolvers.push({ id, peer, type }) < kMaxPeers) {
         doResolution()
       } else {
         cleanup()
@@ -183,9 +190,9 @@ async function findResolution(did, opts) {
     async function doResolution() {
       clearTimeout(timeout)
 
-      if (!didResolve && 0 === resolvers.length) {
+      if (!didResolve && 0 === resolvers.length && !state.aborted) {
         done(notFound())
-      } else if (!didResolve) {
+      } else if (!state.aborted && !didResolve) {
         const { peer } = resolvers.shift()
         const { host, port } = peer
         const uri = `http://${host}:${port}/1.0/identifiers/${did.did}`
@@ -209,7 +216,7 @@ async function findResolution(did, opts) {
       channel.removeListener('peer', onpeer)
       channel.destroy()
 
-      if (!didResolve) {
+      if (!didResolve && !state.aborted) {
         notFound()
       }
     }
