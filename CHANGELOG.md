@@ -1,3 +1,13 @@
+## [0.35.2](https://github.com/AraBlocks/ara-identity/compare/0.35.1...0.35.2) (2018-12-09)
+
+
+### Bug Fixes
+
+* **bin/aid:** Fix 'whoami' command failures for domains ([be3c09d](https://github.com/AraBlocks/ara-identity/commit/be3c09d))
+* **resolve.js:** Handle aborted requests ([4aed809](https://github.com/AraBlocks/ara-identity/commit/4aed809))
+
+
+
 ## [0.35.1](https://github.com/AraBlocks/ara-identity/compare/0.35.0...0.35.1) (2018-12-09)
 
 
