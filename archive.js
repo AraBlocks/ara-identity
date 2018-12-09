@@ -9,10 +9,9 @@ const pump = require('pump')
 const ram = require('random-access-memory')
 const net = require('net')
 const rc = require('./rc')()
-const os = require('os')
 
 const DEFAULT_ARCHIVER_CONNECTION_TIMEOUT = 5000
-const DEFAULT_ARCHIVER_MAX_CONNECTIONS = os.cpus().length
+const DEFAULT_ARCHIVER_MAX_CONNECTIONS = 32
 
 /**
  * Archive an identity into the network
