@@ -1,3 +1,12 @@
+## [0.35.3](https://github.com/AraBlocks/ara-identity/compare/0.35.2...0.35.3) (2018-12-09)
+
+
+### Bug Fixes
+
+* **archive.js:** Do not show connection refused errors ([ae64994](https://github.com/AraBlocks/ara-identity/commit/ae64994))
+
+
+
 ## [0.35.2](https://github.com/AraBlocks/ara-identity/compare/0.35.1...0.35.2) (2018-12-09)
 
 
