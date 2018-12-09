@@ -1,3 +1,12 @@
+## [0.35.4](https://github.com/AraBlocks/ara-identity/compare/0.35.3...0.35.4) (2018-12-09)
+
+
+### Bug Fixes
+
+* **archive.js:** Use static max number ([a21292d](https://github.com/AraBlocks/ara-identity/commit/a21292d))
+
+
+
 ## [0.35.3](https://github.com/AraBlocks/ara-identity/compare/0.35.2...0.35.3) (2018-12-09)
 
 
