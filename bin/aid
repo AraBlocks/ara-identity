@@ -181,6 +181,31 @@ program.command(
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 whoami [-D] [options]')
+    .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
+    .option('secret', {
+      alias: 's',
+      describe: 'Shared secret key for the associated network keys.',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.secret ||
+        rc.network.identity.secret ||
+        rc.network.secret
+    })
+    .option('network', {
+      alias: 'n',
+      describe: 'Human readable network name for keys in keyring',
+      requiresArg: true,
+      default: rc.network.identity.resolver.network,
+    })
+    .option('keyring', {
+      alias: 'k',
+      describe: 'Path to Ara network keyring file',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.keyring ||
+        rc.network.identity.keyring ||
+        rc.network.keyring,
+    })
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
     .option('cache', {
       type: 'boolean',
@@ -411,7 +436,13 @@ async function onarchive(argv) {
     totalConnections: 0
   }
 
-  const { keyring, network, secret, 'max-connections': maxConnections, shallow } = argv
+  const maxConnections = argv['max-connections']
+  const {
+    keyring,
+    network,
+    secret,
+    shallow
+  } = argv
 
   let secretKey = null
   let publicKey = null
@@ -652,13 +683,16 @@ async function onlist(argv) {
 }
 
 async function onwhoami(argv) {
-  let identifier = rc.network.identity.whoami || rc.network.whoami
+  const identifier = rc.network.identity.whoami || rc.network.whoami
   let ddo = null
+  let cache
 
-  if (identifier && 0 !== identifier.indexOf('did:ara:')) {
-    // eslint-disable-next-line no-param-reassign
-    identifier = `did:ara:${identifier}`
-  }
+  const {
+    timeout,
+    keyring,
+    network,
+    secret,
+  } = argv
 
   if (!identifier) {
     error('Identifier not given.')
@@ -666,14 +700,24 @@ async function onwhoami(argv) {
     return
   }
 
+  if (argv['no-cache'] || argv.nocache || false === argv.cache) {
+    cache = false
+  } else if (true === argv.cache) {
+    cache = true
+  }
+
   try {
-    ddo = JSON.parse(await aid.fs.readFile(identifier, 'ddo.json', argv))
+    const _did = aid.did.normalize(identifier)
+    ddo = JSON.parse(await aid.fs.readFile(_did.identifier, 'ddo.json', argv))
   } catch (err) {
     try {
-      ddo = await aid.resolve(identifier, argv)
-      if (!ddo) {
-        throw err
-      }
+      ddo = await aid.resolve(identifier, {
+        network,
+        keyring,
+        timeout,
+        secret,
+        cache,
+      })
     } catch (err2) {
       debug(err2)
       onfatal(new Error(`Unable to resolve identity: ${identifier}.`))
@@ -684,13 +728,9 @@ async function onwhoami(argv) {
     onfatal(new Error('Missing or malformed identity document (ddo.json).'))
   }
 
-  if ('id' in ddo && ddo.id === identifier) {
-    process.stdout.write(ddo.id)
-    process.stdout.write('\n')
-    process.exit(0)
-  } else {
-    process.exit(1)
-  }
+  process.stdout.write(ddo.id)
+  process.stdout.write('\n')
+  process.exit(0)
 }
 
 async function onkeystoredump(argv) {
