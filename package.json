@@ -34,7 +34,7 @@
     "ara-console": "github:arablocks/ara-console#semver:0.2.x",
     "ara-context": "github:arablocks/ara-context#semver:0.5.x",
     "ara-crypto": "github:arablocks/ara-crypto#semver:0.8.x",
-    "ara-identity-dns": "github:arablocks/ara-identity-dns#semver:0.2.x",
+    "ara-identity-dns": "github:arablocks/ara-identity-dns#semver:^0.2.2",
     "ara-network": "github:arablocks/ara-network#1.0.1",
     "ara-runtime-configuration": "github:arablocks/ara-runtime-configuration#semver:1.3.x",
     "ara-secret-storage": "github:arablocks/ara-secret-storage#semver:0.1.x",
