@@ -1,3 +1,12 @@
+# [0.36.0](https://github.com/AraBlocks/ara-identity/compare/0.35.4...0.36.0) (2018-12-10)
+
+
+### Features
+
+* **bin/aid:** Introduce '--proof, --short, --stats' for 'aid resolve' (plus cleanup) ([0e46e18](https://github.com/AraBlocks/ara-identity/commit/0e46e18))
+
+
+
 ## [0.35.4](https://github.com/AraBlocks/ara-identity/compare/0.35.3...0.35.4) (2018-12-09)
 
 
