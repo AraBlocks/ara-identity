@@ -682,15 +682,15 @@ async function onresolve(argv) {
       const { created, updated, revoked } = identity
 
       if (identity.services) {
-        counts.services = identity.services.length
+        counts.services = identity.service.length
       }
 
       if (identity.publicKeys) {
-        counts.publicKeys = identity.publicKeys.length
+        counts.publicKeys = identity.publicKey.length
       }
 
       if (identity.authentications) {
-        counts.authentications = identity.authentications.length
+        counts.authentications = identity.authentication.length
       }
 
       const stats = {
