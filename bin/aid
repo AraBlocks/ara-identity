@@ -124,13 +124,19 @@ program.command(
 
     .group([ 'proof', 'short', 'stats' ], 'Output Options:')
     .option('proof', {
-      describe: 'Output just the DID proof from the resolution result.'
+      describe: 'Output just the DID proof from the resolution result.',
+      requiresArg: false,
+      type: 'boolean',
     })
     .option('short', {
-      describe: 'Output just the DID ID from the resolution result.'
+      describe: 'Output just the DID ID from the resolution result.',
+      requiresArg: false,
+      type: 'boolean',
     })
     .option('stats', {
-      describe: 'Output just the DID stats from the resolution result.'
+      describe: 'Output just the DID stats from the resolution result.',
+      requiresArg: false,
+      type: 'boolean',
     })
 
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
