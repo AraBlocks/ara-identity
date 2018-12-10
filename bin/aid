@@ -410,19 +410,10 @@ async function onrevoke(argv) {
 async function onarchive(argv) {
   let { password } = argv
 
-  if (0 === argv.identifier.indexOf('did:') && 0 !== argv.identifier.indexOf('did:ara:')) {
-    onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
-  }
-
-  if (0 !== argv.identifier.indexOf('did:ara:')) {
-    // eslint-disable-next-line no-param-reassign
-    argv.identifier = `did:ara:${argv.identifier}`
-  }
-
   if ('string' === typeof password) {
     try {
       await pify(fs.access)(password)
-      password = String(await pify(fs.readFile)(password))
+      password = await pify(fs.readFile)(password, 'utf8')
     } catch (err) {
       void err
     }
@@ -447,7 +438,9 @@ async function onarchive(argv) {
 
   password = crypto.blake2b(Buffer.from(password))
 
-  const { identifier } = did.parse(argv.identifier)
+  const ddo = await aid.resolve(argv.identifier, argv)
+  const { identifier } = did.parse(ddo.id)
+
   let identityBuffer = null
   let identity = null
 
