@@ -55,12 +55,12 @@ program.command(
 )
 
 program.command(
-  'archive [did]',
+  'archive [identifier]',
   'Archive identity in network',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 archive [-D] [options]')
-    .positional('did', {
+    .usage('usage: $0 archive [-D] [options] [identifier]')
+    .positional('identifier', {
       default:
         rc.network.identity.archiver.whoami ||
         rc.network.identity.whoami ||
@@ -110,17 +110,29 @@ program.command(
 )
 
 program.command(
-  'resolve [did]',
+  'resolve [identifier]',
   'Resolve an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 resolve [-D] [options]')
-    .positional('did', {
+    .usage('usage: $0 resolve [-D] [options] [identifier]')
+    .positional('identifier', {
       default:
         rc.network.identity.resolver.whoami ||
         rc.network.identity.whoami ||
         rc.network.whoami,
     })
+
+    .group([ 'proof', 'short', 'stats' ], 'Output Options:')
+    .option('proof', {
+      describe: 'Output just the DID proof from the resolution result.'
+    })
+    .option('short', {
+      describe: 'Output just the DID ID from the resolution result.'
+    })
+    .option('stats', {
+      describe: 'Output just the DID stats from the resolution result.'
+    })
+
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
       alias: 's',
@@ -146,6 +158,7 @@ program.command(
         rc.network.identity.keyring ||
         rc.network.keyring,
     })
+
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
     .option('cache', {
       type: 'boolean',
@@ -237,12 +250,12 @@ program.command(
 )
 
 program.command(
-  'keystore-dump [did] [type]',
+  'keystore-dump [identifier] [type]',
   'Recover secret keys and secret storages for Ara and Web3',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 keystore-dump [-D] [options]')
-    .positional('did', {
+    .usage('usage: $0 keystore-dump [-D] [options] [identifier]')
+    .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
     })
     .positional('type', {
@@ -391,13 +404,13 @@ async function onrevoke(argv) {
 async function onarchive(argv) {
   let { password } = argv
 
-  if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
+  if (0 === argv.identifier.indexOf('did:') && 0 !== argv.identifier.indexOf('did:ara:')) {
     onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
-  if (0 !== argv.did.indexOf('did:ara:')) {
+  if (0 !== argv.identifier.indexOf('did:ara:')) {
     // eslint-disable-next-line no-param-reassign
-    argv.did = `did:ara:${argv.did}`
+    argv.identifier = `did:ara:${argv.identifier}`
   }
 
   if ('string' === typeof password) {
@@ -428,7 +441,7 @@ async function onarchive(argv) {
 
   password = crypto.blake2b(Buffer.from(password))
 
-  const { identifier } = did.parse(argv.did)
+  const { identifier } = did.parse(argv.identifier)
   let identityBuffer = null
   let identity = null
 
@@ -629,7 +642,7 @@ async function onresolve(argv) {
     onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
-  if (0 === argv.did.indexOf('did:') && 0 !== argv.did.indexOf('did:ara:')) {
+  if (0 === argv.identifier.indexOf('did:') && 0 !== argv.identifier.indexOf('did:ara:')) {
     onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
@@ -649,7 +662,7 @@ async function onresolve(argv) {
       cache = true
     }
 
-    const identity = await aid.resolve(argv.did, {
+    const identity = await aid.resolve(argv.identifier, {
       network,
       keyring,
       timeout,
@@ -657,7 +670,44 @@ async function onresolve(argv) {
       cache,
     })
 
-    process.stdout.write(JSON.stringify(identity))
+    if (argv.short) {
+      process.stdout.write(identity.id)
+    } else if (argv.proof) {
+      if (identity.proof) {
+        process.stdout.write(JSON.stringify(identity.proof))
+      } else {
+        throw new Error('Resolution result does not contain a proof.')
+      }
+    } else if (argv.stats) {
+      const counts = { services: 0, publicKeys: 0, authentications: 0 }
+      const { created, updated, revoked } = identity
+
+      if (identity.services) {
+        counts.services = identity.services.length
+      }
+
+      if (identity.publicKeys) {
+        counts.publicKeys = identity.publicKeys.length
+      }
+
+      if (identity.authentications) {
+        counts.authentications = identity.authentications.length
+      }
+
+      const stats = {
+        id: identity.id,
+        created: created || null,
+        updated: updated || null,
+        revoked: revoked || null,
+        services: counts.services,
+        publicKeys: counts.publicKeys,
+        authentications: counts.authentications,
+      }
+
+      process.stdout.write(JSON.stringify(stats))
+    } else {
+      process.stdout.write(JSON.stringify(identity))
+    }
   } catch (err) {
     onfatal(err)
   }
@@ -735,8 +785,7 @@ async function onwhoami(argv) {
 
 async function onkeystoredump(argv) {
   const secretStorage = argv['secret-storage']
-  let { password } = argv
-  let identifier = argv.did
+  let { identifier, password } = argv
 
   if ('ara' !== argv.type && 'eth' !== argv.type) {
     onfatal(new Error('Invalid type passed. Type should be either eth or ara'))
