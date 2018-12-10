@@ -1,3 +1,12 @@
+## [0.37.2](https://github.com/AraBlocks/ara-identity/compare/0.37.1...0.37.2) (2018-12-10)
+
+
+### Bug Fixes
+
+* **bin/aid:** Fix typos ([8bdf2b6](https://github.com/AraBlocks/ara-identity/commit/8bdf2b6))
+
+
+
 ## [0.37.1](https://github.com/AraBlocks/ara-identity/compare/0.37.0...0.37.1) (2018-12-10)
 
 
