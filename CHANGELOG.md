@@ -1,3 +1,12 @@
+# [0.37.0](https://github.com/AraBlocks/ara-identity/compare/0.36.1...0.37.0) (2018-12-10)
+
+
+### Bug Fixes
+
+* **bin/aid:** Allow domain as identifier in 'aid archive' ([f2a1136](https://github.com/AraBlocks/ara-identity/commit/f2a1136))
+
+
+
 ## [0.36.1](https://github.com/AraBlocks/ara-identity/compare/0.36.0...0.36.1) (2018-12-10)
 
 
