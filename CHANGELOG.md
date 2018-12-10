@@ -1,3 +1,12 @@
+## [0.36.1](https://github.com/AraBlocks/ara-identity/compare/0.36.0...0.36.1) (2018-12-10)
+
+
+### Bug Fixes
+
+* **bin/aid:** Set flags to 'boolean' type :face_with_rolling_eyes: ([d79de57](https://github.com/AraBlocks/ara-identity/commit/d79de57))
+
+
+
 # [0.36.0](https://github.com/AraBlocks/ara-identity/compare/0.35.4...0.36.0) (2018-12-10)
 
 
