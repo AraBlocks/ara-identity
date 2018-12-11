@@ -216,7 +216,7 @@ async function archive(identity, opts = {}) {
 
         // each "upload" tick could be a "progress" event/callback :shrug:
         if (blocks === files.length) {
-          stream.end()
+          process.nextTick(() => stream.end())
         }
       }
 
