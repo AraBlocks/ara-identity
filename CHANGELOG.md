@@ -1,3 +1,12 @@
+## [0.37.3](https://github.com/AraBlocks/ara-identity/compare/0.37.2...0.37.3) (2018-12-11)
+
+
+### Bug Fixes
+
+* **resolve.js:** Check if uri is a domain name before resolving ([9865800](https://github.com/AraBlocks/ara-identity/commit/9865800))
+
+
+
 ## [0.37.2](https://github.com/AraBlocks/ara-identity/compare/0.37.1...0.37.2) (2018-12-10)
 
 
