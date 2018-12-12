@@ -1,3 +1,18 @@
+# [0.40.0](https://github.com/AraBlocks/ara-identity/compare/0.39.1...0.40.0) (2018-12-12)
+
+
+### Bug Fixes
+
+* **bin/aid:** Fix incorrect plural 'connections' ([b948c54](https://github.com/AraBlocks/ara-identity/commit/b948c54))
+
+
+### Features
+
+* **archive.js:** Support 'onupload' hook ([83f19ce](https://github.com/AraBlocks/ara-identity/commit/83f19ce))
+* **bin/aid:** Output how many blocks were uploaded ([f38d00a](https://github.com/AraBlocks/ara-identity/commit/f38d00a))
+
+
+
 ## [0.39.1](https://github.com/AraBlocks/ara-identity/compare/0.39.0...0.39.1) (2018-12-12)
 
 
