@@ -82,6 +82,13 @@ async function resolve(uri, opts = {}) {
 
   resolutions.push((async function local() {
     try {
+      const ddo = await fs.readFile(did.identifier, 'ddo.json', opts)
+      return JSON.parse(String(ddo))
+    } catch (err) {
+      debug(err)
+    }
+
+    try {
       await fs.access(did.identifier, 'identity', opts)
       const buffer = await fs.readFile(did.identifier, 'identity', opts)
       const identity = protobuf.messages.Identity.decode(buffer)
