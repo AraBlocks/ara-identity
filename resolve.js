@@ -8,6 +8,7 @@ const debug = require('debug')('ara:identity:resolve')
 const fetch = require('got')
 const pify = require('pify')
 const dns = require('ara-identity-dns')
+const url = require('url')
 const fs = require('./fs')
 const rc = require('./rc')()
 
@@ -34,6 +35,7 @@ async function resolve(uri, opts = {}) {
   opts.secret = opts.secret || conf.secret
   opts.keyring = opts.keyring || conf.keyring
   opts.network = opts.network || conf.network
+  opts.servers = opts.servers || conf.servers
 
   // is DID ?
   if (uri && 'object' === typeof uri && uri.did) {
@@ -141,10 +143,14 @@ async function resolve(uri, opts = {}) {
       }
     }
 
-    await Promise.all(promises).then(() => done(null)).catch(done)
+    Promise.all(promises).then(ondone).catch(onerror)
 
-    if (!resolved) {
-      done(notFound())
+    function ondone() {
+      done(resolved ? notFound() : null)
+    }
+
+    function onerror(err) {
+      done(err)
     }
 
     function onthen(result) {
@@ -174,6 +180,28 @@ async function findResolution(did, opts, state) {
   let didResolve = false
   let timeout = null
 
+  if (opts.servers && opts.servers.length) {
+    for (const server of opts.servers) {
+      const uri = url.parse(server)
+      const { protocol, host } = uri
+      let { port } = uri
+
+      if (!port) {
+        if ('https:' === protocol) {
+          port = 443
+        } else {
+          port = 80
+        }
+      }
+
+      resolvers.push({
+        id: null,
+        peer: { host, port },
+        type: protocol.replace(':', ''),
+      })
+    }
+  }
+
   return pify((done) => {
     channel.on('peer', onpeer)
     channel.join(discoveryKey)
@@ -193,10 +221,17 @@ async function findResolution(did, opts, state) {
       if (!didResolve && 0 === resolvers.length && !state.aborted) {
         done(notFound())
       } else if (!state.aborted && !didResolve) {
-        const { peer } = resolvers.shift()
+        const { peer, type } = resolvers.shift()
         const { host, port } = peer
-        const uri = `http://${host}:${port}/1.0/identifiers/${did.did}`
+        let uri = ''
 
+        if ('https' === type || 'http' === type) {
+          uri = `${type}://${host}:${port}`
+        } else {
+          uri = `http://${host}:${port}`
+        }
+
+        uri += `/1.0/identifiers/${did.did}`
         timeout = setTimeout(doResolution, opts.timeout)
 
         try {
@@ -206,6 +241,7 @@ async function findResolution(did, opts, state) {
           done(null, response.didDocument)
           cleanup()
         } catch (err) {
+          debug(err)
           process.nextTick(doResolution)
         }
       }
