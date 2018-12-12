@@ -1,3 +1,12 @@
+# [0.39.0](https://github.com/AraBlocks/ara-identity/compare/0.38.0...0.39.0) (2018-12-12)
+
+
+### Features
+
+* **resolve.js:** Support static resolvers ([4db1604](https://github.com/AraBlocks/ara-identity/commit/4db1604))
+
+
+
 # [0.38.0](https://github.com/AraBlocks/ara-identity/compare/0.37.3...0.38.0) (2018-12-12)
 
 
