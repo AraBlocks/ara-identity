@@ -454,7 +454,8 @@ async function onarchive(argv) {
   let identity = null
 
   const stats = {
-    totalConnections: 0
+    totalConnections: 0,
+    totalBlocks: 0,
   }
 
   const maxConnections = argv['max-connections']
@@ -518,6 +519,7 @@ async function onarchive(argv) {
       onauth,
       onokay,
 
+      onupload,
       onclose,
       onerror,
     })
@@ -526,6 +528,12 @@ async function onarchive(argv) {
       '%d connection%s made',
       stats.totalConnections,
       stats.totalConnections < 2 ? '' : 's',
+    )
+
+    info(
+      '%d block%s uploaded',
+      stats.totalBlocks,
+      stats.totalBlocks < 2 ? '' : 's',
     )
 
     if (didArchive) {
@@ -572,6 +580,10 @@ async function onarchive(argv) {
       rinfo.peer.port,
       toHex(ellipsis(rinfo.discoveryKey)),
     )
+  }
+
+  function onupload(rinfo) {
+    stats.totalBlocks = rinfo.blocks
   }
 
   function onerror(err) {
