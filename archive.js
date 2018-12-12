@@ -167,13 +167,6 @@ async function archive(identity, opts = {}) {
       socket.pause()
       socket.unpipe(handshake).unpipe(socket)
 
-      const proxy = await createCFS({
-        storage: ram,
-        shallow: true,
-        key: publicKey,
-        id: toHex(publicKey),
-      })
-
       const cfs = await createCFS({
         secretKey,
         storage: ram,
@@ -182,7 +175,6 @@ async function archive(identity, opts = {}) {
         id: toHex(publicKey),
       })
 
-      const stream = proxy.replicate({ live: true })
       const shallow = opts.shallow || false
 
       await Promise.all(files.map((file) => {
@@ -195,24 +187,29 @@ async function archive(identity, opts = {}) {
 
       timeout()
 
-      const origin = cfs.replicate()
-      const wire = proxy.replicate()
+      const stream = cfs.replicate()
       let blocks = 0
 
-      if (proxy.partitions.home.content) {
+      if (cfs.partitions.home.content) {
         oncontent()
       } else {
-        proxy.partitions.home.once('content', oncontent)
+        cfs.partitions.home.once('content', oncontent)
       }
 
-      pump(wire, origin, wire)
-
       function oncontent() {
-        proxy.partitions.home.content.on('upload', onupload)
+        cfs.partitions.home.content.on('upload', onupload)
       }
 
       function onupload() {
         blocks++
+
+        if ('function' === typeof opts.onupload) {
+          opts.onupload({
+            peerIndex,
+            blocks,
+            peer,
+          })
+        }
 
         // each "upload" tick could be a "progress" event/callback :shrug:
         if (blocks === files.length) {
