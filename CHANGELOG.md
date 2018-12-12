@@ -1,3 +1,12 @@
+# [0.38.0](https://github.com/AraBlocks/ara-identity/compare/0.37.3...0.38.0) (2018-12-12)
+
+
+### Features
+
+* **bin/aid:** Introduce '--peers' for 'aid resolve' ([559d102](https://github.com/AraBlocks/ara-identity/commit/559d102))
+
+
+
 ## [0.37.3](https://github.com/AraBlocks/ara-identity/compare/0.37.2...0.37.3) (2018-12-11)
 
 
