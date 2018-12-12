@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
+const { DEFAULT_ARCHIVER_MAX_CONNECTIONS } = require('../archive')
 const { info, warn, error } = require('ara-console')
+const { createChannel } = require('ara-network/discovery/channel')
 const { writeIdentity } = require('../util')
+const { createCFS } = require('cfsnet/create')
 const { toHex } = require('../util')
 const { table } = require('table')
 const protobuf = require('../protobuf')
@@ -12,10 +15,11 @@ const debug = require('debug')('ara:identity')
 const pify = require('pify')
 const did = require('did-uri')
 const aid = require('../')
+const ram = require('random-access-memory')
 const rc = require('../rc')()
 const ss = require('ara-secret-storage')
 const fs = require('fs')
-const { DEFAULT_ARCHIVER_MAX_CONNECTIONS } = require('../archive')
+const ip = require('ip')
 
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
@@ -122,7 +126,12 @@ program.command(
         rc.network.whoami,
     })
 
-    .group([ 'proof', 'short', 'stats' ], 'Output Options:')
+    .group([ 'peers', 'proof', 'short', 'stats' ], 'Output Options:')
+    .option('peers', {
+      describe: 'Find and output peers broadcasting this identity.',
+      requiresArg: false,
+      type: 'boolean',
+    })
     .option('proof', {
       describe: 'Output just the DID proof from the resolution result.',
       requiresArg: false,
@@ -641,36 +650,66 @@ async function onresolve(argv) {
     onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
+  if (!argv.identifier) {
+    onfatal(new Error('Missing identifier'))
+  }
+
   if (0 === argv.identifier.indexOf('did:') && 0 !== argv.identifier.indexOf('did:ara:')) {
     onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
   try {
-    let cache
-
-    const {
-      timeout,
-      keyring,
-      network,
-      secret,
-    } = argv
-
     if (argv['no-cache'] || argv.nocache || false === argv.cache) {
-      cache = false
+      argv.cache = false
     } else if (true === argv.cache) {
-      cache = true
+      argv.cache = true
     }
 
-    const identity = await aid.resolve(argv.identifier, {
-      network,
-      keyring,
-      timeout,
-      secret,
-      cache,
-    })
+    const identity = await aid.resolve(argv.identifier, argv)
 
     if (argv.short) {
       process.stdout.write(identity.id)
+    } else if (argv.peers) {
+      const peers = []
+      const seen = []
+      await new Promise(async (resolve, reject) => {
+        const channel = createChannel()
+        const cfs = await createCFS({
+          storage: ram,
+          shallow: true,
+          key: Buffer.from(identity.publicKey[0].publicKeyHex, 'hex')
+        })
+
+        timeout()
+        channel.join(cfs.discoveryKey)
+        channel.once('close', resolve)
+        channel.once('error', reject)
+        channel.on('peer', onpeer)
+        await cfs.close()
+
+        function onpeer(id, peer, type) {
+          if (!seen.includes(peer.host + peer.port)) {
+            timeout()
+            seen.push(peer.host + peer.port)
+            peer.type = type
+            peer.private = ip.isPrivate(peer.host)
+            peers.push(peer)
+          }
+        }
+
+        function timeout(again) {
+          clearTimeout(timeout.timer)
+          if (false !== again) {
+            timeout.timer = setTimeout(resolve, 200)
+          }
+        }
+      })
+
+      if (0 === peers.length) {
+        warn(`Could not find any peers in the network for this identity: ${identity.id}`)
+      }
+
+      process.stdout.write(JSON.stringify(peers))
     } else if (argv.proof) {
       if (identity.proof) {
         process.stdout.write(JSON.stringify(identity.proof))
