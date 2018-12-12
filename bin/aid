@@ -525,7 +525,7 @@ async function onarchive(argv) {
     info(
       '%d connection%s made',
       stats.totalConnections,
-      1 === stats.totalConnections ? '' : 's',
+      stats.totalConnections < 2 ? '' : 's',
     )
 
     if (didArchive) {
