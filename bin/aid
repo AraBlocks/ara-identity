@@ -289,14 +289,11 @@ program.command(
 )
 
 program.command(
-  'keystore-import [identifier] [key]',
+  'keystore-import [key]',
   'Load keys into DDO',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 keystore-import [-D] [options] [identifier] [key]')
-    .positional('identifier', {
-      default: rc.network.identity.whoami || rc.network.whoami,
-    })
+    .usage('usage: $0 keystore-import [-D] [options] [key]')
     .positional('key', {
       describe: "Key to import to the `publicKey` of the DDO"
     })
@@ -306,7 +303,8 @@ program.command(
     })
     .option('mnemonic', {
       alias: 'm',
-      describe: 'Valid bip39 mnemonic'
+      describe: 'Valid bip39 mnemonic',
+      required: true
     })
   , onkeystoreimport
 )
@@ -883,13 +881,11 @@ async function onwhoami(argv) {
 }
 
 async function onkeystoreimport(argv) {
+  const aid = require('../')
+
   let { identifier, password, key, mnemonic } = argv
 
-  if (!identifier) {
-    error('Identifier not given.')
-    process.exit(1)
-    return
-  }
+  console.log("KE:", key)
 
   if (!password) {
     const res = await inquirer.prompt([ {
@@ -905,17 +901,16 @@ async function onkeystoreimport(argv) {
     process.stdout.write('\n')
   }
 
-  // Get the keys for the identity, these will be needed for archiving
-  const { publicKey, secretKey } = await aid.recover({ password, mnemonic })
+  let identity = await aid.create({
+    mnemonic,
+    password,
+    ddo: {
+      publicKey: [JSON.parse(key)]
+    }
+  })
 
-  let ddo = await aid.fs.readFile(identifier, 'ddo.json')
-
-  ddo = JSON.parse(ddo.toString())
-  ddo.publicKey.push(JSON.parse(key))
-
-  await aid.fs.writeFile(identifier, 'ddo.json', Buffer.from(JSON.stringify(ddo)))
-
-  return await aid.archive({ publicKey, secretKey, files: [ 'ddo.json' ]})
+  debug(`archiving identity ${identity.id}`)
+  await aid.archive(identity)
 }
 
 async function onkeystoredump(argv) {
