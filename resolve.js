@@ -132,7 +132,7 @@ async function resolve(uri, opts = {}) {
         break
       } else {
         pending++
-        resolution().then(onthen).catch(onerror)
+        process.nextTick(() => resolution().then(onthen).catch(onerror))
       }
     }
 
@@ -147,6 +147,7 @@ async function resolve(uri, opts = {}) {
         resolved = true
         state.aborted = true
         process.nextTick(done, null, result)
+
         try {
           if (!isBrowser) {
             try {
@@ -159,14 +160,12 @@ async function resolve(uri, opts = {}) {
               }
             }
           }
-
-          return
         } catch (err) {
           debug(err)
         }
       }
 
-      if (0 === pending) {
+      if (!resolved && 0 === pending) {
         state.aborted = true
         done(notFound())
       }
@@ -236,8 +235,8 @@ async function findResolution(did, opts, state) {
       clearTimeout(timeout)
 
       if (state.aborted) {
-        cleanup()
-        done()
+        process.nextTick(cleanup)
+        process.nextTick(done)
         return
       }
 
@@ -267,7 +266,7 @@ async function findResolution(did, opts, state) {
           cleanup()
           done(null, result)
         } catch (err) {
-          doResolution()
+          process.nextTick(doResolution)
           debug(err)
         }
       }
