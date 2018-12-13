@@ -172,12 +172,10 @@ program.command(
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
     .option('cache', {
       type: 'boolean',
-      alias: 'C',
       describe: 'Enable or disable cache',
       default: true,
     })
     .option('timeout', {
-      alias: 't',
       describe: 'Resolution timeout',
     })
   , onresolve
@@ -229,19 +227,18 @@ program.command(
         rc.network.identity.keyring ||
         rc.network.keyring,
     })
-    .group([ 'cache', 'timeout' ], 'Resolution Options:')
+    .group([ 'cache', 'fast', 'timeout' ], 'Resolution Options:')
     .option('cache', {
       type: 'boolean',
-      alias: 'C',
       describe: 'Enable or disable cache',
       default: true,
     })
-    .option('timeout', {
-      alias: 't',
-      describe: 'Resolution timeout',
-    })
     .option('fast', {
+      type: 'boolean',
       describe: 'Use fastest possible resolution.',
+    })
+    .option('timeout', {
+      describe: 'Resolution timeout',
     })
   , onwhoami
 )
