@@ -198,7 +198,7 @@ async function readFile(identifier, filename, opts) {
  * @param {?(Object)} opts
  * @return {Promise}
  */
-async function writeFile(identifier, filename, buffer, opts) { 
+async function writeFile(identifier, filename, buffer, opts) {
   const path = resolvePath(identifier, filename)
   await pify(mkdirp)(dirname(path))
   return pify(fs.writeFile)(path, buffer, opts)
