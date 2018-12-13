@@ -1,8 +1,10 @@
 const { createIdentityKeyPath } = require('./key-path')
 const { dirname, resolve } = require('path')
+const isDomainName = require('is-domain-name')
 const isBuffer = require('is-buffer')
 const mkdirp = require('mkdirp')
 const pify = require('pify')
+const dns = require('ara-identity-dns')
 const fs = require('fs')
 /* eslint-disable no-await-in-loop */
 
@@ -86,9 +88,21 @@ async function writeIdentity(identity) {
   }
 }
 
+async function resolveDNS(uri) {
+  const resolution = await dns.resolve(uri)
+  if (resolution && resolution.length) {
+    if (resolution[0] && resolution[0].identifier) {
+      return resolution[0].identifier
+    }
+  }
+
+  return null
+}
+
 module.exports = {
   ethHexToBuffer,
   writeIdentity,
+  resolveDNS,
   toBuffer,
   toHex,
 }

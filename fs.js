@@ -1,7 +1,9 @@
 const { dirname, resolve } = require('path')
 const { createSwarm } = require('ara-network/discovery')
+const { resolveDNS } = require('./util')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
+const isDomainName = require('is-domain-name')
 const { toHex } = require('./util')
 const { DID } = require('did-uri')
 const mkdirp = require('mkdirp')
@@ -157,6 +159,9 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
  * @return {String}
  */
 function resolvePath(identifier, filename) {
+  if (isDomainName(identifier)) {
+    throw new Error('Make sure to use `util.resolveDNS()` when using a DNS resolvable name')
+  }
   const did = new DID(normalize(identifier))
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
   return resolve(rc.network.identity.root, hash, filename)
@@ -164,6 +169,9 @@ function resolvePath(identifier, filename) {
 
 async function readFile(identifier, filename, opts) {
   const skipCache = Boolean(opts && false === opts.cache)
+  if (isDomainName(identifier)) {
+    identifier = await resolveDNS(identifier)
+  }
   if (false === skipCache) {
     try {
       const path = resolvePath(identifier, filename)
@@ -195,12 +203,18 @@ async function readFile(identifier, filename, opts) {
  * @return {Promise}
  */
 async function writeFile(identifier, filename, buffer, opts) {
+  if (isDomainName(identifier)) {
+    identifier = await resolveDNS(identifier)
+  }
   const path = resolvePath(identifier, filename)
   await pify(mkdirp)(dirname(path))
   return pify(fs.writeFile)(path, buffer, opts)
 }
 
 async function stat(identifier, filename, opts) {
+  if (isDomainName(identifier)) {
+    identifier = await resolveDNS(identifier)
+  }
   if (!opts || false !== opts.cache) {
     const path = resolvePath(identifier, filename)
     try {
@@ -222,6 +236,9 @@ async function stat(identifier, filename, opts) {
 }
 
 async function lstat(identifier, filename, opts) {
+  if (isDomainName(identifier)) {
+    identifier = await resolveDNS(identifier)
+  }
   if (!opts || false !== opts.cache) {
     const path = resolvePath(identifier, filename)
     try {
@@ -243,6 +260,9 @@ async function lstat(identifier, filename, opts) {
 }
 
 async function access(identifier, filename, opts) {
+  if (isDomainName(identifier)) {
+    identifier = await resolveDNS(identifier)
+  }
   if (!opts || false !== opts.cache) {
     try {
       const path = resolvePath(identifier, filename)
@@ -264,6 +284,9 @@ async function access(identifier, filename, opts) {
 }
 
 async function readdir(identifier, filename, opts) {
+  if (isDomainName(identifier)) {
+    identifier = await resolveDNS(identifier)
+  }
   if (!opts || false !== opts.cache) {
     try {
       const path = resolvePath(identifier, filename)

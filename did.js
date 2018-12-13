@@ -1,3 +1,4 @@
+const isDomainName = require('is-domain-name')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
@@ -45,6 +46,10 @@ function normalize(uri, method) {
 
   if ('string' !== typeof uri) {
     throw new TypeError('Expecting URI to be a string or buffer.')
+  }
+
+  if (isDomainName(uri)) {
+    throw new Error('Make sure to use `util.resolveDNS()` when using a DNS resolvable name')
   }
 
   if (method && 'string' !== typeof method) {

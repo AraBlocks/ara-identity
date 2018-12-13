@@ -2,7 +2,8 @@
 /* eslint-disable global-require */
 const { DEFAULT_ARCHIVER_MAX_CONNECTIONS } = require('../archive')
 const { info, warn, error } = require('ara-console')
-const { toHex } = require('../util')
+const { resolveDNS, toHex } = require('../util')
+const isDomainName = require('is-domain-name')
 const { table } = require('table')
 const inquirer = require('inquirer')
 const program = require('yargs')
@@ -866,11 +867,6 @@ async function onkeystoredump(argv) {
 
   if ('ara' !== argv.type && 'eth' !== argv.type) {
     onfatal(new Error('Invalid type passed. Type should be either eth or ara'))
-  }
-
-  if (identifier && 0 !== identifier.indexOf('did:ara:')) {
-    // eslint-disable-next-line no-param-reassign
-    identifier = `did:ara:${identifier}`
   }
 
   if (!identifier) {
