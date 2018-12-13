@@ -49,7 +49,7 @@ function normalize(uri, method) {
   }
 
   if (isDomainName(uri)) {
-    throw new Error('Make sure to use `util.resolveDNS()` when using a DNS resolvable name')
+    throw new Error('DNS resolvable names are not allowed')
   }
 
   if (method && 'string' !== typeof method) {
