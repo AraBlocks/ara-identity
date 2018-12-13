@@ -32,9 +32,11 @@ async function archive(identity, opts = {}) {
 
   let conf
   try {
-    const { secret, keyring } = rc.network.identity || rc.network.identity.archiver
-    const { network } = rc.network.identity.archiver
-    conf = { secret, keyring, network }
+    conf = {
+      secret: rc.network.identity.secret || rc.network.identity.archiver.secret,
+      keyring: rc.network.identity.keyring || rc.network.identity.archiver.keyring,
+      network: rc.network.identity.archiver.network
+    }
   } finally {
     conf = conf || {}
   }
