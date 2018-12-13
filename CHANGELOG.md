@@ -1,3 +1,12 @@
+## [0.42.2](https://github.com/AraBlocks/ara-identity/compare/0.42.1...0.42.2) (2018-12-13)
+
+
+### Features
+
+* **bin/aid:** Support 'aid whoami --fast' for fast resolution ([d86e7ad](https://github.com/AraBlocks/ara-identity/commit/d86e7ad))
+
+
+
 ## [0.42.1](https://github.com/AraBlocks/ara-identity/compare/0.42.0...0.42.1) (2018-12-13)
 
 
