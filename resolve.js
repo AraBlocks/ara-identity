@@ -1,22 +1,21 @@
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
 const isDomainName = require('is-domain-name')
-const protobuf = require('./protobuf')
+const isBrowser = require('is-browser')
 const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
 const debug = require('debug')('ara:identity:resolve')
-const fetch = require('got')
+const fetch = require('node-fetch')
 const pify = require('pify')
 const dns = require('ara-identity-dns')
 const url = require('url')
 const fs = require('./fs')
 const rc = require('./rc')()
 
-const kDIDIdentifierLength = 64
-// in milliseconds
-const kResolutionTimeout = 5000
-const kDIDMethod = 'ara'
-const kMaxPeers = 8
+const DID_IDENTIFIER_LENGTH = 64
+const DID_METHOD = 'ara'
+const RESOLUTION_TIMEOUT = 5000
+const MAX_PEER_RESOLVERS = 8
 
 function notFound() {
   return Object.assign(
@@ -64,23 +63,24 @@ async function resolve(uri, opts = {}) {
 
   const did = new DID(uri)
 
-  if (kDIDMethod !== did.method) {
+  if (DID_METHOD !== did.method) {
     throw new TypeError(`Invalid DID method (${did.method}). ` +
-      `Expecting 'did:${kDIDMethod}:...'.`)
+      `Expecting 'did:${DID_METHOD}:...'.`)
   }
 
   if (did.identifier && -1 !== did.identifier.indexOf('.')) {
     throw new TypeError(`Unable to resolve DID for domain: ${did.identifier}`)
   }
 
-  if (!did.identifier || kDIDIdentifierLength !== did.identifier.length) {
+  if (!did.identifier || DID_IDENTIFIER_LENGTH !== did.identifier.length) {
     throw new TypeError('Invalid DID identifier length.')
   }
 
   const state = { aborted: false }
   const resolutions = []
 
-  resolutions.push((async function local() {
+  resolutions.push(async () => {
+    if (isBrowser) { return null }
     try {
       const ddo = await fs.readFile(did.identifier, 'ddo.json', opts)
       return JSON.parse(String(ddo))
@@ -88,26 +88,10 @@ async function resolve(uri, opts = {}) {
       debug(err)
     }
 
-    try {
-      await fs.access(did.identifier, 'identity', opts)
-      const buffer = await fs.readFile(did.identifier, 'identity', opts)
-      const identity = protobuf.messages.Identity.decode(buffer)
-      for (const k in identity.files) {
-        if (state.aborted) { return null }
-        // eslint-disable-next-line no-shadow
-        const { path, buffer } = identity.files[k]
-        if ('ddo.json' === path) {
-          return JSON.parse(String(buffer))
-        }
-      }
-    } catch (err) {
-      debug(err)
-    }
-
     return null
-  }()))
+  })
 
-  resolutions.push((async function remote() {
+  resolutions.push(async () => {
     if (!opts || !opts.secret || !opts.keyring || !opts.network) {
       return null
     }
@@ -130,45 +114,49 @@ async function resolve(uri, opts = {}) {
 
     if (null === opts.timeout || 'number' !== typeof opts.timeout) {
       // eslint-disable-next-line no-param-reassign
-      opts.timeout = kResolutionTimeout
+      opts.timeout = RESOLUTION_TIMEOUT
     }
 
     return findResolution(did, opts, state)
-  })())
+  })
 
   return pify(async (done) => {
     let resolved = false
-    const promises = []
+    let pending = 0
+    const queue = false === opts.cache ? resolutions.reverse() : resolutions
 
-    for (let i = 0; i < resolutions.length; ++i) {
-      const resolution = resolutions[i]
+    for (let i = 0; i < queue.length; ++i) {
+      const resolution = queue[i]
 
-      if (resolved) {
+      if (resolved || state.aborted) {
         break
       } else {
-        promises.push(resolution.then(onthen))
+        pending++
+        resolution().then(onthen).catch(onerror)
       }
     }
 
-    Promise.all(promises).then(ondone).catch(onerror)
-
-    function ondone() {
-      done(resolved ? notFound() : null)
-    }
-
     function onerror(err) {
+      state.aborted = true
       done(err)
     }
 
     function onthen(result) {
+      pending--
       if (result) {
         resolved = true
         state.aborted = true
         try {
           done(null, result)
+          return
         } catch (err) {
           debug(err)
         }
+      }
+
+      if (0 === pending) {
+        state.aborted = true
+        done(notFound())
       }
     }
   })()
@@ -182,10 +170,12 @@ async function findResolution(did, opts, state) {
   const buffer = await keyring.get(opts.network)
   const unpacked = unpack({ buffer })
   const { discoveryKey } = unpacked
+  keyring.storage.close()
 
   const channel = createChannel()
   let didResolve = false
   let timeout = null
+  let result = null
 
   if (opts.servers && opts.servers.length) {
     for (const server of opts.servers) {
@@ -212,28 +202,43 @@ async function findResolution(did, opts, state) {
   return pify((done) => {
     channel.on('peer', onpeer)
     channel.join(discoveryKey)
-    timeout = setTimeout(doResolution, opts.timeout)
+
+    if (resolvers.length) {
+      process.nextTick(doResolution)
+    } else {
+      timeout = setTimeout(doResolution, opts.timeout)
+    }
 
     function onpeer(id, peer, type) {
-      if (!state.aborted && resolvers.push({ id, peer, type }) < kMaxPeers) {
-        doResolution()
-      } else {
+      if (state.aborted) {
         cleanup()
+      } else if (resolvers.length < MAX_PEER_RESOLVERS) {
+        resolvers.push({ id, peer, type })
+        if (1 === resolvers.length) {
+          process.nextTick(doResolution)
+        }
       }
     }
 
     async function doResolution() {
       clearTimeout(timeout)
 
+      if (state.aborted) {
+        cleanup()
+        done()
+        return
+      }
+
       if (!didResolve && 0 === resolvers.length && !state.aborted) {
-        done(notFound())
+        cleanup()
+        done(null, result)
       } else if (!state.aborted && !didResolve) {
         const { peer, type } = resolvers.shift()
         const { host, port } = peer
         let uri = ''
 
         if ('https' === type || 'http' === type) {
-          uri = `${type}://${host}:${port}`
+          uri = `${type}://${host}`
         } else {
           uri = `http://${host}:${port}`
         }
@@ -242,14 +247,16 @@ async function findResolution(did, opts, state) {
         timeout = setTimeout(doResolution, opts.timeout)
 
         try {
-          const { body } = await fetch(uri)
-          const response = JSON.parse(body)
+          const res = await fetch(uri, { mode: 'cors' })
+          const json = await res.json()
+          result = json.didDocument
+
           didResolve = true
-          done(null, response.didDocument)
           cleanup()
+          done(null, result)
         } catch (err) {
+          doResolution()
           debug(err)
-          process.nextTick(doResolution)
         }
       }
     }
@@ -260,7 +267,7 @@ async function findResolution(did, opts, state) {
       channel.destroy()
 
       if (!didResolve && !state.aborted) {
-        notFound()
+        done(notFound())
       }
     }
   })()
