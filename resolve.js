@@ -141,13 +141,25 @@ async function resolve(uri, opts = {}) {
       done(err)
     }
 
-    function onthen(result) {
+    async function onthen(result) {
       pending--
       if (result) {
         resolved = true
         state.aborted = true
+        process.nextTick(done, null, result)
         try {
-          done(null, result)
+          if (!isBrowser) {
+            try {
+              await fs.access(did.identifier, 'ddo.json', { cache: true })
+            } catch (err) {
+              try {
+                await fs.writeFile(did.identifier, 'ddo.json', JSON.stringify(result))
+              } catch (err2) {
+                debug(err2)
+              }
+            }
+          }
+
           return
         } catch (err) {
           debug(err)
