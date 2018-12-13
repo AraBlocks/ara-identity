@@ -892,6 +892,10 @@ async function onkeystoredump(argv) {
   const secretKeys = { ara: null, eth: null }
   const keystores = { ara: null, eth: null }
 
+  if (isDomainName(identifier)) {
+    identifier = await resolveDNS(identifier)
+  }
+
   keystores.ara = await aid.fs.readFile(identifier, 'keystore/ara')
   keystores.eth = await aid.fs.readFile(identifier, 'keystore/eth')
 
