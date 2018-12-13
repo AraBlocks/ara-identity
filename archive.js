@@ -33,8 +33,8 @@ async function archive(identity, opts = {}) {
   let conf
   try {
     conf = {
-      secret: rc.network.identity.secret || rc.network.identity.archiver.secret,
-      keyring: rc.network.identity.keyring || rc.network.identity.archiver.keyring,
+      secret:  rc.network.identity.archiver.secret || rc.network.identity.secret,
+      keyring: rc.network.identity.archiver.keyring || rc.network.identity.keyring,
       network: rc.network.identity.archiver.network
     }
   } finally {
