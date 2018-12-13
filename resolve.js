@@ -31,9 +31,12 @@ async function resolve(uri, opts = {}) {
 
   let conf
   try {
-    const { secret, keyring } = rc.network.identity || rc.network.identity.resolver
-    const { network } = rc.network.identity.resolver
-    conf = { secret, keyring, network }
+    conf = {
+      secret: rc.network.identity.secret || rc.network.identity.resolver.secret,
+      keyring: rc.network.identity.keyring || rc.network.identity.resolver.keyring,
+      network: rc.network.identity.resolver.network,
+      servers: rc.network.identity.resolver.servers
+    }
   } finally {
     conf = conf || {}
   }
