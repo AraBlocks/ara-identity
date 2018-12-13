@@ -1,3 +1,17 @@
+## [0.42.4](https://github.com/AraBlocks/ara-identity/compare/0.42.3...0.42.4) (2018-12-13)
+
+
+### Bug Fixes
+
+* **archive.js:** Change order of precedence ([c547033](https://github.com/AraBlocks/ara-identity/commit/c547033))
+* **archive.js:** Refactor how config is retrieved ([8856200](https://github.com/AraBlocks/ara-identity/commit/8856200))
+* **archive.js:** Update to be compatible with latest .ararc ([60dca36](https://github.com/AraBlocks/ara-identity/commit/60dca36))
+* **resolve.js:** Change order of precedence ([2aacbda](https://github.com/AraBlocks/ara-identity/commit/2aacbda))
+* **resolve.js:** Refactor how config is retrieved ([092502b](https://github.com/AraBlocks/ara-identity/commit/092502b))
+* **resolve.js:** Update to be compatible with the latest .ararc ([4cb58f4](https://github.com/AraBlocks/ara-identity/commit/4cb58f4))
+
+
+
 ## [0.42.3](https://github.com/AraBlocks/ara-identity/compare/0.42.2...0.42.3) (2018-12-13)
 
 
