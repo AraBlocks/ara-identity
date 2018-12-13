@@ -1,6 +1,5 @@
 const { createIdentityKeyPath } = require('./key-path')
 const { dirname, resolve } = require('path')
-const isDomainName = require('is-domain-name')
 const isBuffer = require('is-buffer')
 const mkdirp = require('mkdirp')
 const pify = require('pify')
