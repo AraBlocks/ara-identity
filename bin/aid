@@ -317,11 +317,11 @@ void program.getOptions().boolean.splice(-2)
 try {
   if (0 === program.argv._.length) {
     program.showHelp()
-    process.exit(1)
+    exit(1)
   }
 } catch (err) {
   debug(err)
-  process.exit(1)
+  exit(1)
 }
 
 if (program.argv.debug) {
@@ -375,7 +375,7 @@ async function onrecover(argv) {
     onfatal(err)
   }
 
-  process.exit(0)
+  exit(0)
 }
 
 async function onrevoke(argv) {
@@ -413,7 +413,7 @@ async function onrevoke(argv) {
     onfatal(err)
   }
 
-  process.exit(0)
+  exit(0)
 }
 
 async function onarchive(argv) {
@@ -538,10 +538,10 @@ async function onarchive(argv) {
 
     if (didArchive) {
       info('Successfully archived identity to network "%s"', network)
-      process.nextTick(() => process.exit(0))
+      process.nextTick(() => exit(0))
     } else {
       error('Failed to archive identity')
-      process.nextTick(() => process.exit(1))
+      process.nextTick(() => exit(1))
     }
   } catch (err) {
     error('Failed to archive identity.')
@@ -646,7 +646,7 @@ async function oncreate(argv) {
     process.stdout.write('\n')
   }
 
-  process.exit(0)
+  exit(0)
 }
 
 async function onresolve(argv) {
@@ -768,7 +768,7 @@ async function onresolve(argv) {
     onfatal(err)
   }
 
-  process.exit(0)
+  exit(0)
 }
 
 async function onlist(argv) {
@@ -782,7 +782,7 @@ async function onlist(argv) {
       process.stdout.write(`${id}\n`)
     }
 
-    process.exit(0)
+    exit(0)
   } catch (err) {
     onfatal(err)
   }
@@ -802,7 +802,7 @@ async function onwhoami(argv) {
 
   if (!identifier) {
     error('Identifier not given.')
-    process.exit(1)
+    exit(1)
     return
   }
 
@@ -836,7 +836,7 @@ async function onwhoami(argv) {
 
   process.stdout.write(ddo.id)
   process.stdout.write('\n')
-  process.exit(0)
+  exit(0)
 }
 
 async function onkeystoredump(argv) {
@@ -854,7 +854,7 @@ async function onkeystoredump(argv) {
 
   if (!identifier) {
     error('Identifier not given.')
-    process.exit(1)
+    exit(1)
     return
   }
 
@@ -924,11 +924,15 @@ async function onkeystoredump(argv) {
   }
 
   process.stdout.write('\n')
-  process.exit(0)
+  exit(0)
 }
 
 function onfatal(err) {
   debug(err)
   error('fatal:', err.message)
-  process.exit(1)
+  exit(1)
+}
+
+function exit(code) {
+  process.nextTick(process.exit, code || 0)
 }
