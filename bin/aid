@@ -245,6 +245,9 @@ program.command(
       alias: 't',
       describe: 'Resolution timeout',
     })
+    .option('fast', {
+      describe: 'Use fastest possible resolution.',
+    })
   , onwhoami
 )
 
@@ -812,22 +815,24 @@ async function onwhoami(argv) {
     cache = true
   }
 
+  if (argv.fast) {
+    process.stdout.write(identifier)
+    process.stdout.write('\n')
+    exit(0)
+    return
+  }
+
   try {
-    const _did = aid.did.normalize(identifier)
-    ddo = JSON.parse(await aid.fs.readFile(_did.identifier, 'ddo.json', argv))
-  } catch (err) {
-    try {
-      ddo = await aid.resolve(identifier, {
-        network,
-        keyring,
-        timeout,
-        secret,
-        cache,
-      })
-    } catch (err2) {
-      debug(err2)
-      onfatal(new Error(`Unable to resolve identity: ${identifier}.`))
-    }
+    ddo = await aid.resolve(identifier, {
+      network,
+      keyring,
+      timeout,
+      secret,
+      cache,
+    })
+  } catch (err2) {
+    debug(err2)
+    onfatal(new Error(`Unable to resolve identity: ${identifier}.`))
   }
 
   if (!ddo) {
