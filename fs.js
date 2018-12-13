@@ -13,7 +13,7 @@ const rc = require('./rc')()
 const fs = require('fs')
 
 const DISCOVERY_TIMEOUT = 5 * 1000
-const CFS_UPDATE_TIMEOUT = 3 * 1000
+const CFS_UPDATE_TIMEOUT = 1 * 1000
 
 /**
  * Joins a network swarm for an identity scoped to a given
