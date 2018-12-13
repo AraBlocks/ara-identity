@@ -1,3 +1,12 @@
+# [0.42.0](https://github.com/AraBlocks/ara-identity/compare/0.41.0...0.42.0) (2018-12-13)
+
+
+### Features
+
+* **resolve.js:** Cache results on disk if not already present ([ee99770](https://github.com/AraBlocks/ara-identity/commit/ee99770))
+
+
+
 # [0.41.0](https://github.com/AraBlocks/ara-identity/compare/0.40.0...0.41.0) (2018-12-13)
 
 
