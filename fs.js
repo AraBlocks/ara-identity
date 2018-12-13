@@ -159,7 +159,7 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
  */
 function resolvePath(identifier, filename) {
   if (isDomainName(identifier)) {
-    throw new Error('Make sure to use `util.resolveDNS()` when using a DNS resolvable name')
+    throw new Error('DNS resolvable names are not allowed')
   }
   const did = new DID(normalize(identifier))
   const hash = toHex(crypto.blake2b(Buffer.from(did.identifier, 'hex')))
@@ -198,7 +198,7 @@ async function readFile(identifier, filename, opts) {
  * @param {?(Object)} opts
  * @return {Promise}
  */
-async function writeFile(identifier, filename, buffer, opts) {
+async function writeFile(identifier, filename, buffer, opts) { 
   const path = resolvePath(identifier, filename)
   await pify(mkdirp)(dirname(path))
   return pify(fs.writeFile)(path, buffer, opts)
