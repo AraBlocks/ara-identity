@@ -1,5 +1,6 @@
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
+const { resolveDNS } = require('./util')
 const isDomainName = require('is-domain-name')
 const isBrowser = require('is-browser')
 const isBuffer = require('is-buffer')
@@ -7,7 +8,6 @@ const { DID } = require('did-uri')
 const debug = require('debug')('ara:identity:resolve')
 const fetch = require('node-fetch')
 const pify = require('pify')
-const dns = require('ara-identity-dns')
 const url = require('url')
 const fs = require('./fs')
 const rc = require('./rc')()
@@ -45,12 +45,7 @@ async function resolve(uri, opts = {}) {
     }
   } else if ('string' === typeof uri && isDomainName(uri)) {
     try {
-      const resolution = await dns.resolve(uri)
-      if (resolution && resolution.length) {
-        if (resolution[0] && resolution[0].identifier) {
-          uri = resolution[0].identifier
-        }
-      }
+      uri = await resolveDNS(uri)
     } catch (err) {
       debug(err)
     }
@@ -285,5 +280,6 @@ async function findResolution(did, opts, state) {
 }
 
 module.exports = {
-  resolve
+  resolve,
+  resolveDNS
 }
