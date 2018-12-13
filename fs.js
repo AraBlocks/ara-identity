@@ -1,9 +1,10 @@
+const { dirname, resolve } = require('path')
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
-const { resolve } = require('path')
 const { toHex } = require('./util')
 const { DID } = require('did-uri')
+const mkdirp = require('mkdirp')
 const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:fs')
 const pify = require('pify')
@@ -195,6 +196,7 @@ async function readFile(identifier, filename, opts) {
  */
 async function writeFile(identifier, filename, buffer, opts) {
   const path = resolvePath(identifier, filename)
+  await pify(mkdirp)(dirname(path))
   return pify(fs.writeFile)(path, buffer, opts)
 }
 
@@ -293,6 +295,7 @@ class NoEntitityError extends Error {
 }
 
 module.exports = {
+  resolve: resolvePath,
   writeFile,
   readFile,
   readdir,
