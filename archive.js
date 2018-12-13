@@ -15,18 +15,18 @@ const DEFAULT_ARCHIVER_MAX_CONNECTIONS = 32
 
 /**
  * Archive an identity into the network
- * 
+ *
  * @public
- * 
+ *
  * @param {Object}         identity  Results from create(), { secretKey, publicKey, files }
  * @param {Object}         opts
  * @param {String|Buffer}  opts.secret
  * @param {String}         opts.keyring
  * @param {String}         opts.network
  * @param {Boolean}        opts.shallow
- * 
+ *
  * @throws TypeError
- * 
+ *
  * @return {Promise}
  */
 async function archive(identity, opts = {}) {
