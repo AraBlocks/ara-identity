@@ -1,20 +1,15 @@
 #!/usr/bin/env node
-
+/* eslint-disable global-require */
 const { DEFAULT_ARCHIVER_MAX_CONNECTIONS } = require('../archive')
 const { info, warn, error } = require('ara-console')
-const { createChannel } = require('ara-network/discovery/channel')
-const { writeIdentity } = require('../util')
-const { createCFS } = require('cfsnet/create')
 const { toHex } = require('../util')
 const { table } = require('table')
-const protobuf = require('../protobuf')
 const inquirer = require('inquirer')
 const program = require('yargs')
 const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity')
 const pify = require('pify')
 const did = require('did-uri')
-const aid = require('../')
 const ram = require('random-access-memory')
 const rc = require('../rc')()
 const ss = require('ara-secret-storage')
@@ -333,6 +328,9 @@ if (program.argv.debug) {
 }
 
 async function onrecover(argv) {
+  const { writeIdentity } = require('../util')
+  const aid = require('../')
+
   const { mnemonic } = argv
   let { password } = argv
 
@@ -382,6 +380,9 @@ async function onrecover(argv) {
 }
 
 async function onrevoke(argv) {
+  const { writeIdentity } = require('../util')
+  const aid = require('../')
+
   const { mnemonic } = argv
   let { password } = argv
 
@@ -420,6 +421,9 @@ async function onrevoke(argv) {
 }
 
 async function onarchive(argv) {
+  const protobuf = require('../protobuf')
+  const aid = require('../')
+
   let { password } = argv
 
   if ('string' === typeof password) {
@@ -596,6 +600,9 @@ async function onarchive(argv) {
 }
 
 async function oncreate(argv) {
+  const { writeIdentity } = require('../util')
+  const aid = require('../')
+
   let { password } = argv
 
   if ('string' === typeof password) {
@@ -653,6 +660,11 @@ async function oncreate(argv) {
 }
 
 async function onresolve(argv) {
+  // lazy require
+  const { createChannel } = require('ara-network/discovery/channel')
+  const { createCFS } = require('cfsnet/create')
+  const aid = require('../')
+
   if (!argv.keyring && !argv.cache) {
     onfatal(new TypeError('Expecting Ara network keyring file.'))
   }
@@ -775,6 +787,8 @@ async function onresolve(argv) {
 }
 
 async function onlist(argv) {
+  const aid = require('../')
+
   try {
     debug('aid: list: %s', argv.path)
 
@@ -792,6 +806,8 @@ async function onlist(argv) {
 }
 
 async function onwhoami(argv) {
+  const aid = require('../')
+
   const identifier = rc.network.identity.whoami || rc.network.whoami
   let ddo = null
   let cache
@@ -845,6 +861,9 @@ async function onwhoami(argv) {
 }
 
 async function onkeystoredump(argv) {
+  const protobuf = require('../protobuf')
+  const aid = require('../')
+
   const secretStorage = argv['secret-storage']
   let { identifier, password } = argv
 
