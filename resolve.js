@@ -280,6 +280,5 @@ async function findResolution(did, opts, state) {
 }
 
 module.exports = {
-  resolve,
-  resolveDNS
+  resolve
 }
