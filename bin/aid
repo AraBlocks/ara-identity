@@ -718,7 +718,7 @@ async function onresolve(argv) {
         function timeout(again) {
           clearTimeout(timeout.timer)
           if (false !== again) {
-            timeout.timer = setTimeout(resolve, 200)
+            timeout.timer = setTimeout(resolve, 500)
           }
         }
       })
