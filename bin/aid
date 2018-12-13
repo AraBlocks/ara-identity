@@ -666,7 +666,10 @@ async function onresolve(argv) {
     onfatal(new Error('Missing identifier'))
   }
 
-  if (0 === argv.identifier.indexOf('did:') && 0 !== argv.identifier.indexOf('did:ara:')) {
+  if (
+    0 === argv.identifier.indexOf('did:') &&
+    0 !== argv.identifier.indexOf('did:ara:')
+  ) {
     onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
@@ -692,20 +695,23 @@ async function onresolve(argv) {
           key: Buffer.from(identity.publicKey[0].publicKeyHex, 'hex')
         })
 
-        timeout()
         channel.join(cfs.discoveryKey)
         channel.once('close', resolve)
         channel.once('error', reject)
         channel.on('peer', onpeer)
+
+        timeout()
         await cfs.close()
 
         function onpeer(id, peer, type) {
           if (!seen.includes(peer.host + peer.port)) {
             timeout()
-            seen.push(peer.host + peer.port)
+
             peer.type = type
             peer.private = ip.isPrivate(peer.host)
+
             peers.push(peer)
+            seen.push(peer.host + peer.port)
           }
         }
 
