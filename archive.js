@@ -31,7 +31,13 @@ async function archive(identity, opts = {}) {
   }
 
   let conf
-  try { conf = rc.network.identity.archiver } finally { conf = conf || {} }
+  try {
+    const { secret, keyring } = rc.network.identity || rc.network.identity.archiver
+    const { network } = rc.network.identity.archiver
+    conf = { secret, keyring, network }
+  } finally {
+    conf = conf || {}
+  }
   opts.secret = opts.secret || conf.secret
   opts.keyring = opts.keyring || conf.keyring
   opts.network = opts.network || conf.network
