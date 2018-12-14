@@ -75,6 +75,7 @@ All functions check for input validity, input correctness, and throw an error if
 
 * [aid.archive(identity, opts)](#archive)
 * [aid.create(opts)](#create)
+* [aid.update(identifier, opts)](#update)
 * [aid.save(identity)](#save)
 * [aid.createIdentityKeyPath(identity)](#createIdPath)
 * [aid.did.create(publicKey)](#didCreate)
@@ -126,6 +127,21 @@ const opts = {
 }
 
 const identity = await aid.create(opts)
+```
+
+<a name="update"></a>
+### `aid.update(identifier, opts)`
+
+Updates an identity state. This recreates new signatures for an
+identity.
+
+```js
+const opts = { password: 'hello' }
+const identity = await aid.create(opts)
+identity.ddo.addPublicKey(aPublicKeyToAdd)
+identity.password = password // must include password updates
+await aid.update(identity.did.did, identity.ddo)
+await aid.save(identity)
 ```
 
 <a name="save"></a>
