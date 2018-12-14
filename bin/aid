@@ -907,11 +907,11 @@ async function onaddpublickey(argv) {
 
     const ddo = aid.ddo.create(identity)
     if (Array.isArray(key)) {
-      key.map(JSON.parse).forEach((key) => {
-        ddo.addPublicKey(key)
+      key.forEach((key) => {
+        ddo.addPublicKey(parseKey(key))
       })
     } else {
-      ddo.addPublicKey(JSON.parse(key))
+      ddo.addPublicKey(parseKey(key))
     }
 
     const updated = await aid.update(identity.id, {
@@ -929,6 +929,15 @@ async function onaddpublickey(argv) {
 
   process.stdout.write('\n')
   exit(0)
+
+  function parseKey(key) {
+    try {
+      fs.access(key)
+      key = fs.readFileSync(key).toString()
+    } finally {
+      return JSON.parse(key)
+    }
+  }
 }
 
 async function onkeystoredump(argv) {
