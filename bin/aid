@@ -296,7 +296,7 @@ program.command(
     .usage('usage: $0 add-public-key [-D] [options]')
     .group([ 'key', 'password, mnemonic' ], 'Options:')
     .option('key', {
-      describe: 'Key to import to the `publicKey` of the DDO',
+      describe: 'Key to import to the `publicKey` section of the DDO',
       required: true
     })
     .option('password', {
