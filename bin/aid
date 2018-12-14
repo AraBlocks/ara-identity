@@ -290,12 +290,12 @@ program.command(
 
 program.command(
   'add-pub-key [key]',
-  'Add a public key to an identity's DDO,
+  'Add a public key to an identity\'s DDO',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 add-pub-key [-D] [options] [key]')
     .positional('key', {
-      describe: "Key to import to the `publicKey` of the DDO"
+      describe: 'Key to import to the `publicKey` of the DDO'
     })
     .option('password', {
       alias: 'p',
@@ -882,9 +882,8 @@ async function onwhoami(argv) {
 async function onaddpubkey(argv) {
   const aid = require('../')
 
-  let { identifier, password, key, mnemonic } = argv
-
-  console.log("KE:", key)
+  const { key, mnemonic } = argv
+  let { password } = argv
 
   if (!password) {
     const res = await inquirer.prompt([ {
@@ -900,16 +899,18 @@ async function onaddpubkey(argv) {
     process.stdout.write('\n')
   }
 
-  let identity = await aid.create({
+  const identity = await aid.create({
     mnemonic,
     password,
     ddo: {
-      publicKey: [JSON.parse(key)]
+      publicKey: [ JSON.parse(key) ]
     }
   })
 
-  debug(`archiving identity ${identity.id}`)
-  await aid.archive(identity)
+  const writePromises = identity.files.map(({ path, buffer }) =>
+    aid.fs.writeFile(identity.identifier.toString('hex'), path, buffer))
+
+  await Promise.all(writePromises)
 }
 
 async function onkeystoredump(argv) {
