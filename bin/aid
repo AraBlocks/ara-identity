@@ -289,13 +289,15 @@ program.command(
 )
 
 program.command(
-  'add-public-key [key]',
+  'add-public-key',
   'Add a public key to an identity\'s DDO',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 add-public-key [-D] [options] [key]')
-    .positional('key', {
-      describe: 'Key to import to the `publicKey` of the DDO'
+    .usage('usage: $0 add-public-key [-D] [options]')
+    .group([ 'key', 'password, mnemonic' ], 'Options:')
+    .option('key', {
+      describe: 'Key to import to the `publicKey` of the DDO',
+      required: true
     })
     .option('password', {
       alias: 'p',
@@ -306,7 +308,7 @@ program.command(
       describe: 'Valid bip39 mnemonic',
       required: true
     })
-  , onaddpubkey
+  , onaddpublickey
 )
 
 program.command(
@@ -879,7 +881,7 @@ async function onwhoami(argv) {
   exit(0)
 }
 
-async function onaddpubkey(argv) {
+async function onaddpublickey(argv) {
   const aid = require('../')
 
   const { key, mnemonic } = argv
