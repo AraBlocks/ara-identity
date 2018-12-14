@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable global-require */
 const { DEFAULT_ARCHIVER_MAX_CONNECTIONS } = require('../archive')
+const { resolve: resolvePath } = require('path')
 const { info, warn, error } = require('ara-console')
 const { resolveDNS, toHex } = require('../util')
 const isDomainName = require('is-domain-name')
@@ -932,8 +933,8 @@ async function onaddpublickey(argv) {
 
   function parseKey(key) {
     try {
-      fs.access(key)
-      key = fs.readFileSync(key).toString()
+      fs.access(resolvePath(key))
+      key = fs.readFileSync(resolvePath(key)).toString()
     } finally {
       return JSON.parse(key)
     }
