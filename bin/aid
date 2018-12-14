@@ -938,7 +938,7 @@ async function onaddpublickey(argv) {
   async function parseKey(key) {
     try {
       await pify(fs.access)(resolvePath(key))
-      key = fs.readFileSync(resolvePath(key)).toString()
+      key = pify(fs.readFile)(resolvePath(key)).toString()
     } finally {
       return JSON.parse(key)
     }
