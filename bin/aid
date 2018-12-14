@@ -901,18 +901,26 @@ async function onaddpublickey(argv) {
     process.stdout.write('\n')
   }
 
-  const identity = await aid.create({
-    mnemonic,
-    password,
-    ddo: {
-      publicKey: Array.isArray(key) ? key.map(JSON.parse) : [ JSON.parse(key) ]
-    }
-  })
+  try {
+    const identity = await aid.create({
+      mnemonic,
+      password,
+      ddo: {
+        publicKey: Array.isArray(key) ? key.map(JSON.parse) : [ JSON.parse(key) ]
+      }
+    })
 
-  const writePromises = identity.files.map(({ path, buffer }) =>
-    aid.fs.writeFile(identity.identifier.toString('hex'), path, buffer))
+    const writePromises = identity.files.map(({ path, buffer }) =>
+      aid.fs.writeFile(identity.publicKey.toString('hex'), path, buffer))
 
-  await Promise.all(writePromises)
+    await Promise.all(writePromises)
+  } catch (err) {
+    debug(err)
+    onfatal(new Error('Error while adding public key to DDO'))
+  }
+
+  process.stdout.write('\n')
+  exit(0)
 }
 
 async function onkeystoredump(argv) {
