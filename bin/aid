@@ -289,24 +289,24 @@ program.command(
 )
 
 program.command(
-  'add-public-key',
+  'add-public-key [identifier]',
   'Add a public key to an identity\'s DDO',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 add-public-key [-D] [options]')
-    .group([ 'key', 'password, mnemonic' ], 'Options:')
+    .usage('usage: $0 add-public-key [-D] [options] [identifier]')
+    .group([ 'key', 'password' ], 'Options:')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
     .option('key', {
-      describe: 'Key to import to the `publicKey` section of the DDO',
+      describe: 'JSON of public key to import to the `publicKey` section of the DDO',
       required: true
     })
     .option('password', {
       alias: 'p',
       describe: 'Password for the identity'
-    })
-    .option('mnemonic', {
-      alias: 'm',
-      describe: 'Valid bip39 mnemonic',
-      required: true
     })
   , onaddpublickey
 )
@@ -884,7 +884,7 @@ async function onwhoami(argv) {
 async function onaddpublickey(argv) {
   const aid = require('../')
 
-  const { key, mnemonic } = argv
+  const { key, identifier } = argv
   let { password } = argv
 
   if (!password) {
@@ -902,18 +902,30 @@ async function onaddpublickey(argv) {
   }
 
   try {
-    const identity = await aid.create({
-      mnemonic,
-      password,
-      ddo: {
-        publicKey: Array.isArray(key) ? key.map(JSON.parse) : [ JSON.parse(key) ]
-      }
+    const identity = await aid.resolve(identifier)
+
+    const keystore = JSON.parse(await aid.fs.readFile(identifier, 'keystore/ara'))
+    const secretKey = ss.decrypt(keystore, {
+      key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
     })
 
-    const writePromises = identity.files.map(({ path, buffer }) =>
-      aid.fs.writeFile(identity.publicKey.toString('hex'), path, buffer))
+    const ddo = aid.ddo.create(identity)
+    if (Array.isArray(key)) {
+      key.map(JSON.parse).forEach((key) => {
+        ddo.addPublicKey(key)
+      })
+    } else {
+      ddo.addPublicKey(JSON.parse(key))
+    }
 
-    await Promise.all(writePromises)
+    const updated = await aid.update(identifier, {
+      password,
+      publicKey: Buffer.from(identity.publicKey[0].publicKeyHex, 'hex'),
+      secretKey,
+      ddo,
+    })
+
+    await aid.save(updated)
   } catch (err) {
     debug(err)
     onfatal(new Error('Error while adding public key to DDO'))
