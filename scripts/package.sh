@@ -62,4 +62,8 @@ cp "$DIR/../CHANGELOG.md" $BUILD/macos
 cp "$DIR/../CHANGELOG.md" $BUILD/linux
 cp "$DIR/../CHANGELOG.md" $BUILD/win
 
+zip -r $BUILD/macos.zip $BUILD/macos
+zip -r $BUILD/linux.zip $BUILD/linux
+zip -r $BUILD/win.zip $BUILD/win
+
 exit $?
