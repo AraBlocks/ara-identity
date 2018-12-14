@@ -908,11 +908,15 @@ async function onaddpublickey(argv) {
 
     const ddo = aid.ddo.create(identity)
     if (Array.isArray(key)) {
-      key.forEach((key) => {
-        ddo.addPublicKey(parseKey(key))
+      const keys = await Promise.all(key.map((key) => {
+        return parseKey(key)
+      }))
+
+      keys.forEach((key) => {
+        ddo.addPublicKey(key)
       })
     } else {
-      ddo.addPublicKey(parseKey(key))
+      ddo.addPublicKey(await parseKey(key))
     }
 
     const updated = await aid.update(identity.id, {
@@ -931,11 +935,16 @@ async function onaddpublickey(argv) {
   process.stdout.write('\n')
   exit(0)
 
-  function parseKey(key) {
+  async function parseKey(key) {
     try {
-      fs.access(resolvePath(key))
+      console.log("TRY:", resolvePath(key))
+      await pify(fs.access)(resolvePath(key))
+      console.log("KEY:", resolvePath(key))
       key = fs.readFileSync(resolvePath(key)).toString()
+    } catch (e) {
+      console.log("ERR:", e)
     } finally {
+      console.log("GOT?", key)
       return JSON.parse(key)
     }
   }
