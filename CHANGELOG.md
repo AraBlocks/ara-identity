@@ -1,3 +1,13 @@
+# [0.43.0](https://github.com/AraBlocks/ara-identity/compare/0.42.6...0.43.0) (2018-12-14)
+
+
+### Features
+
+* **create.js:** Support identity modifications through 'create()' ([cfc8c26](https://github.com/AraBlocks/ara-identity/commit/cfc8c26))
+* **update.js:** Introduce 'update()' ([6e4a095](https://github.com/AraBlocks/ara-identity/commit/6e4a095))
+
+
+
 ## [0.42.6](https://github.com/AraBlocks/ara-identity/compare/0.42.5...0.42.6) (2018-12-14)
 
 
