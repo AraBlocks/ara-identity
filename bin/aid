@@ -905,7 +905,7 @@ async function onaddpublickey(argv) {
     mnemonic,
     password,
     ddo: {
-      publicKey: [ JSON.parse(key) ]
+      publicKey: Array.isArray(key) ? key.map(JSON.parse) : [ JSON.parse(key) ]
     }
   })
 
