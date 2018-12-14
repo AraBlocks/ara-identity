@@ -900,7 +900,7 @@ async function onaddpublickey(argv) {
   try {
     const identity = await aid.resolve(identifier)
 
-    const keystore = JSON.parse(await aid.fs.readFile(identifier, 'keystore/ara'))
+    const keystore = JSON.parse(await aid.fs.readFile(identity.id, 'keystore/ara'))
     const secretKey = ss.decrypt(keystore, {
       key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
     })
@@ -914,7 +914,7 @@ async function onaddpublickey(argv) {
       ddo.addPublicKey(JSON.parse(key))
     }
 
-    const updated = await aid.update(identifier, {
+    const updated = await aid.update(identity.id, {
       password,
       publicKey: Buffer.from(identity.publicKey[0].publicKeyHex, 'hex'),
       secretKey,
