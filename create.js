@@ -4,6 +4,7 @@ const { PublicKey } = require('did-document/public-key')
 const { Service } = require('did-document/service')
 const createContext = require('ara-context')
 const { toHex } = require('./util')
+const isBuffer = require('is-buffer')
 const ethereum = require('./ethereum')
 const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
@@ -38,10 +39,6 @@ async function create(opts) {
     throw new TypeError('Expecting context object.')
   }
 
-  if (opts.context && 'object' !== typeof opts.context.web3) {
-    throw new TypeError('Expecting web3 to be in context.')
-  }
-
   if (null == opts.password) {
     throw new TypeError('Expecting password.')
   } else if (opts.password && 'string' !== typeof opts.password) {
@@ -62,16 +59,6 @@ async function create(opts) {
     }
   }
 
-  if (null == opts.mnemonic) {
-    mnemonic = bip39.generateMnemonic()
-  } else {
-    if (!bip39.validateMnemonic(opts.mnemonic)) {
-      throw new TypeError('Expecting a valid bip39 mnemonic')
-    }
-    // eslint-disable-next-line prefer-destructuring
-    mnemonic = opts.mnemonic
-  }
-
   if (opts.ddo) {
     if (!opts.ddo.publicKey && opts.ddo.publicKeys) {
       opts.ddo.publicKey = opts.ddo.publicKeys
@@ -82,79 +69,24 @@ async function create(opts) {
     }
   }
 
-  const { seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic)) } = opts
-
   const { context = createContext({ provider: false }) } = opts
-  const { web3 } = context
-
-  const { publicKey, secretKey } = crypto.keyPair(seed)
-
-  const { salt, iv } = await ethereum.keystore.create()
-  const wallet = await ethereum.wallet.load({
-    seed: bip39.mnemonicToSeed(mnemonic)
-  })
-
-  const account = await ethereum.account.create({
-    web3,
-    privateKey: wallet.getPrivateKey()
-  })
-
-  const kstore = await ethereum.keystore.dump({
-    password: opts.password,
-    salt,
-    iv,
-    privateKey: wallet.getPrivateKey(),
-  })
-
   const password = crypto.blake2b(Buffer.from(opts.password))
 
-  const didUri = did.create(publicKey)
-  let didDocument
-  if (opts.revoked && opts.created) {
-    const { created, revoked } = opts
-    didDocument = ddo.create({ id: didUri, created, revoked })
+  let encryptedEthKeystore = null
+  let encryptionKey = null
+  let didDocument = null
+  let publicKey = null
+  let secretKey = null
+  let account = null
+  let wallet = null
+  let didUri = null
+  let seed = isBuffer(opts.seed) ? opts.seed : null
+
+  if (isBuffer(opts.publicKey) && isBuffer(opts.secretKey)) {
+    await modifyIdentity()
   } else {
-    didDocument = ddo.create({ id: didUri })
+    await createNewIdentity()
   }
-
-  const encryptionKey = Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
-  const encodedKeystore = protobuf.messages.KeyStore.encode(kstore)
-  const encryptedKeystore = ss.encrypt(encodedKeystore, {
-    key: encryptionKey,
-    iv: crypto.randomBytes(16),
-  })
-
-  didDocument.addPublicKey(new PublicKey({
-    id: `${didUri.did}#owner`,
-    type: kEd25519VerificationKey2018,
-    owner: didUri.did,
-
-    // public key variants
-    publicKeyHex: toHex(publicKey),
-    publicKeyBase64: crypto.base64.encode(publicKey).toString(),
-    publicKeyBase58: crypto.base58.encode(publicKey).toString()
-  }))
-
-  didDocument.addPublicKey(new PublicKey({
-    id: `${didUri.did}#eth`,
-    type: kSecp256k1VerificationKey2018,
-    owner: didUri.did,
-
-    // public key variants
-    publicKeyHex: toHex(wallet.getPublicKey()),
-    publicKeyBase64: crypto.base64.encode(wallet.getPublicKey()).toString(),
-    publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString()
-  }))
-
-  didDocument.addAuthentication(new Authentication(
-    kEd25519SignatureAuthentication2018,
-    { publicKey: `${didUri.did}#owner` }
-  ))
-
-  didDocument.addAuthentication(new Authentication(
-    kSecp256k1SignatureAuthentication2018,
-    { publicKey: `${didUri.did}#eth` }
-  ))
 
   if (opts.ddo) {
     // add default authentication to ddo if available
@@ -176,10 +108,23 @@ async function create(opts) {
     // additional keys
     if (Array.isArray(opts.ddo.publicKey)) {
       for (const pk of opts.ddo.publicKey) {
-        const { publicKeyHex, publicKeyBase64, publicKeyBase58 } = pk
+        let { publicKeyBase64, publicKeyBase58 } = pk
+        const { publicKeyHex } = pk
+
         if (!pk.id.startsWith('did:')) {
           pk.id = `${didUri.did}#${pk.id}`
         }
+
+        const pub = Buffer.from(publicKeyHex, 'hex')
+
+        if (!publicKeyBase58) {
+          publicKeyBase58 = crypto.base64.encode(pub).toString()
+        }
+
+        if (!publicKeyBase64) {
+          publicKeyBase64 = crypto.base64.encode(pub).toString()
+        }
+
         didDocument.addPublicKey(new PublicKey({
           id: pk.id,
           type: pk.type || kEd25519VerificationKey2018,
@@ -187,8 +132,8 @@ async function create(opts) {
 
           // public key variants
           publicKeyHex,
+          publicKeyBase58,
           publicKeyBase64,
-          publicKeyBase58
         }))
       }
     }
@@ -227,7 +172,7 @@ async function create(opts) {
     buffer: Buffer.from(JSON.stringify(didDocument))
   }, {
     path: 'keystore/eth',
-    buffer: Buffer.from(JSON.stringify(encryptedKeystore))
+    buffer: Buffer.from(JSON.stringify(encryptedEthKeystore))
   }, {
     path: 'keystore/ara',
     buffer: Buffer.from(JSON.stringify(ss.encrypt(secretKey, {
@@ -259,8 +204,15 @@ async function create(opts) {
     }),
   })
 
-  encryptionKey.fill(0)
-  seed.fill(0)
+  if (null !== encryptionKey) {
+    encryptionKey.fill(0)
+    encryptionKey = null
+  }
+
+  if (null !== seed) {
+    seed.fill(0)
+    seed = null
+  }
 
   if (context) {
     context.close()
@@ -275,6 +227,115 @@ async function create(opts) {
     files,
     ddo: didDocument,
     did: didUri,
+  }
+
+  async function createNewIdentity() {
+    if (opts.context && 'object' !== typeof opts.context.web3) {
+      throw new TypeError('Expecting web3 to be in context.')
+    }
+
+    if (null == opts.mnemonic) {
+      mnemonic = bip39.generateMnemonic()
+    } else {
+      if (!bip39.validateMnemonic(opts.mnemonic)) {
+        throw new TypeError('Expecting a valid bip39 mnemonic')
+      }
+      // eslint-disable-next-line prefer-destructuring
+      mnemonic = opts.mnemonic
+    }
+
+    if (isBuffer(opts.seed)) {
+      seed = opts.seed
+    } else {
+      seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic))
+    }
+
+    const kp = crypto.keyPair(seed)
+    publicKey = kp.publicKey
+    secretKey = kp.secretKey
+
+    const { web3 } = context
+    const { salt, iv } = await ethereum.keystore.create()
+
+    encryptionKey = createEncryptionKey()
+
+    wallet = await ethereum.wallet.load({
+      seed: bip39.mnemonicToSeed(mnemonic)
+    })
+
+    account = await ethereum.account.create({
+      web3,
+      privateKey: wallet.getPrivateKey()
+    })
+
+    const kstore = await ethereum.keystore.dump({
+      password: opts.password,
+      salt,
+      iv,
+      privateKey: wallet.getPrivateKey(),
+    })
+
+    const encodedKeystore = protobuf.messages.KeyStore.encode(kstore)
+    encryptedEthKeystore = ss.encrypt(encodedKeystore, {
+      key: encryptionKey,
+      iv: crypto.randomBytes(16),
+    })
+
+    didUri = did.create(publicKey)
+    didDocument = createDIDDocument()
+
+    didDocument.addPublicKey(new PublicKey({
+      id: `${didUri.did}#owner`,
+      type: kEd25519VerificationKey2018,
+      owner: didUri.did,
+
+      // public key variants
+      publicKeyHex: toHex(publicKey),
+      publicKeyBase64: crypto.base64.encode(publicKey).toString(),
+      publicKeyBase58: crypto.base58.encode(publicKey).toString()
+    }))
+
+    didDocument.addPublicKey(new PublicKey({
+      id: `${didUri.did}#eth`,
+      type: kSecp256k1VerificationKey2018,
+      owner: didUri.did,
+
+      // public key variants
+      publicKeyHex: toHex(wallet.getPublicKey()),
+      publicKeyBase64: crypto.base64.encode(wallet.getPublicKey()).toString(),
+      publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString()
+    }))
+
+    didDocument.addAuthentication(new Authentication(
+      kEd25519SignatureAuthentication2018,
+      { publicKey: `${didUri.did}#owner` }
+    ))
+
+    didDocument.addAuthentication(new Authentication(
+      kSecp256k1SignatureAuthentication2018,
+      { publicKey: `${didUri.did}#eth` }
+    ))
+  }
+
+  async function modifyIdentity() {
+    publicKey = opts.publicKey
+    secretKey = opts.secretKey
+    encryptionKey = createEncryptionKey()
+    didUri = did.create(publicKey)
+    didDocument = createDIDDocument()
+  }
+
+  function createEncryptionKey() {
+    return Buffer.allocUnsafe(16).fill(secretKey.slice(0, 16))
+  }
+
+  function createDIDDocument() {
+    if (opts.revoked && opts.created) {
+      const { created, revoked } = opts
+      return ddo.create({ id: didUri, created, revoked })
+    }
+
+    return ddo.create({ id: didUri })
   }
 }
 
