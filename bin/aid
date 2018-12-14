@@ -912,9 +912,9 @@ async function onaddpublickey(argv) {
         return parseKey(key)
       }))
 
-      keys.forEach((key) => {
+      for (const key of keys) {
         ddo.addPublicKey(key)
-      })
+      }
     } else {
       ddo.addPublicKey(await parseKey(key))
     }
@@ -937,14 +937,9 @@ async function onaddpublickey(argv) {
 
   async function parseKey(key) {
     try {
-      console.log("TRY:", resolvePath(key))
       await pify(fs.access)(resolvePath(key))
-      console.log("KEY:", resolvePath(key))
       key = fs.readFileSync(resolvePath(key)).toString()
-    } catch (e) {
-      console.log("ERR:", e)
     } finally {
-      console.log("GOT?", key)
       return JSON.parse(key)
     }
   }
