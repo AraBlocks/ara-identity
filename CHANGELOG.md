@@ -1,3 +1,22 @@
+# [0.44.0](https://github.com/AraBlocks/ara-identity/compare/0.43.0...0.44.0) (2018-12-14)
+
+
+### Bug Fixes
+
+* **bin/aid:** Allow for domain id in add-pub-key ([ab9ac0b](https://github.com/AraBlocks/ara-identity/commit/ab9ac0b))
+* **bin/aid:** Fix access call in on-add-key ([42e4b23](https://github.com/AraBlocks/ara-identity/commit/42e4b23))
+* **bin/aid:** Fix keystore-import func to work ([1c0e59d](https://github.com/AraBlocks/ara-identity/commit/1c0e59d))
+* **bin/aid:** Resolve path in on-add-key ([aacdf25](https://github.com/AraBlocks/ara-identity/commit/aacdf25))
+
+
+### Features
+
+* **bin/aid:** Add keystore-import ([86ad946](https://github.com/AraBlocks/ara-identity/commit/86ad946))
+* **bin/aid:** Allow add-pub-key 'key' to be Array ([2a00d7a](https://github.com/AraBlocks/ara-identity/commit/2a00d7a))
+* **bin/aid:** Allow for file --key in add-pub-key ([4dea816](https://github.com/AraBlocks/ara-identity/commit/4dea816))
+
+
+
 # [0.43.0](https://github.com/AraBlocks/ara-identity/compare/0.42.6...0.43.0) (2018-12-14)
 
 
