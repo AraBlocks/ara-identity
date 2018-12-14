@@ -66,4 +66,20 @@ zip -r $BUILD/macos.zip $BUILD/macos
 zip -r $BUILD/linux.zip $BUILD/linux
 zip -r $BUILD/win.zip $BUILD/win
 
+if test -f $HOME/.bashrc; then
+  BASHRC="$HOME/.bashrc"
+elif test -f $HOME/.bash_profile; then
+  BASHRC="$HOME/.bash_profile"
+elif test -f $HOME/.zshrc; then
+  BASHRC="$HOME/.zshrc"
+fi
+
+if test -f $BASHRC; then
+  if ! $(cat $BASHRC | grep 'PATH=' | grep '.ara/bin' >/dev/null); then
+    {
+      echo '## Ara bin path :]';
+      echo 'export PATH="$HOME/.ara/bin:$PATH"';
+    } >> $BASHRC
+  fi
+fi
 exit $?
