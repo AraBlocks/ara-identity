@@ -908,12 +908,10 @@ async function onaddpublickey(argv) {
 
     const ddo = aid.ddo.create(identity)
     if (Array.isArray(key)) {
-      const keys = await Promise.all(key.map((key) => {
-        return parseKey(key)
-      }))
+      const keys = await Promise.all(key.map(parseKey))
 
-      for (const key of keys) {
-        ddo.addPublicKey(key)
+      for (const k of keys) {
+        ddo.addPublicKey(k)
       }
     } else {
       ddo.addPublicKey(await parseKey(key))
