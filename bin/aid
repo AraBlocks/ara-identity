@@ -935,13 +935,16 @@ async function onaddpublickey(argv) {
   process.stdout.write('\n')
   exit(0)
 
+  // eslint-disable-next-line no-shadow
   async function parseKey(key) {
     try {
       await pify(fs.access)(resolvePath(key))
-      key = pify(fs.readFile)(resolvePath(key)).toString()
-    } finally {
-      return JSON.parse(key)
+      key = await pify(fs.readFile)(resolvePath(key), 'utf8')
+    } catch (err) {
+      debug(err)
     }
+
+    return JSON.parse(key)
   }
 }
 
