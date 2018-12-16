@@ -96,23 +96,23 @@ async function resolve(uri, opts = {}) {
   })
 
   resolutions.push(async () => {
-    if (!opts || !opts.secret || !opts.keyring || !opts.network) {
+    if (!opts) {
       return null
     }
 
-    if ('string' !== typeof opts.secret && !isBuffer(opts.secret)) {
+    if (!opts.servers && (!opts.secret || !opts.keyring || !opts.network)) {
+      return null
+    }
+
+    if (opts.secret && 'string' !== typeof opts.secret && !isBuffer(opts.secret)) {
       return new TypeError('Expecting shared secret to be a string or buffer.')
     }
 
-    if (!opts.secret || 0 === opts.secret.length) {
+    if (opts.secret && 0 === opts.secret.length) {
       return new TypeError('Shared secret cannot be empty.')
     }
 
-    if (!opts.keyring) {
-      return new TypeError('Expecting network keys keyring.')
-    }
-
-    if (!opts.network || 'string' !== typeof opts.network) {
+    if (opts.network && 'string' !== typeof opts.network) {
       throw new TypeError('Expecting network name for the resolver.')
     }
 
@@ -179,24 +179,32 @@ async function resolve(uri, opts = {}) {
 
 async function findResolution(did, opts, state) {
   const resolvers = []
-  const secret = Buffer.from(opts.secret)
-  const keyring = keyRing(opts.keyring, { secret })
-  await keyring.ready()
-  const buffer = await keyring.get(opts.network)
-  const unpacked = unpack({ buffer })
-  const { discoveryKey } = unpacked
-  keyring.storage.close()
 
-  const channel = createChannel()
+  let discoveryKey = null
   let didResolve = false
+  let channel = null
   let timeout = null
   let result = null
+
+  if (!isBrowser && opts.secret && opts.keyring && opts.network) {
+    const secret = Buffer.from(opts.secret)
+    const keyring = keyRing(opts.keyring, { secret })
+    await keyring.ready()
+    const buffer = await keyring.get(opts.network)
+    const unpacked = unpack({ buffer })
+    // eslint-disable-next-line prefer-destructuring
+    discoveryKey = unpacked.discoveryKey
+    keyring.storage.close()
+    channel = createChannel()
+  }
 
   if (opts.servers && opts.servers.length) {
     for (const server of opts.servers) {
       const uri = url.parse(server)
-      const { protocol, host } = uri
+      const { host } = uri
       let { port } = uri
+      // eslint-disable-next-line no-undef
+      const { protocol = isBrowser ? window.location.protocol : 'http:' } = uri
 
       if (!port) {
         if ('https:' === protocol) {
@@ -209,14 +217,16 @@ async function findResolution(did, opts, state) {
       resolvers.push({
         id: null,
         peer: { host, port },
-        type: protocol.replace(':', ''),
+        type: protocol ? protocol.replace(':', '') : isBrowser,
       })
     }
   }
 
   return pify((done) => {
-    channel.on('peer', onpeer)
-    channel.join(discoveryKey)
+    if (channel) {
+      channel.on('peer', onpeer)
+      channel.join(discoveryKey)
+    }
 
     if (resolvers.length) {
       process.nextTick(doResolution)
@@ -277,9 +287,11 @@ async function findResolution(did, opts, state) {
     }
 
     function cleanup() {
-      clearTimeout(timeout)
-      channel.removeListener('peer', onpeer)
-      channel.destroy()
+      if (channel) {
+        clearTimeout(timeout)
+        channel.removeListener('peer', onpeer)
+        channel.destroy()
+      }
 
       if (!didResolve && !state.aborted) {
         done(notFound())
