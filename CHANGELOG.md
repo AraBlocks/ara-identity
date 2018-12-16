@@ -1,3 +1,12 @@
+# [0.45.0](https://github.com/AraBlocks/ara-identity/compare/0.44.2...0.45.0) (2018-12-16)
+
+
+### Features
+
+* **bin/aid:** Add 'aid remove-public-key' ([02344b9](https://github.com/AraBlocks/ara-identity/commit/02344b9))
+
+
+
 ## [0.44.2](https://github.com/AraBlocks/ara-identity/compare/0.44.1...0.44.2) (2018-12-16)
 
 
