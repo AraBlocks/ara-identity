@@ -1,3 +1,13 @@
+## [0.44.2](https://github.com/AraBlocks/ara-identity/compare/0.44.1...0.44.2) (2018-12-16)
+
+
+### Bug Fixes
+
+* **bin/aid:** Fix missing 'await' for file reads ([0a7f3cc](https://github.com/AraBlocks/ara-identity/commit/0a7f3cc))
+* **resolve.js:** Handle cases when not in browser withs static resolvers ([f8e9691](https://github.com/AraBlocks/ara-identity/commit/f8e9691))
+
+
+
 ## [0.44.1](https://github.com/AraBlocks/ara-identity/compare/0.44.0...0.44.1) (2018-12-14)
 
 
