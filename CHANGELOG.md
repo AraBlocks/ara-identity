@@ -1,3 +1,12 @@
+## [0.47.1](https://github.com/AraBlocks/ara-identity/compare/0.47.0...0.47.1) (2018-12-17)
+
+
+### Bug Fixes
+
+* **fs.js:** Correct 'NoEntitityError' to 'NoEntityError' ([10d3ec0](https://github.com/AraBlocks/ara-identity/commit/10d3ec0))
+
+
+
 # [0.47.0](https://github.com/AraBlocks/ara-identity/compare/0.46.0...0.47.0) (2018-12-17)
 
 
