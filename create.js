@@ -285,6 +285,20 @@ async function create(opts) {
     didUri = did.create(publicKey)
     didDocument = createDIDDocument()
 
+    addOwnerPublicKey()
+    addEthPublicKey()
+  }
+
+  async function modifyIdentity() {
+    publicKey = opts.publicKey
+    secretKey = opts.secretKey
+    encryptionKey = createEncryptionKey()
+    didUri = did.create(publicKey)
+    didDocument = createDIDDocument()
+    addOwnerPublicKey()
+  }
+
+  function addOwnerPublicKey() {
     didDocument.addPublicKey(new PublicKey({
       id: `${didUri.did}#owner`,
       type: kEd25519VerificationKey2018,
@@ -296,6 +310,13 @@ async function create(opts) {
       publicKeyBase58: crypto.base58.encode(publicKey).toString()
     }))
 
+    didDocument.addAuthentication(new Authentication(
+      kEd25519SignatureAuthentication2018,
+      { publicKey: `${didUri.did}#owner` }
+    ))
+  }
+
+  function addEthPublicKey() {
     didDocument.addPublicKey(new PublicKey({
       id: `${didUri.did}#eth`,
       type: kSecp256k1VerificationKey2018,
@@ -308,22 +329,9 @@ async function create(opts) {
     }))
 
     didDocument.addAuthentication(new Authentication(
-      kEd25519SignatureAuthentication2018,
-      { publicKey: `${didUri.did}#owner` }
-    ))
-
-    didDocument.addAuthentication(new Authentication(
       kSecp256k1SignatureAuthentication2018,
       { publicKey: `${didUri.did}#eth` }
     ))
-  }
-
-  async function modifyIdentity() {
-    publicKey = opts.publicKey
-    secretKey = opts.secretKey
-    encryptionKey = createEncryptionKey()
-    didUri = did.create(publicKey)
-    didDocument = createDIDDocument()
   }
 
   function createEncryptionKey() {
