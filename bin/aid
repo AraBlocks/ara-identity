@@ -102,10 +102,10 @@ program.command(
       default: DEFAULT_ARCHIVER_MAX_CONNECTIONS,
     })
     .option('shallow', {
-      describe: 'Only archive the ddo',
-      required: true,
-      requiresArg: true,
+      type: 'boolean',
       default: false,
+      describe: 'Only archive the ddo',
+      requiresArg: false,
     })
   , onarchive
 )
@@ -262,6 +262,22 @@ program.command(
 )
 
 program.command(
+  'revoke',
+  'Revoke an Ara identity using a mnemonic',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 [-D] revoke [options]')
+    .group([ 'mnemonic' ], 'Revoke Options:')
+    .option('mnemonic', {
+      alias: 'm',
+      describe: 'Valid bip39 mnemonic',
+      required: true,
+      requiresArg: true,
+    })
+  , onrevoke
+)
+
+program.command(
   'keystore-dump [identifier] [type]',
   'Recover secret keys and secret storages for Ara and Web3',
   // eslint-disable-next-line no-shadow
@@ -347,19 +363,71 @@ program.command(
 )
 
 program.command(
-  'revoke',
-  'Revoke an Ara identity using a mnemonic',
+  'add-service [identifier]',
+  'Add a service endpoint to an identity\'s DDO',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 [-D] revoke [options]')
-    .group([ 'mnemonic' ], 'Revoke Options:')
-    .option('mnemonic', {
-      alias: 'm',
-      describe: 'Valid bip39 mnemonic',
+    .usage('usage: $0 add-service [-D] [options] [identifier]')
+    .group([ 'id', 'type', 'endpoint', 'config' ], 'Service Options:')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
       required: true,
-      requiresArg: true,
+      type: String
     })
-  , onrevoke
+    .option('id', {
+      describe: 'ID of service',
+      required: true
+    })
+    .option('type', {
+      describe: 'Type of service',
+      required: true
+    })
+    .option('endpoint', {
+      describe: 'of the service',
+      required: true
+    })
+    .option('config', {
+      describe: 'Path to JSON configuration for the service'
+    })
+  , onaddservice
+)
+
+program.command(
+  'remove-service [identifier]',
+  'Remove a service endpoint to an identity\'s DDO',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 remove-service [-D] [options] [identifier]')
+    .group([ 'id' ], 'Service Removal Options:')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
+    .option('id', {
+      describe: 'ID of service',
+      required: true
+    })
+  , onremoveservice
+)
+
+program.command(
+  'export-service [identifier]',
+  'Export a service endpoint from an identity\'s DDO',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 export-service [-D] [options] [identifier]')
+    .group([ 'endpoint' ], 'Service Export Options:')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
+    .option('id', {
+      describe: 'ID of service',
+      required: true
+    })
+  , onexportservice
 )
 
 program
@@ -384,7 +452,6 @@ if (program.argv.debug) {
 }
 
 async function onrecover(argv) {
-  const { writeIdentity } = require('../util')
   const aid = require('../')
 
   const { mnemonic } = argv
@@ -426,7 +493,7 @@ async function onrecover(argv) {
       warn('Will write identity file: %s', identity.files[i].path)
     }
 
-    await writeIdentity(identity)
+    await aid.save(identity)
     info('Identity recovered successfully.')
   } catch (err) {
     return onfatal(err)
@@ -436,7 +503,6 @@ async function onrecover(argv) {
 }
 
 async function onrevoke(argv) {
-  const { writeIdentity } = require('../util')
   const aid = require('../')
 
   const { mnemonic } = argv
@@ -467,7 +533,7 @@ async function onrevoke(argv) {
       warn('Will write identity file: %s', identity.files[i].path)
     }
 
-    await writeIdentity(identity)
+    await aid.save(identity)
     info('Identity revoked successfully.')
   } catch (err) {
     return onfatal(err)
@@ -512,14 +578,7 @@ async function onarchive(argv) {
 
   const ddo = await aid.resolve(argv.identifier, argv)
   const { identifier } = did.parse(ddo.id)
-
-  let identityBuffer = null
-  let identity = null
-
-  const stats = {
-    totalConnections: 0,
-    totalBlocks: 0,
-  }
+  const stats = { totalConnections: 0, totalBlocks: 0 }
 
   const maxConnections = argv['max-connections']
   const {
@@ -529,8 +588,11 @@ async function onarchive(argv) {
     shallow
   } = argv
 
+  let identityBuffer = null
+  let didArchive = false
   let secretKey = null
   let publicKey = null
+  let identity = null
 
   try {
     const keystoreBuffer = await aid.fs.readFile(identifier, 'keystore/ara')
@@ -567,7 +629,7 @@ async function onarchive(argv) {
     })
 
     warn('Archiving new identity for network \'%s\'.', keyring)
-    const didArchive = await aid.archive({
+    didArchive = await aid.archive({
       publicKey,
       secretKey,
       files
@@ -598,18 +660,18 @@ async function onarchive(argv) {
       stats.totalBlocks,
       stats.totalBlocks < 2 ? '' : 's',
     )
-
-    if (didArchive) {
-      info('Successfully archived identity to network "%s"', network)
-      process.nextTick(() => exit(0))
-    } else {
-      error('Failed to archive identity')
-      process.nextTick(() => exit(1))
-    }
   } catch (err) {
     error('Failed to archive identity.')
     return onfatal(err)
   }
+
+  if (didArchive) {
+    info('Successfully archived identity to network "%s"', network)
+    return exit(0)
+  }
+
+  error('Failed to archive identity')
+  return exit(1)
 
   function onhello(hello) {
     info(
@@ -656,7 +718,6 @@ async function onarchive(argv) {
 }
 
 async function oncreate(argv) {
-  const { writeIdentity } = require('../util')
   const aid = require('../')
 
   let { password } = argv
@@ -700,7 +761,7 @@ async function oncreate(argv) {
     }
   }
 
-  await writeIdentity(identity)
+  await aid.save(identity)
 
   if (!argv.quiet) {
     info('Please safely store the following 12 word mnemonic phrase for this')
@@ -753,6 +814,15 @@ async function onresolve(argv) {
 
     const identity = await aid.resolve(argv.identifier, argv)
 
+    let publicKey = null
+
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if ('owner' === fragment) {
+        publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+      }
+    }
+
     if (argv.short) {
       process.stdout.write(identity.id)
     } else if (argv.peers) {
@@ -763,7 +833,7 @@ async function onresolve(argv) {
         const cfs = await createCFS({
           storage: ram,
           shallow: true,
-          key: Buffer.from(identity.publicKey[0].publicKeyHex, 'hex')
+          key: publicKey
         })
 
         channel.join(cfs.discoveryKey)
@@ -935,8 +1005,17 @@ async function onaddpublickey(argv) {
     process.stdout.write('\n')
   }
 
+  let publicKey = null
+
   try {
     const identity = await aid.resolve(identifier)
+
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if ('owner' === fragment) {
+        publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+      }
+    }
 
     const keystore = JSON.parse(await aid.fs.readFile(identity.id, 'keystore/ara'))
     const secretKey = ss.decrypt(keystore, {
@@ -962,7 +1041,7 @@ async function onaddpublickey(argv) {
 
     const updated = await aid.update(identity.id, {
       password,
-      publicKey: Buffer.from(identity.publicKey[0].publicKeyHex, 'hex'),
+      publicKey,
       secretKey,
       ddo,
     })
@@ -1010,10 +1089,19 @@ async function onremovepublickey(argv) {
     process.stdout.write('\n')
   }
 
+  let publicKey = null
+
   try {
     const identity = await aid.resolve(identifier)
+
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if ('owner' === fragment) {
+        publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+      }
+    }
+
     const keystore = JSON.parse(await aid.fs.readFile(identity.id, 'keystore/ara'))
-    const publicKey = Buffer.from(identity.publicKey[0].publicKeyHex, 'hex')
     const secretKey = ss.decrypt(keystore, {
       key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
     })
@@ -1183,6 +1271,203 @@ async function onkeystoredump(argv) {
   }
 
   process.stdout.write('\n')
+
+  return exit(0)
+}
+
+async function onaddservice(argv) {
+  const aid = require('../')
+
+  const { identifier } = argv
+  let { password } = argv
+
+  if (!password) {
+    const res = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please enter the passphrase associated with the identity. \n' +
+      'Passphrase:'
+    } ])
+
+    // eslint-disable-next-line prefer-destructuring
+    password = res.password
+    process.stdout.write('\n')
+  }
+
+  let publicKey = null
+
+  try {
+    const identity = await aid.resolve(identifier)
+
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if ('owner' === fragment) {
+        publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+      }
+    }
+
+    const ddo = aid.ddo.create(identity)
+
+    const keystore = JSON.parse(await aid.fs.readFile(identity.id, 'keystore/ara'))
+    const secretKey = ss.decrypt(keystore, {
+      key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
+    })
+
+    const config = {
+      id: `${identity.id};${argv.id}`,
+      type: argv.type,
+      serviceEndpoint: argv.endpoint,
+    }
+
+    if (argv.config) {
+      try {
+        const serviceConfigPath = resolvePath(argv.config)
+        await pify(fs.access)(serviceConfigPath)
+        const buffer = await pify(fs.readFile)(serviceConfigPath)
+        const serviceConfig = JSON.parse(buffer)
+
+        if ('object' === typeof serviceConfig) {
+          Object.assign(config, serviceConfig)
+        }
+      } catch (err) {
+        debug(err)
+      }
+    }
+
+    ddo.addService(config)
+
+    const updated = await aid.update(identity.id, {
+      publicKey,
+      secretKey,
+      password,
+      ddo,
+    })
+
+    await aid.save(updated)
+  } catch (err) {
+    debug(err)
+    return onfatal(new Error('Error while adding service to DDO'))
+  }
+
+  process.stdout.write('\n')
+
+  return exit(0)
+}
+
+async function onremoveservice(argv) {
+  const aid = require('../')
+
+  const { identifier } = argv
+  let { password } = argv
+
+  if (!password) {
+    const res = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please enter the passphrase associated with the identity. \n' +
+      'Passphrase:'
+    } ])
+
+    // eslint-disable-next-line prefer-destructuring
+    password = res.password
+    process.stdout.write('\n')
+  }
+
+  let publicKey = null
+
+  try {
+    const identity = await aid.resolve(identifier)
+
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if ('owner' === fragment) {
+        publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+      }
+    }
+
+    const keystore = JSON.parse(await aid.fs.readFile(identity.id, 'keystore/ara'))
+    const secretKey = ss.decrypt(keystore, {
+      key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
+    })
+
+    for (let i = 0; i < identity.service.length; ++i) {
+      const service = identity.service[i]
+      const parts = service.id.split(';')
+      const shortId = parts[1]
+
+      if (argv.id === shortId || argv.id === service.id) {
+        identity.service.splice(i, 1)
+        break
+      }
+    }
+
+    const ddo = aid.ddo.create(identity)
+
+    const updated = await aid.update(identity.id, {
+      password,
+      publicKey,
+      secretKey,
+      ddo,
+    })
+
+    await aid.save(updated)
+  } catch (err) {
+    debug(err)
+    return onfatal(new Error('Error while removing service from DDO'))
+  }
+
+  process.stdout.write('\n')
+
+  return exit(0)
+}
+
+async function onexportservice(argv) {
+  const aid = require('../')
+
+  const { identifier } = argv
+
+  if (Array.isArray(argv.id)) {
+    process.stdout.write('[')
+  }
+
+  try {
+    const identity = await aid.resolve(identifier, argv)
+    let first = true
+
+    for (let i = 0; i < identity.service.length; ++i) {
+      const service = identity.service[i]
+      const parts = service.id.split(';')
+      const shortId = parts[1]
+
+      if (
+        !Array.isArray(argv.id) &&
+        (argv.id === shortId || argv.id === service.id)
+      ) {
+        process.stdout.write(JSON.stringify(service))
+        break
+      }
+
+      if (
+        Array.isArray(argv.id) &&
+        (argv.id.includes(service.id) || argv.id.includes(shortId))
+      ) {
+        if (!first) {
+          process.stdout.write(',')
+        }
+
+        process.stdout.write(JSON.stringify(service))
+        first = false
+      }
+    }
+  } catch (err) {
+    return onfatal(err)
+  } finally {
+    if (Array.isArray(argv.id)) {
+      process.stdout.write(']')
+    }
+  }
 
   return exit(0)
 }
