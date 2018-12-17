@@ -31,15 +31,22 @@ async function archive(identity, opts = {}) {
   }
 
   let conf
+
   try {
     conf = {
-      secret: rc.network.identity.archiver.secret || rc.network.identity.secret,
-      keyring: rc.network.identity.archiver.keyring || rc.network.identity.keyring,
-      network: rc.network.identity.archiver.network
+      secret:
+        rc.network.identity.archiver.secret || rc.network.identity.secret,
+
+      keyring:
+        rc.network.identity.archiver.keyring || rc.network.identity.keyring,
+
+      network:
+        rc.network.identity.archiver.network
     }
   } finally {
     conf = conf || {}
   }
+
   opts.secret = opts.secret || conf.secret
   opts.keyring = opts.keyring || conf.keyring
   opts.network = opts.network || conf.network
@@ -184,9 +191,11 @@ async function archive(identity, opts = {}) {
       })
 
       const shallow = opts.shallow || false
+      let writes = 0
 
       await Promise.all(files.map((file) => {
         if (!shallow || 'ddo.json' === file.path) {
+          writes++
           return cfs.writeFile(file.path, file.buffer)
         }
 
@@ -220,7 +229,7 @@ async function archive(identity, opts = {}) {
         }
 
         // each "upload" tick could be a "progress" event/callback :shrug:
-        if (blocks === files.length) {
+        if (blocks === writes) {
           process.nextTick(() => stream.end())
         }
       }
