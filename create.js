@@ -144,6 +144,7 @@ async function create(opts) {
         if (!service.id.startsWith('did:')) {
           service.id = `${didUri.did}#${service.id}`
         }
+
         didDocument.addService(createService({
           id: service.id,
           type: service.type,
@@ -156,7 +157,6 @@ async function create(opts) {
 
   // sign the DDO for the proof
   const digest = didDocument.digest(crypto.blake2b)
-  didDocument.update()
   didDocument.proof({
     // from ld-cryptosuite-registry'
     type: kEd25519VerificationKey2018,
@@ -345,11 +345,15 @@ async function create(opts) {
     if ('id' in opts && 'publicKey' in opts) {
       conf.created = opts.created
       conf.updated = opts.updated
-      conf.revoked = opts.revoked
     } else if (opts.ddo) {
       conf.created = opts.ddo.created
       conf.updated = opts.ddo.updated
-      conf.revoked = opts.ddo.revoked
+    }
+
+    conf.revoked = opts.revoked
+
+    if (conf.updated) {
+      conf.updated = new Date()
     }
 
     return ddo.create(conf)
