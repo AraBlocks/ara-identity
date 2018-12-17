@@ -124,7 +124,7 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
 
     function ontimeout() {
       debug('network: ontimeout: %s: %s', did.identifier, filename)
-      close(new NoEntitityError(filename, 'open'))
+      close(new NoEntityError(filename, 'open'))
     }
 
     function onconnection(connection, peer) {
@@ -183,7 +183,7 @@ async function readFile(identifier, filename, opts) {
     try {
       done(null, await cfs.readFile(filename))
     } catch (err) {
-      done(new NoEntitityError(filename, 'open'))
+      done(new NoEntityError(filename, 'open'))
     }
   }
 }
@@ -220,7 +220,7 @@ async function stat(identifier, filename, opts) {
     try {
       done(null, await cfs.stat(filename))
     } catch (err) {
-      done(new NoEntitityError(filename, 'stat'))
+      done(new NoEntityError(filename, 'stat'))
     }
   }
 }
@@ -241,7 +241,7 @@ async function lstat(identifier, filename, opts) {
     try {
       done(null, await cfs.lstat(filename))
     } catch (err) {
-      done(new NoEntitityError(filename, 'lstat'))
+      done(new NoEntityError(filename, 'lstat'))
     }
   }
 }
@@ -262,7 +262,7 @@ async function access(identifier, filename, opts) {
     try {
       done(null, await cfs.access(filename))
     } catch (err) {
-      done(new NoEntitityError(filename, 'access'))
+      done(new NoEntityError(filename, 'access'))
     }
   }
 }
@@ -283,12 +283,12 @@ async function readdir(identifier, filename, opts) {
     try {
       done(null, await cfs.readdir(filename, opts))
     } catch (err) {
-      done(new NoEntitityError(filename, 'scandir'))
+      done(new NoEntityError(filename, 'scandir'))
     }
   }
 }
 
-class NoEntitityError extends Error {
+class NoEntityError extends Error {
   constructor(path, call) {
     super(`ENOENT: no such file or directory, ${call} '${path}'`)
     this.errno = -2
