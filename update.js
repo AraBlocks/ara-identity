@@ -19,6 +19,18 @@ async function update(identifier, opts) {
       } else if (resolution.publicKey) {
         opts.ddo = resolution.publicKey
       }
+
+      if (resolution.authentication && opts.ddo.authentication) {
+        append(resolution.authentication, opts.ddo.authentication)
+      } else if (resolution.authentication) {
+        opts.ddo = resolution.authentication
+      }
+
+      if (resolution.service && opts.ddo.service) {
+        append(resolution.service, opts.ddo.service)
+      } else if (resolution.service) {
+        opts.ddo = resolution.service
+      }
     } catch (err) {
       debug(err)
     }
