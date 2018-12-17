@@ -1,3 +1,13 @@
+## [0.45.1](https://github.com/AraBlocks/ara-identity/compare/0.45.0...0.45.1) (2018-12-17)
+
+
+### Bug Fixes
+
+* **create.js:** Fix broken 'updated' timestamps ([033d6a7](https://github.com/AraBlocks/ara-identity/commit/033d6a7))
+* **update.js:** Include missing properties ([bd75190](https://github.com/AraBlocks/ara-identity/commit/bd75190))
+
+
+
 # [0.45.0](https://github.com/AraBlocks/ara-identity/compare/0.44.2...0.45.0) (2018-12-16)
 
 
