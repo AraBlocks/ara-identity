@@ -995,9 +995,23 @@ async function onremovepublickey(argv) {
 
     for (let i = 0; i < identity.publicKey.length; ++i) {
       const pk = identity.publicKey[i]
-      const { fragment } = did.parse(pk.id)
+      const { fragment, reference: publicKeyReference } = did.parse(pk.id)
       if (key === fragment) {
         identity.publicKey.splice(i, 1)
+
+        if (identity.proof && identity.proof.creator === publicKeyReference) {
+          delete identity.proof
+        }
+
+        for (let j = 0; j < identity.authentication.length; ++j) {
+          const auth = identity.authentication[j]
+          const { reference } = did.parse(auth.publicKey)
+          if (reference === publicKeyReference) {
+            identity.authentication.splice(j, 1)
+            break
+          }
+        }
+
         break
       }
     }
