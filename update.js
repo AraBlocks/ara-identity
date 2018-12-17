@@ -1,7 +1,6 @@
 const { resolve } = require('./resolve')
 const { create } = require('./create')
 const debug = require('debug')('ara:identity:update')
-const ddo = require('./ddo')
 
 /**
  * Updates an ARA identity.
@@ -11,37 +10,48 @@ async function update(identifier, opts) {
     throw new TypeError('Expecting object.')
   }
 
-  if (!opts.ddo) {
-    try {
-      const resolution = ddo.create(await resolve(identifier))
-      if (resolution.publicKey && opts.ddo.publicKey) {
-        append(resolution.publicKey, opts.ddo.publicKey)
-      } else if (resolution.publicKey) {
-        opts.ddo = resolution.publicKey
-      }
+  let ddo = null
 
-      if (resolution.authentication && opts.ddo.authentication) {
-        append(resolution.authentication, opts.ddo.authentication)
-      } else if (resolution.authentication) {
-        opts.ddo = resolution.authentication
-      }
+  if (opts.ddo && opts.ddo.toJSON) {
+    opts.ddo = JSON.parse(JSON.stringify(opts.ddo.toJSON()))
+  }
 
-      if (resolution.service && opts.ddo.service) {
-        append(resolution.service, opts.ddo.service)
-      } else if (resolution.service) {
-        opts.ddo = resolution.service
-      }
-    } catch (err) {
-      debug(err)
+  try {
+    ddo = await resolve(identifier)
+
+    if (ddo.publicKey && opts.ddo.publicKey) {
+      append(ddo.publicKey, opts.ddo.publicKey)
+    } else if (ddo.publicKey) {
+      opts.ddo.publicKey = ddo.publicKey
     }
+
+    if (ddo.authentication && opts.ddo.authentication) {
+      append(ddo.authentication, opts.ddo.authentication)
+    } else if (ddo.authentication) {
+      opts.ddo.authentication = ddo.authentication
+    }
+
+    if (ddo.service && opts.ddo.service) {
+      append(ddo.service, opts.ddo.service)
+    } else if (ddo.service) {
+      opts.ddo.service = ddo.service
+    }
+  } catch (err) {
+    debug(err)
+  }
+
+  if (ddo) {
+    opts.created = ddo.created
+    opts.updated = new Date()
+    opts.ddo = ddo
   }
 
   return create(opts)
 }
 
 function append(left, right) {
-  for (const x of left) {
-    right.push(x)
+  for (const x of right) {
+    left.push(x)
   }
 }
 
