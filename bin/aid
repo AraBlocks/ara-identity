@@ -328,6 +328,25 @@ program.command(
 )
 
 program.command(
+  'export-public-key [identifier]',
+  'Export a public key from an identity\'s DDO',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 remove-public-key [-D] [options] [identifier]')
+    .group([ 'key' ], 'Public Key Export Options:')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
+    .option('key', {
+      describe: 'Fragment name of public key found in identity DDO',
+      required: true
+    })
+  , onexportpublickey
+)
+
+program.command(
   'revoke',
   'Revoke an Ara identity using a mnemonic',
   // eslint-disable-next-line no-shadow
@@ -395,7 +414,7 @@ async function onrecover(argv) {
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
-    onfatal(
+    return onfatal(
       new TypeError('A new passphrase is required to recover the identity.'))
   }
 
@@ -410,10 +429,10 @@ async function onrecover(argv) {
     await writeIdentity(identity)
     info('Identity recovered successfully.')
   } catch (err) {
-    onfatal(err)
+    return onfatal(err)
   }
 
-  exit(0)
+  return exit(0)
 }
 
 async function onrevoke(argv) {
@@ -436,7 +455,7 @@ async function onrevoke(argv) {
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
-    onfatal(
+    return onfatal(
       new TypeError('A passphrase is required to revoke your identity.'))
   }
 
@@ -451,10 +470,10 @@ async function onrevoke(argv) {
     await writeIdentity(identity)
     info('Identity revoked successfully.')
   } catch (err) {
-    onfatal(err)
+    return onfatal(err)
   }
 
-  exit(0)
+  return exit(0)
 }
 
 async function onarchive(argv) {
@@ -485,7 +504,7 @@ async function onarchive(argv) {
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
-    onfatal(
+    return onfatal(
       new TypeError('Please provide a password to archive your identity.'))
   }
 
@@ -522,20 +541,20 @@ async function onarchive(argv) {
       publicKey = secretKey.slice(32)
     } catch (err) {
       debug(err)
-      onfatal(new Error('Invalid passphrase when decoding keystore.'))
+      return onfatal(new Error('Invalid passphrase when decoding keystore.'))
     }
 
     identityBuffer = await aid.fs.readFile(identifier, 'identity', argv)
   } catch (err) {
     error('Unable to read identity.')
-    onfatal(err)
+    return onfatal(err)
   }
 
   try {
     identity = protobuf.messages.Identity.decode(identityBuffer)
   } catch (err) {
     error('Failed to decode identity.')
-    onfatal(err)
+    return onfatal(err)
   }
 
   const { files } = identity
@@ -589,7 +608,7 @@ async function onarchive(argv) {
     }
   } catch (err) {
     error('Failed to archive identity.')
-    onfatal(err)
+    return onfatal(err)
   }
 
   function onhello(hello) {
@@ -665,7 +684,7 @@ async function oncreate(argv) {
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
-    onfatal(
+    return onfatal(
       new TypeError('A new passphrase is required to secure the identity.'))
   }
 
@@ -693,7 +712,7 @@ async function oncreate(argv) {
     process.stdout.write('\n')
   }
 
-  exit(0)
+  return exit(0)
 }
 
 async function onresolve(argv) {
@@ -703,26 +722,26 @@ async function onresolve(argv) {
   const aid = require('../')
 
   if (!argv.keyring && !argv.cache) {
-    onfatal(new TypeError('Expecting Ara network keyring file.'))
+    return onfatal(new TypeError('Expecting Ara network keyring file.'))
   }
 
   if (!argv.secret && !argv.cache) {
-    onfatal(new TypeError('Expecting Shared secret key.'))
+    return onfatal(new TypeError('Expecting Shared secret key.'))
   }
 
   if (!argv.network && !argv.cache) {
-    onfatal(new TypeError('Expecting Human readable network keys name.'))
+    return onfatal(new TypeError('Expecting Human readable network keys name.'))
   }
 
   if (!argv.identifier) {
-    onfatal(new Error('Missing identifier'))
+    return onfatal(new Error('Missing identifier'))
   }
 
   if (
     0 === argv.identifier.indexOf('did:') &&
     0 !== argv.identifier.indexOf('did:ara:')
   ) {
-    onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
+    return onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
   try {
@@ -817,10 +836,10 @@ async function onresolve(argv) {
       process.stdout.write(JSON.stringify(identity))
     }
   } catch (err) {
-    onfatal(err)
+    return onfatal(err)
   }
 
-  exit(0)
+  return exit(0)
 }
 
 async function onlist(argv) {
@@ -835,11 +854,11 @@ async function onlist(argv) {
     for (const id of identities) {
       process.stdout.write(`${id}\n`)
     }
-
-    exit(0)
   } catch (err) {
-    onfatal(err)
+    return onfatal(err)
   }
+
+  return exit(0)
 }
 
 async function onwhoami(argv) {
@@ -858,8 +877,7 @@ async function onwhoami(argv) {
 
   if (!identifier) {
     error('Identifier not given.')
-    exit(1)
-    return
+    return exit(1)
   }
 
   if (argv['no-cache'] || argv.nocache || false === argv.cache) {
@@ -871,8 +889,7 @@ async function onwhoami(argv) {
   if (argv.fast) {
     process.stdout.write(identifier)
     process.stdout.write('\n')
-    exit(0)
-    return
+    return exit(0)
   }
 
   try {
@@ -885,23 +902,24 @@ async function onwhoami(argv) {
     })
   } catch (err2) {
     debug(err2)
-    onfatal(new Error(`Unable to resolve identity: ${identifier}.`))
+    return onfatal(new Error(`Unable to resolve identity: ${identifier}.`))
   }
 
   if (!ddo) {
-    onfatal(new Error('Missing or malformed identity document (ddo.json).'))
+    return onfatal(new Error('Missing or malformed identity document (ddo.json).'))
   }
 
   process.stdout.write(ddo.id)
   process.stdout.write('\n')
-  exit(0)
+
+  return exit(0)
 }
 
 async function onaddpublickey(argv) {
   const aid = require('../')
 
-  const { key, identifier } = argv
-  let { password } = argv
+  const { identifier } = argv
+  let { password, key } = argv
 
   if (!password) {
     const res = await inquirer.prompt([ {
@@ -925,15 +943,21 @@ async function onaddpublickey(argv) {
       key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
     })
 
-    const ddo = aid.ddo.create(identity)
-    if (Array.isArray(key)) {
-      const keys = await Promise.all(key.map(parseKey))
+    if (!Array.isArray(key)) {
+      key = [ key ]
+    }
 
-      for (const k of keys) {
+    const ddo = aid.ddo.create(identity)
+    const keys = await Promise.all(key.map(parseKey))
+
+    for (const k of keys) {
+      if (Array.isArray(k)) {
+        for (const j of k) {
+          ddo.addPublicKey(j)
+        }
+      } else {
         ddo.addPublicKey(k)
       }
-    } else {
-      ddo.addPublicKey(await parseKey(key))
     }
 
     const updated = await aid.update(identity.id, {
@@ -946,11 +970,12 @@ async function onaddpublickey(argv) {
     await aid.save(updated)
   } catch (err) {
     debug(err)
-    onfatal(new Error('Error while adding public key to DDO'))
+    return onfatal(new Error('Error while adding public key to DDO'))
   }
 
   process.stdout.write('\n')
-  exit(0)
+
+  return exit(0)
 
   // eslint-disable-next-line no-shadow
   async function parseKey(key) {
@@ -1028,11 +1053,49 @@ async function onremovepublickey(argv) {
     await aid.save(updated)
   } catch (err) {
     debug(err)
-    onfatal(new Error('Error while adding public key to DDO'))
+    return onfatal(new Error('Error while adding public key to DDO'))
   }
 
   process.stdout.write('\n')
-  exit(0)
+
+  return exit(0)
+}
+
+async function onexportpublickey(argv) {
+  const aid = require('../')
+
+  const { key, identifier } = argv
+
+  if (Array.isArray(key)) {
+    process.stdout.write('[')
+  }
+
+  try {
+    const identity = await aid.resolve(identifier, argv)
+    let first = true
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if (!Array.isArray(key) && key === fragment) {
+        process.stdout.write(JSON.stringify(pk))
+        break
+      } else if (Array.isArray(key) && key.includes(fragment)) {
+        if (!first) {
+          process.stdout.write(',')
+        }
+
+        process.stdout.write(JSON.stringify(pk))
+        first = false
+      }
+    }
+  } catch (err) {
+    return onfatal(err)
+  } finally {
+    if (Array.isArray(key)) {
+      process.stdout.write(']')
+    }
+  }
+
+  return exit(0)
 }
 
 async function onkeystoredump(argv) {
@@ -1043,13 +1106,12 @@ async function onkeystoredump(argv) {
   let { identifier, password } = argv
 
   if ('ara' !== argv.type && 'eth' !== argv.type) {
-    onfatal(new Error('Invalid type passed. Type should be either eth or ara'))
+    return onfatal(new Error('Invalid type passed. Type should be either eth or ara'))
   }
 
   if (!identifier) {
     error('Identifier not given.')
-    exit(1)
-    return
+    return exit(1)
   }
 
   if (!password) {
@@ -1065,7 +1127,6 @@ async function onkeystoredump(argv) {
     password = res.password
     process.stdout.write('\n')
   }
-
   const secretKeys = { ara: null, eth: null }
   const keystores = { ara: null, eth: null }
 
@@ -1082,7 +1143,7 @@ async function onkeystoredump(argv) {
     secretKeys.ara = ss.decrypt(JSON.parse(keystores.ara), { key })
   } catch (err) {
     debug(err)
-    onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
+    return onfatal(new Error('Invalid passphrase when decoding ara keystore.'))
   }
 
   if (secretStorage) {
@@ -1098,7 +1159,7 @@ async function onkeystoredump(argv) {
         process.stdout.write(JSON.stringify(ethKeystore))
       } catch (err) {
         debug(err)
-        onfatal(new Error('Error while decoding the web3 ethereum keystore'))
+        return onfatal(new Error('Error while decoding the web3 ethereum keystore'))
       }
     }
   } else {
@@ -1116,13 +1177,14 @@ async function onkeystoredump(argv) {
         process.stdout.write(toHex(secretKeys.eth))
       } catch (err) {
         debug(err)
-        onfatal(new Error('Error while decrypting the ethereum keystore'))
+        return onfatal(new Error('Error while decrypting the ethereum keystore'))
       }
     }
   }
 
   process.stdout.write('\n')
-  exit(0)
+
+  return exit(0)
 }
 
 function onfatal(err) {
