@@ -156,6 +156,7 @@ async function create(opts) {
 
   // sign the DDO for the proof
   const digest = didDocument.digest(crypto.blake2b)
+  didDocument.update()
   didDocument.proof({
     // from ld-cryptosuite-registry'
     type: kEd25519VerificationKey2018,
@@ -330,12 +331,20 @@ async function create(opts) {
   }
 
   function createDIDDocument() {
-    if (opts.revoked && opts.created) {
-      const { created, revoked } = opts
-      return ddo.create({ id: didUri, created, revoked })
+    const conf = { id: didUri }
+
+    // opts is DDO
+    if ('id' in opts && 'publicKey' in opts) {
+      conf.created = opts.created
+      conf.updated = opts.updated
+      conf.revoked = opts.revoked
+    } else if (opts.ddo) {
+      conf.created = opts.ddo.created
+      conf.updated = opts.ddo.updated
+      conf.revoked = opts.ddo.revoked
     }
 
-    return ddo.create({ id: didUri })
+    return ddo.create(conf)
   }
 }
 
