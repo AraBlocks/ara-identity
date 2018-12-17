@@ -1,3 +1,13 @@
+## [0.45.2](https://github.com/AraBlocks/ara-identity/compare/0.45.1...0.45.2) (2018-12-17)
+
+
+### Bug Fixes
+
+* **bin/aid:** Remove dangling 'authentication/proof' if tied to public key ([1ef8d53](https://github.com/AraBlocks/ara-identity/commit/1ef8d53))
+* **create.js:** Ensure owner public key is always generated ([8100b89](https://github.com/AraBlocks/ara-identity/commit/8100b89))
+
+
+
 ## [0.45.1](https://github.com/AraBlocks/ara-identity/compare/0.45.0...0.45.1) (2018-12-17)
 
 
