@@ -1,3 +1,20 @@
+# [0.47.0](https://github.com/AraBlocks/ara-identity/compare/0.46.0...0.47.0) (2018-12-17)
+
+
+### Bug Fixes
+
+* **archive.js:** Handle shallow archives by counting writes, not files ([b855724](https://github.com/AraBlocks/ara-identity/commit/b855724))
+* **create.js:** Correctly handle create/updates/revokes ([03eaa5e](https://github.com/AraBlocks/ara-identity/commit/03eaa5e))
+* **update.js:** Fix how documents are merged before updating ([ec76a83](https://github.com/AraBlocks/ara-identity/commit/ec76a83))
+* **update.js:** Remove merge logic and enforce input DDO ([b282e63](https://github.com/AraBlocks/ara-identity/commit/b282e63))
+
+
+### Features
+
+* **bin/aid:** Introduce service add/remove/export ([6fa68af](https://github.com/AraBlocks/ara-identity/commit/6fa68af))
+
+
+
 # [0.46.0](https://github.com/AraBlocks/ara-identity/compare/0.45.2...0.46.0) (2018-12-17)
 
 
