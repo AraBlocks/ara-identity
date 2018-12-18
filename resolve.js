@@ -94,7 +94,7 @@ async function resolve(uri, opts = {}) {
     if (isBrowser) { return null }
     try {
       const ddo = await fs.readFile(did.identifier, 'ddo.json', opts)
-      return JSON.parse(String(ddo))
+      return (opts.parse || JSON.parse)(String(ddo))
     } catch (err) {
       debug(err)
     }
