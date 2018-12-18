@@ -1332,6 +1332,14 @@ async function onaddservice(argv) {
         }
       } catch (err) {
         debug(err)
+        try {
+          const serviceConfig = JSON.parse(argv.config)
+          if ('object' === typeof serviceConfig) {
+            Object.assign(config, serviceConfig)
+          }
+        } catch (err2) {
+          debug(err2)
+        }
       }
     }
 
