@@ -1,3 +1,12 @@
+## [0.47.3](https://github.com/AraBlocks/ara-identity/compare/0.47.2...0.47.3) (2018-12-18)
+
+
+### Features
+
+* **bin/aid:** Support JSON from command line ([37179da](https://github.com/AraBlocks/ara-identity/commit/37179da))
+
+
+
 ## [0.47.2](https://github.com/AraBlocks/ara-identity/compare/0.47.1...0.47.2) (2018-12-18)
 
 
