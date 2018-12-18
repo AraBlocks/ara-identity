@@ -1,3 +1,12 @@
+## [0.47.2](https://github.com/AraBlocks/ara-identity/compare/0.47.1...0.47.2) (2018-12-18)
+
+
+### Features
+
+* **resolve.js:** Support custom 'JSON.parse' ([b66a197](https://github.com/AraBlocks/ara-identity/commit/b66a197))
+
+
+
 ## [0.47.1](https://github.com/AraBlocks/ara-identity/compare/0.47.0...0.47.1) (2018-12-17)
 
 
