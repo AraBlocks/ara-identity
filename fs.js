@@ -177,7 +177,7 @@ async function readFile(identifier, filename, opts) {
     }
   }
 
-  else if ('false' !== opts.network) {
+  if (false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
 
     async function onjoin(cfs, did, done) {
@@ -188,7 +188,7 @@ async function readFile(identifier, filename, opts) {
       }
     }
   } else {
-    return new NoEntityError(filename, 'open')
+    throw new NoEntityError(filename, 'open')
   }
 }
 
@@ -218,7 +218,7 @@ async function stat(identifier, filename, opts) {
     }
   }
 
-  else if ('false' !== opts.network) {
+  if (false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
 
     async function onjoin(cfs, did, done) {
@@ -231,7 +231,7 @@ async function stat(identifier, filename, opts) {
   }
 
   else {
-    return new NoEntityError(filename, 'stat')
+    throw new NoEntityError(filename, 'stat')
   }
 }
 
@@ -245,7 +245,7 @@ async function lstat(identifier, filename, opts) {
     }
   }
 
-  else if ('false' !== opts.network) {
+  if (false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
 
     async function onjoin(cfs, did, done) {
@@ -257,7 +257,7 @@ async function lstat(identifier, filename, opts) {
     }
   }
   else {
-    return new NoEntityError(filename, 'lstat')
+    throw new NoEntityError(filename, 'lstat')
   }
 }
 
@@ -271,7 +271,7 @@ async function access(identifier, filename, opts) {
     }
   }
 
-  else if ('false' !== opts.network) {
+  if (false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
 
     async function onjoin(cfs, did, done) {
@@ -284,7 +284,7 @@ async function access(identifier, filename, opts) {
   }
 
   else {
-    return new NoEntityError(filename, 'access')
+    throw new NoEntityError(filename, 'access')
   }
 }
 
