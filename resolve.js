@@ -157,7 +157,6 @@ async function resolve(uri, opts = {}) {
       if (result) {
         resolved = true
         state.aborted = true
-        process.nextTick(done, null, result)
 
         try {
           if (!isBrowser) {
@@ -174,6 +173,7 @@ async function resolve(uri, opts = {}) {
         } catch (err) {
           debug(err)
         }
+        process.nextTick(done, null, result)
       }
 
       if (!resolved && 0 === pending) {
