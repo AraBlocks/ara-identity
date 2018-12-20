@@ -177,19 +177,18 @@ async function readFile(identifier, filename, opts) {
     }
   }
 
+  async function onjoin(cfs, did, done) {
+    try {
+      done(null, await cfs.readFile(filename))
+    } catch (err) {
+      done(new NoEntityError(filename, 'open'))
+    }
+  }
+
   if (false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
-
-    async function onjoin(cfs, did, done) {
-      try {
-        done(null, await cfs.readFile(filename))
-      } catch (err) {
-        done(new NoEntityError(filename, 'open'))
-      }
-    }
-  } else {
-    throw new NoEntityError(filename, 'open')
   }
+  throw new NoEntityError(filename, 'open')
 }
 
 /**
@@ -218,21 +217,19 @@ async function stat(identifier, filename, opts) {
     }
   }
 
-  if (false !== opts.network) {
-    return joinNetwork(identifier, filename, opts, onjoin)
-
-    async function onjoin(cfs, did, done) {
-      try {
-        done(null, await cfs.stat(filename))
-      } catch (err) {
-        done(new NoEntityError(filename, 'stat'))
-      }
+  async function onjoin(cfs, did, done) {
+    try {
+      done(null, await cfs.stat(filename))
+    } catch (err) {
+      done(new NoEntityError(filename, 'stat'))
     }
   }
 
-  else {
-    throw new NoEntityError(filename, 'stat')
+  if (false !== opts.network) {
+    return joinNetwork(identifier, filename, opts, onjoin)
   }
+
+  throw new NoEntityError(filename, 'stat')
 }
 
 async function lstat(identifier, filename, opts) {
@@ -245,20 +242,18 @@ async function lstat(identifier, filename, opts) {
     }
   }
 
-  if (false !== opts.network) {
-    return joinNetwork(identifier, filename, opts, onjoin)
-
-    async function onjoin(cfs, did, done) {
-      try {
-        done(null, await cfs.lstat(filename))
-      } catch (err) {
-        done(new NoEntityError(filename, 'lstat'))
-      }
+  async function onjoin(cfs, did, done) {
+    try {
+      done(null, await cfs.lstat(filename))
+    } catch (err) {
+      done(new NoEntityError(filename, 'lstat'))
     }
   }
-  else {
-    throw new NoEntityError(filename, 'lstat')
+
+  if (false !== opts.network) {
+    return joinNetwork(identifier, filename, opts, onjoin)
   }
+  throw new NoEntityError(filename, 'lstat')
 }
 
 async function access(identifier, filename, opts) {
@@ -271,21 +266,18 @@ async function access(identifier, filename, opts) {
     }
   }
 
-  if (false !== opts.network) {
-    return joinNetwork(identifier, filename, opts, onjoin)
-
-    async function onjoin(cfs, did, done) {
-      try {
-        done(null, await cfs.access(filename))
-      } catch (err) {
-        done(new NoEntityError(filename, 'access'))
-      }
+  async function onjoin(cfs, did, done) {
+    try {
+      done(null, await cfs.access(filename))
+    } catch (err) {
+      done(new NoEntityError(filename, 'access'))
     }
   }
 
-  else {
-    throw new NoEntityError(filename, 'access')
+  if (false !== opts.network) {
+    return joinNetwork(identifier, filename, opts, onjoin)
   }
+  throw new NoEntityError(filename, 'access')
 }
 
 async function readdir(identifier, filename, opts) {
@@ -298,21 +290,18 @@ async function readdir(identifier, filename, opts) {
     }
   }
 
-  else if ('false' !== opts.network) {
-    return joinNetwork(identifier, filename, opts, onjoin)
-
-    async function onjoin(cfs, did, done) {
-      try {
-        done(null, await cfs.readdir(filename, opts))
-      } catch (err) {
-        done(new NoEntityError(filename, 'scandir'))
-      }
+  async function onjoin(cfs, did, done) {
+    try {
+      done(null, await cfs.readdir(filename, opts))
+    } catch (err) {
+      done(new NoEntityError(filename, 'scandir'))
     }
   }
 
-  else {
-    return new NoEntityError(filename, 'scandir')
+  if ('false' !== opts.network) {
+    return joinNetwork(identifier, filename, opts, onjoin)
   }
+  throw new NoEntityError(filename, 'scandir')
 }
 
 class NoEntityError extends Error {
