@@ -162,7 +162,7 @@ async function resolve(uri, opts = {}) {
         try {
           if (!isBrowser) {
             try {
-              await fs.access(did.identifier, 'ddo.json', { cache: true })
+              await fs.access(did.identifier, 'ddo.json', { cache: true, network: false })
             } catch (err) {
               try {
                 await fs.writeFile(did.identifier, 'ddo.json', JSON.stringify(result))
