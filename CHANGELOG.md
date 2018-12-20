@@ -1,3 +1,18 @@
+## [0.47.4](https://github.com/AraBlocks/ara-identity/compare/0.47.3...0.47.4) (2018-12-20)
+
+
+### Bug Fixes
+
+* **fs.js:** Fix argument check and error handling ([846bd4a](https://github.com/AraBlocks/ara-identity/commit/846bd4a))
+* **resolve.js:** Only check if DDO is present locally ([6390f6b](https://github.com/AraBlocks/ara-identity/commit/6390f6b))
+
+
+### Features
+
+* **fs.js:** Introduce network option to fs methods ([de71150](https://github.com/AraBlocks/ara-identity/commit/de71150))
+
+
+
 ## [0.47.3](https://github.com/AraBlocks/ara-identity/compare/0.47.2...0.47.3) (2018-12-18)
 
 
