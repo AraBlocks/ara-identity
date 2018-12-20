@@ -228,7 +228,6 @@ async function stat(identifier, filename, opts) {
   if (false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
-
   throw new NoEntityError(filename, 'stat')
 }
 
