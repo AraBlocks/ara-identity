@@ -305,6 +305,9 @@ program.command(
       optional: true,
       describe: 'Path to look for did directory'
     })
+    .option('password', {
+      describe: 'Identifier password (avoids a prompt).'
+    })
   , onkeystoredump
 )
 
