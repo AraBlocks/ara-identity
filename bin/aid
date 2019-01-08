@@ -52,6 +52,9 @@ program.command(
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 create [-D] [options]')
+    .option('password', {
+      describe: 'Pass in a password, to avoid a prompt'
+    })
   , oncreate
 )
 
