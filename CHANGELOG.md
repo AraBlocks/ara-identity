@@ -1,3 +1,18 @@
+## [0.47.5](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.47.5) (2019-01-08)
+
+
+### Bug Fixes
+
+* **bin/aid:** actually pass in password oncreate ([c9cf350](https://github.com/AraBlocks/ara-identity/commit/c9cf350))
+* **bin/aid:** Add password option for keystore-dump ([fa773b1](https://github.com/AraBlocks/ara-identity/commit/fa773b1))
+
+
+### Features
+
+* **bin/aid:** print DID in CLI create quiet mode ([9671109](https://github.com/AraBlocks/ara-identity/commit/9671109))
+
+
+
 ## [0.47.4](https://github.com/AraBlocks/ara-identity/compare/0.47.3...0.47.4) (2018-12-20)
 
 
