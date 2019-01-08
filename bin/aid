@@ -769,6 +769,8 @@ async function oncreate(argv) {
     info('It will never be shown again:')
     info('\n\n%s', table([ [ identity.mnemonic ] ]))
   } else {
+    process.stdout.write(identity.did.did)
+    process.stdout.write('\n')
     process.stdout.write(identity.mnemonic)
     process.stdout.write('\n')
   }
