@@ -13,6 +13,7 @@ message KeyStore {
     string mac = 4;
     string kdf = 5;
     KDFParams kdfparams = 6;
+    string digest = 7;
 
     message CipherParams {
       string iv = 1;
