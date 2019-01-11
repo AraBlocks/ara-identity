@@ -21,6 +21,9 @@ const {
   kSecp256k1SignatureAuthentication2018,
 } = require('ld-cryptosuite-registry')
 
+const BEGIN_PUBLIC_KEY = '-----BEGIN PUBLIC KEY-----\n'
+const END_PUBLIC_KEY = '\n-----END PUBLIC KEY-----'
+
 /**
  * Creates a new ARA identity.
  * @public
@@ -307,7 +310,12 @@ async function create(opts) {
       // public key variants
       publicKeyHex: toHex(publicKey),
       publicKeyBase64: crypto.base64.encode(publicKey).toString(),
-      publicKeyBase58: crypto.base58.encode(publicKey).toString()
+      publicKeyBase58: crypto.base58.encode(publicKey).toString(),
+      publicKeyPem: (
+        BEGIN_PUBLIC_KEY
+        + crypto.base64.encode(publicKey).toString() +
+        END_PUBLIC_KEY
+      )
     }))
 
     didDocument.addAuthentication(new Authentication(
@@ -325,7 +333,12 @@ async function create(opts) {
       // public key variants
       publicKeyHex: toHex(wallet.getPublicKey()),
       publicKeyBase64: crypto.base64.encode(wallet.getPublicKey()).toString(),
-      publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString()
+      publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString(),
+      publicKeyPem: (
+        BEGIN_PUBLIC_KEY
+        + crypto.base64.encode(wallet.getPublicKey()).toString() +
+        END_PUBLIC_KEY
+      )
     }))
 
     didDocument.addAuthentication(new Authentication(
