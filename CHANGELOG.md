@@ -1,3 +1,12 @@
+# [0.48.0](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.48.0) (2019-01-11)
+
+
+### Features
+
+* **create.js:** Include 'publicKeyPem' property for public keys ([48ed61b](https://github.com/AraBlocks/ara-identity/commit/48ed61b))
+
+
+
 ## [0.47.4](https://github.com/AraBlocks/ara-identity/compare/0.47.3...0.47.4) (2018-12-20)
 
 
