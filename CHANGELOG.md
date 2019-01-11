@@ -1,9 +1,16 @@
-# [0.48.0](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.48.0) (2019-01-11)
+## [0.48.1](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.48.1) (2019-01-11)
+
+
+### Bug Fixes
+
+* **bin/aid:** actually pass in password oncreate ([c9cf350](https://github.com/AraBlocks/ara-identity/commit/c9cf350))
+* **bin/aid:** Add password option for keystore-dump ([fa773b1](https://github.com/AraBlocks/ara-identity/commit/fa773b1))
 
 
 ### Features
 
-* **create.js:** Include 'publicKeyPem' property for public keys ([48ed61b](https://github.com/AraBlocks/ara-identity/commit/48ed61b))
+* **bin/aid:** print DID in CLI create quiet mode ([9671109](https://github.com/AraBlocks/ara-identity/commit/9671109))
+* **create.js:** Include 'publicKeyPem' property for public keys ([3ed9e42](https://github.com/AraBlocks/ara-identity/commit/3ed9e42))
 
 
 
