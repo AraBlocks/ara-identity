@@ -1,4 +1,4 @@
-## [0.48.1](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.48.1) (2019-01-11)
+## [0.48.2](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.48.2) (2019-01-11)
 
 
 ### Bug Fixes
@@ -11,6 +11,7 @@
 
 * **bin/aid:** print DID in CLI create quiet mode ([9671109](https://github.com/AraBlocks/ara-identity/commit/9671109))
 * **create.js:** Include 'publicKeyPem' property for public keys ([3ed9e42](https://github.com/AraBlocks/ara-identity/commit/3ed9e42))
+* **protobuf/schema.proto:** Introduce 'string digest = 7;' field for 'KeyStore' ([3b4a417](https://github.com/AraBlocks/ara-identity/commit/3b4a417))
 
 
 
