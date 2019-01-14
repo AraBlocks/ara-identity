@@ -112,7 +112,7 @@ async function create(opts) {
     if (Array.isArray(opts.ddo.publicKey)) {
       for (const pk of opts.ddo.publicKey) {
         let { publicKeyBase64, publicKeyBase58 } = pk
-        const { publicKeyHex } = pk
+        const { publicKeyHex, publicKeyPem } = pk
 
         if (!pk.id.startsWith('did:')) {
           pk.id = `${didUri.did}#${pk.id}`
@@ -121,7 +121,7 @@ async function create(opts) {
         const pub = Buffer.from(publicKeyHex, 'hex')
 
         if (!publicKeyBase58) {
-          publicKeyBase58 = crypto.base64.encode(pub).toString()
+          publicKeyBase58 = crypto.base58.encode(pub).toString()
         }
 
         if (!publicKeyBase64) {
@@ -137,6 +137,11 @@ async function create(opts) {
           publicKeyHex,
           publicKeyBase58,
           publicKeyBase64,
+          publicKeyPem: publicKeyPem || (
+            BEGIN_PUBLIC_KEY
+            + crypto.base64.encode(pub).toString() +
+            END_PUBLIC_KEY
+          )
         }))
       }
     }
