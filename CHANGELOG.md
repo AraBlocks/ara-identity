@@ -1,3 +1,12 @@
+## [0.48.3](https://github.com/AraBlocks/ara-identity/compare/0.48.2...0.48.3) (2019-01-14)
+
+
+### Bug Fixes
+
+* **create.js:** Correct 'base58' encoding of public key for new keys ([04363bd](https://github.com/AraBlocks/ara-identity/commit/04363bd))
+
+
+
 ## [0.48.2](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.48.2) (2019-01-11)
 
 
