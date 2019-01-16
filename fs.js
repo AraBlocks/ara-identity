@@ -185,7 +185,7 @@ async function readFile(identifier, filename, opts) {
     }
   }
 
-  if (false !== opts.network) {
+  if (opts && false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
   throw new NoEntityError(filename, 'open')
@@ -225,9 +225,10 @@ async function stat(identifier, filename, opts) {
     }
   }
 
-  if (false !== opts.network) {
+  if (opts && false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
+
   throw new NoEntityError(filename, 'stat')
 }
 
@@ -252,6 +253,7 @@ async function lstat(identifier, filename, opts) {
   if (false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
+
   throw new NoEntityError(filename, 'lstat')
 }
 
@@ -273,9 +275,10 @@ async function access(identifier, filename, opts) {
     }
   }
 
-  if (false !== opts.network) {
+  if (opts && false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
+
   throw new NoEntityError(filename, 'access')
 }
 
@@ -297,9 +300,10 @@ async function readdir(identifier, filename, opts) {
     }
   }
 
-  if ('false' !== opts.network) {
+  if (opts && false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
+
   throw new NoEntityError(filename, 'scandir')
 }
 
