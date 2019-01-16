@@ -1,3 +1,12 @@
+## [0.48.4](https://github.com/AraBlocks/ara-identity/compare/0.48.3...0.48.4) (2019-01-16)
+
+
+### Bug Fixes
+
+* **fs.js:** Fix undefined 'opts' checks ([d56ac3c](https://github.com/AraBlocks/ara-identity/commit/d56ac3c))
+
+
+
 ## [0.48.3](https://github.com/AraBlocks/ara-identity/compare/0.48.2...0.48.3) (2019-01-14)
 
 
