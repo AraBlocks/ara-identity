@@ -40,7 +40,7 @@
     "ara-secret-storage": "github:arablocks/ara-secret-storage#semver:0.1.x",
     "bip39": "^2.5.0",
     "brfs": "^2.0.1",
-    "cfsnet": "github:arablocks/cfsnet#semver:^0.15.0",
+    "cfsnet": "github:arablocks/cfsnet#semver:^0.15.3",
     "debug": "^3.1.0",
     "did-document": "^0.5.7",
     "did-uri": "^0.2.8",
