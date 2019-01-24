@@ -1,3 +1,8 @@
+<a name="0.48.6"></a>
+## [0.48.6](https://github.com/AraBlocks/ara-identity/compare/0.48.5...0.48.6) (2019-01-24)
+
+
+
 <a name="0.48.5"></a>
 ## [0.48.5](https://github.com/AraBlocks/ara-identity/compare/0.48.4...0.48.5) (2019-01-24)
 
