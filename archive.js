@@ -144,15 +144,18 @@ async function archive(identity, opts = {}) {
 
     activeConnections++
     totalConnections++
-    socket.on('error', onerror)
-    socket.on('close', () => { activeConnections-- })
-    handshake.pipe(socket).pipe(handshake)
 
-    handshake.hello()
+    socket.on('error', onerror)
+    socket.on('close', onclose)
+    socket.on('close', () => { activeConnections-- })
+
+    handshake.on('error', onerror)
     handshake.on('hello', onhello)
     handshake.on('auth', onauth)
     handshake.on('okay', onokay)
-    socket.on('close', onclose)
+
+    handshake.hello()
+    handshake.pipe(socket).pipe(handshake)
 
     function onhello(hello) {
       timeout()
