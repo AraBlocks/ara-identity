@@ -65,7 +65,7 @@
     "randombytes": "^2.0.6",
     "rimraf": "^2.6.2",
     "table": "^4.0.3",
-    "web3": "^1.0.0-beta.34",
+    "web3": "1.0.0-beta.37",
     "yargs": "^11.0.0"
   },
   "devDependencies": {
