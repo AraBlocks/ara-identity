@@ -93,6 +93,8 @@ All functions check for input validity, input correctness, and throw an error if
 * [aid.replicate(did)](#replicate)
 * [aid.resolve(did, opts)](#resolve)
 * [aid.revoke(opts)](#revoke)
+* [aid.sign(identifier, message, opts)](#sign)
+* [aid.verify(identifier, signature, message, opts)](#verify)
 
 <a name="archive"></a>
 ### `aid.archive(identity, opts)`
@@ -354,6 +356,25 @@ const opts = {
   password: 'password'
 }
 const revokedIdentity = await aid.revoke(opts)
+```
+
+<a name="sign"></a>
+### `aid.sign(identifier, message, opts)`
+```js
+const message = Buffer.from()'hello')
+const password = Buffer.from('password')
+const identifier = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
+const signature = await aid.sign(identifier, message, { password })
+```
+
+<a name="verify"></a>
+### `aid.verify(identifier, signature, message, opts)`
+```js
+const message = Buffer.from('hello')
+const password = Buffer.from('password')
+const identifier = 'did:ara:4d7eba2809e627168054cae10a3a08fbdb9f5d58cd0e26a565c1c14c4157cb45'
+const signature = await aid.sign(identifier, message, { password })
+const verified = await aid.verify(identifier, signature, message)
 ```
 
 ## CLI

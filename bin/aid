@@ -430,6 +430,124 @@ program.command(
   , onexportservice
 )
 
+program.command(
+  'sign [identifier] [message]',
+  'Sign a message for an identity',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 sign [-D] [options] [identifier] [message]')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
+    .positional('message', {
+      required: true,
+      type: String
+    })
+
+    .group([ 'binary' ], 'Output Options:')
+    .option('binary', {
+      describe: 'Write signature as binary to stdout.',
+      type: 'boolean'
+    })
+
+    .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
+    .option('secret', {
+      alias: 's',
+      describe: 'Shared secret key for the associated network keys.',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.secret ||
+        rc.network.identity.secret ||
+        rc.network.secret
+    })
+    .option('network', {
+      alias: 'n',
+      describe: 'Human readable network name for keys in keyring',
+      requiresArg: true,
+      default: rc.network.identity.resolver.network,
+    })
+    .option('keyring', {
+      alias: 'k',
+      describe: 'Path to Ara network keyring file',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.keyring ||
+        rc.network.identity.keyring ||
+        rc.network.keyring,
+    })
+
+    .group([ 'cache', 'timeout' ], 'Resolution Options:')
+    .option('cache', {
+      type: 'boolean',
+      describe: 'Enable or disable cache',
+      default: true,
+    })
+    .option('timeout', {
+      describe: 'Resolution timeout',
+    })
+  , onsign
+)
+
+program.command(
+  'verify [identifier] [message]',
+  'verify a message for an identity',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 verify [-D] [options] [identifier] [message] [signature]')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
+    .positional('message', {
+      required: true,
+      type: String
+    })
+    .positional('signature', {
+      required: true,
+      type: String
+    })
+
+    .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
+    .option('secret', {
+      alias: 's',
+      describe: 'Shared secret key for the associated network keys.',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.secret ||
+        rc.network.identity.secret ||
+        rc.network.secret
+    })
+    .option('network', {
+      alias: 'n',
+      describe: 'Human readable network name for keys in keyring',
+      requiresArg: true,
+      default: rc.network.identity.resolver.network,
+    })
+    .option('keyring', {
+      alias: 'k',
+      describe: 'Path to Ara network keyring file',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.keyring ||
+        rc.network.identity.keyring ||
+        rc.network.keyring,
+    })
+
+    .group([ 'cache', 'timeout' ], 'Resolution Options:')
+    .option('cache', {
+      type: 'boolean',
+      describe: 'Enable or disable cache',
+      default: true,
+    })
+    .option('timeout', {
+      describe: 'Resolution timeout',
+    })
+  , onverify
+)
+
 program
   .recommendCommands()
   .completion('completion', false)
@@ -1480,6 +1598,76 @@ async function onexportservice(argv) {
   }
 
   return exit(0)
+}
+
+async function onsign(argv) {
+  const aid = require('../')
+
+  let { password } = argv
+
+  if ('string' === typeof password) {
+    try {
+      await pify(fs.access)(password)
+      password = await pify(fs.readFile)(password, 'utf8')
+    } catch (err) {
+      void err
+    }
+  }
+
+  if (!password) {
+    ({ password } = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please provide a passphrase for your identity. This is needed to ' +
+      'sign a message with your identity.\n' +
+      'Passphrase:'
+    } ]))
+  }
+
+  if (!password) {
+    // eslint-disable-next-line function-paren-newline
+    return onfatal(
+      new TypeError('Please provide a password to sign a message with your identity.'))
+  }
+
+  const signature = await aid.sign(argv.identifier, argv.message, argv)
+
+  if (argv.binary) {
+    process.stdout.write(signature)
+  } else {
+    process.stdout.write(signature.toString('hex'))
+  }
+
+  return exit(0)
+}
+
+async function onverify(argv) {
+  const aid = require('../')
+  let verified = false
+  let signature = null
+
+  if ('string' === typeof argv.signature) {
+    try {
+      await pify(fs.access)(argv.signature)
+      signature = await pify(fs.readFile)(argv.signature)
+    } catch (err) {
+      void err
+    }
+  }
+
+  if (null === signature) {
+    signature = Buffer.from(argv.signature, 'hex')
+  }
+
+  try {
+    verified = await aid.verify(argv.identifier, signature, argv.message, argv)
+  } catch (err) {
+    debug(err)
+    return exit(1)
+  }
+
+  return exit(verified ? 0 : 1)
 }
 
 function onfatal(err) {

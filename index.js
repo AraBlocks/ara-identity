@@ -2,10 +2,12 @@ const { createIdentityKeyPath } = require('./key-path')
 const { archive } = require('./archive')
 const { resolve } = require('./resolve')
 const { recover } = require('./recover')
+const { create } = require('./create')
 const { revoke } = require('./revoke')
 const { update } = require('./update')
-const { create } = require('./create')
+const { verify } = require('./verify')
 const { save } = require('./save')
+const { sign } = require('./sign')
 const ethereum = require('./ethereum')
 const { list } = require('./list')
 const util = require('./util')
@@ -19,10 +21,12 @@ module.exports = {
   archive,
   recover,
   resolve,
-  revoke,
   create,
+  revoke,
   update,
+  verify,
   save,
+  sign,
   list,
   util,
   ddo,
