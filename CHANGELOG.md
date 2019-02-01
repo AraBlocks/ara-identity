@@ -1,3 +1,13 @@
+<a name="0.49.0"></a>
+# [0.49.0](https://github.com/AraBlocks/ara-identity/compare/0.48.6...0.49.0) (2019-02-01)
+
+
+### Features
+
+* **sign,verify:** Introduce aid.sign() and aid.verify() ([b4f6c27](https://github.com/AraBlocks/ara-identity/commit/b4f6c27))
+
+
+
 <a name="0.48.6"></a>
 ## [0.48.6](https://github.com/AraBlocks/ara-identity/compare/0.48.5...0.48.6) (2019-01-24)
 
