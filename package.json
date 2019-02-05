@@ -42,7 +42,7 @@
     "brfs": "^2.0.1",
     "cfsnet": "github:arablocks/cfsnet#semver:^0.15.3",
     "debug": "^3.1.0",
-    "did-document": "^0.6.1",
+    "did-document": "^0.6.2",
     "did-uri": "^0.2.8",
     "ethereumjs-wallet": "^0.6.2",
     "extend": "^3.0.1",
