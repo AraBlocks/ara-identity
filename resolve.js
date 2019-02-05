@@ -157,22 +157,6 @@ async function resolve(uri, opts = {}) {
       if (result) {
         resolved = true
         state.aborted = true
-
-        try {
-          if (!isBrowser) {
-            try {
-              await fs.access(did.identifier, 'ddo.json', { cache: true, network: false })
-            } catch (err) {
-              try {
-                await fs.writeFile(did.identifier, 'ddo.json', JSON.stringify(result))
-              } catch (err2) {
-                debug(err2)
-              }
-            }
-          }
-        } catch (err) {
-          debug(err)
-        }
         process.nextTick(done, null, result)
       }
 
