@@ -1,3 +1,13 @@
+<a name="0.50.1"></a>
+## [0.50.1](https://github.com/AraBlocks/ara-identity/compare/0.50.0...0.50.1) (2019-02-05)
+
+
+### Bug Fixes
+
+* **resolve.js:** Fix resolution for temporary cache ([8e356d7](https://github.com/AraBlocks/ara-identity/commit/8e356d7))
+
+
+
 <a name="0.50.0"></a>
 # [0.50.0](https://github.com/AraBlocks/ara-identity/compare/0.49.3...0.50.0) (2019-02-05)
 
