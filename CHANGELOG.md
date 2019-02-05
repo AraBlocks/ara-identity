@@ -1,3 +1,13 @@
+<a name="0.49.2"></a>
+## [0.49.2](https://github.com/AraBlocks/ara-identity/compare/0.49.1...0.49.2) (2019-02-05)
+
+
+### Bug Fixes
+
+* **bin/aid:** Output serialized 'DIDDocument' instance ([b19d022](https://github.com/AraBlocks/ara-identity/commit/b19d022))
+
+
+
 <a name="0.49.1"></a>
 ## [0.49.1](https://github.com/AraBlocks/ara-identity/compare/0.49.0...0.49.1) (2019-02-05)
 
