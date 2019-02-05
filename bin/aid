@@ -4,6 +4,7 @@ const { DEFAULT_ARCHIVER_MAX_CONNECTIONS } = require('../archive')
 const { resolve: resolvePath } = require('path')
 const { info, warn, error } = require('ara-console')
 const { resolveDNS, toHex } = require('../util')
+const { DIDDocument } = require('did-document')
 const isDomainName = require('is-domain-name')
 const { table } = require('table')
 const inquirer = require('inquirer')
@@ -932,7 +933,7 @@ async function onresolve(argv) {
       argv.cache = true
     }
 
-    const identity = await aid.resolve(argv.identifier, argv)
+    const identity = new DIDDocument(await aid.resolve(argv.identifier, argv))
 
     let publicKey = null
 
