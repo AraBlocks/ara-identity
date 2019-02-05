@@ -1,4 +1,5 @@
 const { unpack, keyRing } = require('ara-network/keys')
+const { readFile, stat } = require('fs')
 const { createChannel } = require('ara-network/discovery/channel')
 const { resolveDNS } = require('./util')
 const isDomainName = require('is-domain-name')
@@ -7,9 +8,11 @@ const isBuffer = require('is-buffer')
 const { DID } = require('did-uri')
 const debug = require('debug')('ara:identity:resolve')
 const fetch = require('node-fetch')
+const path = require('path')
 const pify = require('pify')
 const url = require('url')
 const fs = require('./fs')
+const os = require('os')
 const rc = require('./rc')()
 
 const DID_IDENTIFIER_LENGTH = 64
@@ -95,6 +98,25 @@ async function resolve(uri, opts = {}) {
     try {
       const ddo = await fs.readFile(did.identifier, 'ddo.json', opts)
       return (opts.parse || JSON.parse)(String(ddo))
+    } catch (err) {
+      debug(err)
+    }
+
+    return null
+  })
+
+  resolutions.push(async () => {
+    if (isBrowser) { return null }
+    try {
+      const cachePath = path.join(os.tmpdir(), 'aid', did.identifier, 'ddo.json')
+      const stats = await pify(stat)(cachePath)
+      const ttl = 1000 * 30
+      const now = Date.now()
+
+      if ((now - stats.ctime) / ttl < 1) {
+        const json = await pify(readFile)(cachePath, 'utf8')
+        return (opts.parse || JSON.parse)(String(json))
+      }
     } catch (err) {
       debug(err)
     }
