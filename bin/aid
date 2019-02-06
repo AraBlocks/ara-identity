@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 /* eslint-disable global-require */
-const { DEFAULT_ARCHIVER_MAX_CONNECTIONS } = require('../archive')
 const { resolve: resolvePath } = require('path')
 const { info, warn, error } = require('ara-console')
-const { resolveDNS, toHex } = require('../util')
 const { DIDDocument } = require('did-document')
 const isDomainName = require('is-domain-name')
 const { table } = require('table')
 const inquirer = require('inquirer')
 const program = require('yargs')
-const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity')
 const pify = require('pify')
 const did = require('did-uri')
@@ -100,7 +97,7 @@ program.command(
       describe: 'Maximum number of Archivers to find',
       required: true,
       requiresArg: true,
-      default: DEFAULT_ARCHIVER_MAX_CONNECTIONS,
+      default: 32,
     })
     .option('shallow', {
       type: 'boolean',
@@ -662,7 +659,9 @@ async function onrevoke(argv) {
 }
 
 async function onarchive(argv) {
+  const { toHex } = require('../util')
   const protobuf = require('../protobuf')
+  const crypto = require('ara-crypto')
   const aid = require('../')
 
   let { password } = argv
@@ -1053,60 +1052,22 @@ async function onlist(argv) {
 }
 
 async function onwhoami(argv) {
-  const aid = require('../')
-
-  const identifier = rc.network.identity.whoami || rc.network.whoami
-  let ddo = null
-  let cache
-
-  const {
-    timeout,
-    keyring,
-    network,
-    secret,
-  } = argv
-
-  if (!identifier) {
-    error('Identifier not given.')
-    return exit(1)
-  }
-
-  if (argv['no-cache'] || argv.nocache || false === argv.cache) {
-    cache = false
-  } else if (true === argv.cache) {
-    cache = true
-  }
-
-  if (argv.fast) {
-    process.stdout.write(identifier)
-    process.stdout.write('\n')
-    return exit(0)
-  }
+  const { whoami } = require('../whoami')
 
   try {
-    ddo = await aid.resolve(identifier, {
-      network,
-      keyring,
-      timeout,
-      secret,
-      cache,
-    })
-  } catch (err2) {
-    debug(err2)
-    return onfatal(new Error(`Unable to resolve identity: ${identifier}.`))
+    const me = await whoami(argv)
+    process.stdout.write(me)
+    process.stdout.write('\n')
+  } catch (err) {
+    debug(err)
+    return onfatal(err.message)
   }
-
-  if (!ddo) {
-    return onfatal(new Error('Missing or malformed identity document (ddo.json).'))
-  }
-
-  process.stdout.write(ddo.id)
-  process.stdout.write('\n')
 
   return exit(0)
 }
 
 async function onaddpublickey(argv) {
+  const crypto = require('ara-crypto')
   const aid = require('../')
 
   const { identifier } = argv
@@ -1191,6 +1152,7 @@ async function onaddpublickey(argv) {
 }
 
 async function onremovepublickey(argv) {
+  const crypto = require('ara-crypto')
   const aid = require('../')
 
   const { key, identifier } = argv
@@ -1308,7 +1270,9 @@ async function onexportpublickey(argv) {
 }
 
 async function onkeystoredump(argv) {
+  const { resolveDNS, toHex } = require('../util')
   const protobuf = require('../protobuf')
+  const crypto = require('ara-crypto')
   const aid = require('../')
 
   const secretStorage = argv['secret-storage']
@@ -1397,6 +1361,7 @@ async function onkeystoredump(argv) {
 }
 
 async function onaddservice(argv) {
+  const crypto = require('ara-crypto')
   const aid = require('../')
 
   const { identifier } = argv
@@ -1485,6 +1450,7 @@ async function onaddservice(argv) {
 }
 
 async function onremoveservice(argv) {
+  const crypto = require('ara-crypto')
   const aid = require('../')
 
   const { identifier } = argv
