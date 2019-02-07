@@ -1,5 +1,13 @@
-<a name="0.50.3"></a>
-## [0.50.3](https://github.com/AraBlocks/ara-identity/compare/0.50.1...0.50.3) (2019-02-08)
+## [0.50.3](https://github.com/AraBlocks/ara-identity/compare/0.50.2...0.50.3) (2019-02-07)
+
+
+### Bug Fixes
+
+* **scripts/package.sh:** Fix 'pkg' npm script ([746bc9f](https://github.com/AraBlocks/ara-identity/commit/746bc9f))
+
+
+
+## [0.50.2](https://github.com/AraBlocks/ara-identity/compare/0.50.1...0.50.2) (2019-02-06)
 
 
 ### Bug Fixes
