@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CWD="$(pwd)"
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+DIR="$(cd `dirname ${BASH_SOURCE[0]}` > /dev/null && pwd)"
 PKG=${PKG:-$(which pkg)}
 BUILD=${BUILD:-build}
 TARGET=${TARGET:-bin/aid}
