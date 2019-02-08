@@ -1,4 +1,5 @@
-## [0.50.2](https://github.com/AraBlocks/ara-identity/compare/0.50.1...0.50.2) (2019-02-06)
+<a name="0.50.3"></a>
+## [0.50.3](https://github.com/AraBlocks/ara-identity/compare/0.50.1...0.50.3) (2019-02-08)
 
 
 ### Bug Fixes
@@ -6,7 +7,14 @@
 * **package.json:** Hardcode web3 to beta.37 bc later versions borked ([a1cf33a](https://github.com/AraBlocks/ara-identity/commit/a1cf33a))
 
 
+### Features
 
+* **dns:** Initial DNS module ([7a0a9e9](https://github.com/AraBlocks/ara-identity/commit/7a0a9e9))
+* **whoami:** Make 'whoami' a module level funcion ([c83eaa9](https://github.com/AraBlocks/ara-identity/commit/c83eaa9))
+
+
+
+<a name="0.50.1"></a>
 ## [0.50.1](https://github.com/AraBlocks/ara-identity/compare/0.50.0...0.50.1) (2019-02-05)
 
 
@@ -16,14 +24,17 @@
 
 
 
+<a name="0.50.0"></a>
 # [0.50.0](https://github.com/AraBlocks/ara-identity/compare/0.49.3...0.50.0) (2019-02-05)
 
 
 
+<a name="0.49.3"></a>
 ## [0.49.3](https://github.com/AraBlocks/ara-identity/compare/0.49.2...0.49.3) (2019-02-05)
 
 
 
+<a name="0.49.2"></a>
 ## [0.49.2](https://github.com/AraBlocks/ara-identity/compare/0.49.1...0.49.2) (2019-02-05)
 
 
@@ -33,10 +44,12 @@
 
 
 
+<a name="0.49.1"></a>
 ## [0.49.1](https://github.com/AraBlocks/ara-identity/compare/0.49.0...0.49.1) (2019-02-05)
 
 
 
+<a name="0.49.0"></a>
 # [0.49.0](https://github.com/AraBlocks/ara-identity/compare/0.48.6...0.49.0) (2019-02-01)
 
 
@@ -46,10 +59,12 @@
 
 
 
+<a name="0.48.6"></a>
 ## [0.48.6](https://github.com/AraBlocks/ara-identity/compare/0.48.5...0.48.6) (2019-01-24)
 
 
 
+<a name="0.48.5"></a>
 ## [0.48.5](https://github.com/AraBlocks/ara-identity/compare/0.48.4...0.48.5) (2019-01-24)
 
 
@@ -59,6 +74,7 @@
 
 
 
+<a name="0.48.4"></a>
 ## [0.48.4](https://github.com/AraBlocks/ara-identity/compare/0.48.3...0.48.4) (2019-01-16)
 
 
@@ -68,6 +84,7 @@
 
 
 
+<a name="0.48.3"></a>
 ## [0.48.3](https://github.com/AraBlocks/ara-identity/compare/0.48.2...0.48.3) (2019-01-14)
 
 
@@ -77,6 +94,7 @@
 
 
 
+<a name="0.48.2"></a>
 ## [0.48.2](https://github.com/AraBlocks/ara-identity/compare/0.47.4...0.48.2) (2019-01-11)
 
 
@@ -94,6 +112,7 @@
 
 
 
+<a name="0.47.4"></a>
 ## [0.47.4](https://github.com/AraBlocks/ara-identity/compare/0.47.3...0.47.4) (2018-12-20)
 
 
@@ -109,6 +128,7 @@
 
 
 
+<a name="0.47.3"></a>
 ## [0.47.3](https://github.com/AraBlocks/ara-identity/compare/0.47.2...0.47.3) (2018-12-18)
 
 
@@ -118,6 +138,7 @@
 
 
 
+<a name="0.47.2"></a>
 ## [0.47.2](https://github.com/AraBlocks/ara-identity/compare/0.47.1...0.47.2) (2018-12-18)
 
 
@@ -127,6 +148,7 @@
 
 
 
+<a name="0.47.1"></a>
 ## [0.47.1](https://github.com/AraBlocks/ara-identity/compare/0.47.0...0.47.1) (2018-12-17)
 
 
@@ -136,6 +158,7 @@
 
 
 
+<a name="0.47.0"></a>
 # [0.47.0](https://github.com/AraBlocks/ara-identity/compare/0.46.0...0.47.0) (2018-12-17)
 
 
@@ -153,6 +176,7 @@
 
 
 
+<a name="0.46.0"></a>
 # [0.46.0](https://github.com/AraBlocks/ara-identity/compare/0.45.2...0.46.0) (2018-12-17)
 
 
@@ -162,6 +186,7 @@
 
 
 
+<a name="0.45.2"></a>
 ## [0.45.2](https://github.com/AraBlocks/ara-identity/compare/0.45.1...0.45.2) (2018-12-17)
 
 
@@ -172,6 +197,7 @@
 
 
 
+<a name="0.45.1"></a>
 ## [0.45.1](https://github.com/AraBlocks/ara-identity/compare/0.45.0...0.45.1) (2018-12-17)
 
 
@@ -182,6 +208,7 @@
 
 
 
+<a name="0.45.0"></a>
 # [0.45.0](https://github.com/AraBlocks/ara-identity/compare/0.44.2...0.45.0) (2018-12-16)
 
 
@@ -191,6 +218,7 @@
 
 
 
+<a name="0.44.2"></a>
 ## [0.44.2](https://github.com/AraBlocks/ara-identity/compare/0.44.1...0.44.2) (2018-12-16)
 
 
@@ -201,10 +229,12 @@
 
 
 
+<a name="0.44.1"></a>
 ## [0.44.1](https://github.com/AraBlocks/ara-identity/compare/0.44.0...0.44.1) (2018-12-14)
 
 
 
+<a name="0.44.0"></a>
 # [0.44.0](https://github.com/AraBlocks/ara-identity/compare/0.43.0...0.44.0) (2018-12-14)
 
 
@@ -224,6 +254,7 @@
 
 
 
+<a name="0.43.0"></a>
 # [0.43.0](https://github.com/AraBlocks/ara-identity/compare/0.42.6...0.43.0) (2018-12-14)
 
 
@@ -234,10 +265,12 @@
 
 
 
+<a name="0.42.6"></a>
 ## [0.42.6](https://github.com/AraBlocks/ara-identity/compare/0.42.5...0.42.6) (2018-12-14)
 
 
 
+<a name="0.42.5"></a>
 ## [0.42.5](https://github.com/AraBlocks/ara-identity/compare/0.42.3...0.42.5) (2018-12-13)
 
 
@@ -253,10 +286,12 @@
 
 
 
+<a name="0.42.3"></a>
 ## [0.42.3](https://github.com/AraBlocks/ara-identity/compare/0.42.2...0.42.3) (2018-12-13)
 
 
 
+<a name="0.42.2"></a>
 ## [0.42.2](https://github.com/AraBlocks/ara-identity/compare/0.42.1...0.42.2) (2018-12-13)
 
 
@@ -266,10 +301,12 @@
 
 
 
+<a name="0.42.1"></a>
 ## [0.42.1](https://github.com/AraBlocks/ara-identity/compare/0.42.0...0.42.1) (2018-12-13)
 
 
 
+<a name="0.42.0"></a>
 # [0.42.0](https://github.com/AraBlocks/ara-identity/compare/0.41.0...0.42.0) (2018-12-13)
 
 
@@ -279,10 +316,12 @@
 
 
 
+<a name="0.41.0"></a>
 # [0.41.0](https://github.com/AraBlocks/ara-identity/compare/0.40.0...0.41.0) (2018-12-13)
 
 
 
+<a name="0.40.0"></a>
 # [0.40.0](https://github.com/AraBlocks/ara-identity/compare/0.39.1...0.40.0) (2018-12-12)
 
 
@@ -298,10 +337,12 @@
 
 
 
+<a name="0.39.1"></a>
 ## [0.39.1](https://github.com/AraBlocks/ara-identity/compare/0.39.0...0.39.1) (2018-12-12)
 
 
 
+<a name="0.39.0"></a>
 # [0.39.0](https://github.com/AraBlocks/ara-identity/compare/0.38.0...0.39.0) (2018-12-12)
 
 
@@ -311,6 +352,7 @@
 
 
 
+<a name="0.38.0"></a>
 # [0.38.0](https://github.com/AraBlocks/ara-identity/compare/0.37.3...0.38.0) (2018-12-12)
 
 
@@ -320,6 +362,7 @@
 
 
 
+<a name="0.37.3"></a>
 ## [0.37.3](https://github.com/AraBlocks/ara-identity/compare/0.37.2...0.37.3) (2018-12-11)
 
 
@@ -329,6 +372,7 @@
 
 
 
+<a name="0.37.2"></a>
 ## [0.37.2](https://github.com/AraBlocks/ara-identity/compare/0.37.1...0.37.2) (2018-12-10)
 
 
@@ -338,6 +382,7 @@
 
 
 
+<a name="0.37.1"></a>
 ## [0.37.1](https://github.com/AraBlocks/ara-identity/compare/0.37.0...0.37.1) (2018-12-10)
 
 
@@ -347,6 +392,7 @@
 
 
 
+<a name="0.37.0"></a>
 # [0.37.0](https://github.com/AraBlocks/ara-identity/compare/0.36.1...0.37.0) (2018-12-10)
 
 
@@ -356,6 +402,7 @@
 
 
 
+<a name="0.36.1"></a>
 ## [0.36.1](https://github.com/AraBlocks/ara-identity/compare/0.36.0...0.36.1) (2018-12-10)
 
 
@@ -365,6 +412,7 @@
 
 
 
+<a name="0.36.0"></a>
 # [0.36.0](https://github.com/AraBlocks/ara-identity/compare/0.35.4...0.36.0) (2018-12-10)
 
 
@@ -374,6 +422,7 @@
 
 
 
+<a name="0.35.4"></a>
 ## [0.35.4](https://github.com/AraBlocks/ara-identity/compare/0.35.3...0.35.4) (2018-12-09)
 
 
@@ -383,6 +432,7 @@
 
 
 
+<a name="0.35.3"></a>
 ## [0.35.3](https://github.com/AraBlocks/ara-identity/compare/0.35.2...0.35.3) (2018-12-09)
 
 
@@ -392,6 +442,7 @@
 
 
 
+<a name="0.35.2"></a>
 ## [0.35.2](https://github.com/AraBlocks/ara-identity/compare/0.35.1...0.35.2) (2018-12-09)
 
 
@@ -402,10 +453,12 @@
 
 
 
+<a name="0.35.1"></a>
 ## [0.35.1](https://github.com/AraBlocks/ara-identity/compare/0.35.0...0.35.1) (2018-12-09)
 
 
 
+<a name="0.35.0"></a>
 # [0.35.0](https://github.com/AraBlocks/ara-identity/compare/0.34.5...0.35.0) (2018-12-08)
 
 
@@ -416,6 +469,7 @@
 
 
 
+<a name="0.34.5"></a>
 ## [0.34.5](https://github.com/AraBlocks/ara-identity/compare/0.34.3...0.34.5) (2018-12-08)
 
 
@@ -425,6 +479,7 @@
 
 
 
+<a name="0.34.3"></a>
 ## [0.34.3](https://github.com/AraBlocks/ara-identity/compare/0.34.2...0.34.3) (2018-12-07)
 
 
@@ -434,6 +489,7 @@
 
 
 
+<a name="0.34.2"></a>
 ## [0.34.2](https://github.com/AraBlocks/ara-identity/compare/0.34.1...0.34.2) (2018-12-07)
 
 
@@ -443,6 +499,7 @@
 
 
 
+<a name="0.34.1"></a>
 ## [0.34.1](https://github.com/AraBlocks/ara-identity/compare/0.33.2...0.34.1) (2018-12-06)
 
 
@@ -464,10 +521,12 @@
 
 
 
+<a name="0.33.2"></a>
 ## [0.33.2](https://github.com/AraBlocks/ara-identity/compare/0.33.1...0.33.2) (2018-12-06)
 
 
 
+<a name="0.33.1"></a>
 ## [0.33.1](https://github.com/AraBlocks/ara-identity/compare/0.33.0...0.33.1) (2018-12-06)
 
 
@@ -477,6 +536,7 @@
 
 
 
+<a name="0.33.0"></a>
 # [0.33.0](https://github.com/AraBlocks/ara-identity/compare/0.32.8...0.33.0) (2018-12-06)
 
 
@@ -486,6 +546,7 @@
 
 
 
+<a name="0.32.8"></a>
 ## [0.32.8](https://github.com/AraBlocks/ara-identity/compare/0.32.7...0.32.8) (2018-12-03)
 
 
@@ -495,6 +556,7 @@
 
 
 
+<a name="0.32.7"></a>
 ## [0.32.7](https://github.com/AraBlocks/ara-identity/compare/0.32.6...0.32.7) (2018-11-30)
 
 
@@ -504,10 +566,12 @@
 
 
 
+<a name="0.32.6"></a>
 ## [0.32.6](https://github.com/AraBlocks/ara-identity/compare/0.32.5...0.32.6) (2018-11-29)
 
 
 
+<a name="0.32.5"></a>
 ## [0.32.5](https://github.com/AraBlocks/ara-identity/compare/0.32.4...0.32.5) (2018-11-29)
 
 
@@ -517,18 +581,22 @@
 
 
 
+<a name="0.32.4"></a>
 ## [0.32.4](https://github.com/AraBlocks/ara-identity/compare/0.32.3...0.32.4) (2018-11-29)
 
 
 
+<a name="0.32.3"></a>
 ## [0.32.3](https://github.com/AraBlocks/ara-identity/compare/0.32.2...0.32.3) (2018-11-29)
 
 
 
+<a name="0.32.2"></a>
 ## [0.32.2](https://github.com/AraBlocks/ara-identity/compare/0.32.1...0.32.2) (2018-11-29)
 
 
 
+<a name="0.32.1"></a>
 ## [0.32.1](https://github.com/AraBlocks/ara-identity/compare/0.31.3...0.32.1) (2018-11-29)
 
 
@@ -547,6 +615,7 @@
 
 
 
+<a name="0.31.3"></a>
 ## [0.31.3](https://github.com/AraBlocks/ara-identity/compare/0.31.0...0.31.3) (2018-11-15)
 
 
@@ -565,6 +634,7 @@
 
 
 
+<a name="0.31.0"></a>
 # [0.31.0](https://github.com/AraBlocks/ara-identity/compare/0.30.3...0.31.0) (2018-11-15)
 
 
@@ -583,6 +653,7 @@
 
 
 
+<a name="0.30.3"></a>
 ## [0.30.3](https://github.com/AraBlocks/ara-identity/compare/0.30.2...0.30.3) (2018-11-08)
 
 
@@ -592,6 +663,7 @@
 
 
 
+<a name="0.30.2"></a>
 ## [0.30.2](https://github.com/AraBlocks/ara-identity/compare/0.29.0...0.30.2) (2018-11-06)
 
 
@@ -608,6 +680,7 @@
 
 
 
+<a name="0.29.0"></a>
 # [0.29.0](https://github.com/AraBlocks/ara-identity/compare/0.28.1...0.29.0) (2018-10-25)
 
 
@@ -647,22 +720,27 @@
 
 
 
+<a name="0.28.1"></a>
 ## [0.28.1](https://github.com/AraBlocks/ara-identity/compare/0.28.0...0.28.1) (2018-10-22)
 
 
 
+<a name="0.28.0"></a>
 # [0.28.0](https://github.com/AraBlocks/ara-identity/compare/0.27.0...0.28.0) (2018-10-15)
 
 
 
+<a name="0.27.0"></a>
 # [0.27.0](https://github.com/AraBlocks/ara-identity/compare/0.26.0...0.27.0) (2018-10-15)
 
 
 
+<a name="0.26.0"></a>
 # [0.26.0](https://github.com/AraBlocks/ara-identity/compare/0.25.0...0.26.0) (2018-10-15)
 
 
 
+<a name="0.25.0"></a>
 # [0.25.0](https://github.com/AraBlocks/ara-identity/compare/0.24.0...0.25.0) (2018-10-11)
 
 
@@ -672,6 +750,7 @@
 
 
 
+<a name="0.24.0"></a>
 # [0.24.0](https://github.com/AraBlocks/ara-identity/compare/0.23.0...0.24.0) (2018-10-04)
 
 
@@ -688,6 +767,7 @@
 
 
 
+<a name="0.23.0"></a>
 # [0.23.0](https://github.com/AraBlocks/ara-identity/compare/0.22.0...0.23.0) (2018-10-01)
 
 
@@ -697,26 +777,32 @@
 
 
 
+<a name="0.22.0"></a>
 # [0.22.0](https://github.com/AraBlocks/ara-identity/compare/0.21.0...0.22.0) (2018-09-19)
 
 
 
+<a name="0.21.0"></a>
 # [0.21.0](https://github.com/AraBlocks/ara-identity/compare/0.20.0...0.21.0) (2018-09-19)
 
 
 
+<a name="0.20.0"></a>
 # [0.20.0](https://github.com/AraBlocks/ara-identity/compare/0.19.0...0.20.0) (2018-09-19)
 
 
 
+<a name="0.19.0"></a>
 # [0.19.0](https://github.com/AraBlocks/ara-identity/compare/0.18.0...0.19.0) (2018-09-19)
 
 
 
+<a name="0.18.0"></a>
 # [0.18.0](https://github.com/AraBlocks/ara-identity/compare/0.17.0...0.18.0) (2018-09-19)
 
 
 
+<a name="0.17.0"></a>
 # [0.17.0](https://github.com/AraBlocks/ara-identity/compare/0.16.0...0.17.0) (2018-09-19)
 
 
@@ -727,18 +813,22 @@
 
 
 
+<a name="0.16.0"></a>
 # [0.16.0](https://github.com/AraBlocks/ara-identity/compare/0.15.1...0.16.0) (2018-09-18)
 
 
 
+<a name="0.15.1"></a>
 ## [0.15.1](https://github.com/AraBlocks/ara-identity/compare/0.15.0...0.15.1) (2018-09-18)
 
 
 
+<a name="0.15.0"></a>
 # [0.15.0](https://github.com/AraBlocks/ara-identity/compare/0.14.0...0.15.0) (2018-09-18)
 
 
 
+<a name="0.14.0"></a>
 # [0.14.0](https://github.com/AraBlocks/ara-identity/compare/0.13.0...0.14.0) (2018-09-18)
 
 
@@ -749,6 +839,7 @@
 
 
 
+<a name="0.13.0"></a>
 # [0.13.0](https://github.com/AraBlocks/ara-identity/compare/0.12.0...0.13.0) (2018-09-14)
 
 
@@ -758,6 +849,7 @@
 
 
 
+<a name="0.12.0"></a>
 # [0.12.0](https://github.com/AraBlocks/ara-identity/compare/0.11.1...0.12.0) (2018-09-14)
 
 
@@ -768,6 +860,7 @@
 
 
 
+<a name="0.11.1"></a>
 ## [0.11.1](https://github.com/AraBlocks/ara-identity/compare/0.10.0...0.11.1) (2018-09-13)
 
 
@@ -778,10 +871,12 @@
 
 
 
+<a name="0.10.0"></a>
 # [0.10.0](https://github.com/AraBlocks/ara-identity/compare/0.9.0...0.10.0) (2018-09-13)
 
 
 
+<a name="0.9.0"></a>
 # [0.9.0](https://github.com/AraBlocks/ara-identity/compare/0.8.0...0.9.0) (2018-09-13)
 
 
@@ -791,6 +886,7 @@
 
 
 
+<a name="0.8.0"></a>
 # [0.8.0](https://github.com/AraBlocks/ara-identity/compare/0.7.1...0.8.0) (2018-09-11)
 
 
@@ -803,10 +899,12 @@
 
 
 
+<a name="0.7.1"></a>
 ## [0.7.1](https://github.com/AraBlocks/ara-identity/compare/0.7.0...0.7.1) (2018-09-11)
 
 
 
+<a name="0.7.0"></a>
 # [0.7.0](https://github.com/AraBlocks/ara-identity/compare/0.6.0...0.7.0) (2018-09-11)
 
 
@@ -822,6 +920,7 @@
 
 
 
+<a name="0.6.0"></a>
 # [0.6.0](https://github.com/AraBlocks/ara-identity/compare/0.5.1...0.6.0) (2018-09-10)
 
 
@@ -832,10 +931,12 @@
 
 
 
+<a name="0.5.1"></a>
 ## [0.5.1](https://github.com/AraBlocks/ara-identity/compare/0.4.0...0.5.1) (2018-09-06)
 
 
 
+<a name="0.4.0"></a>
 # [0.4.0](https://github.com/AraBlocks/ara-identity/compare/0.3.1...0.4.0) (2018-08-28)
 
 
@@ -845,18 +946,22 @@
 
 
 
+<a name="0.3.1"></a>
 ## [0.3.1](https://github.com/AraBlocks/ara-identity/compare/0.3.0...0.3.1) (2018-08-22)
 
 
 
+<a name="0.3.0"></a>
 # [0.3.0](https://github.com/AraBlocks/ara-identity/compare/0.2.0...0.3.0) (2018-08-22)
 
 
 
+<a name="0.2.0"></a>
 # [0.2.0](https://github.com/AraBlocks/ara-identity/compare/0.1.0...0.2.0) (2018-08-22)
 
 
 
+<a name="0.1.0"></a>
 # [0.1.0](https://github.com/AraBlocks/ara-identity/compare/fc4cbe8...0.1.0) (2018-08-21)
 
 
