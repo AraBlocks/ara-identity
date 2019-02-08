@@ -1598,6 +1598,7 @@ async function onsign(argv) {
       new TypeError('Please provide a password to sign a message with your identity.'))
   }
 
+  argv.password = password
   const signature = await aid.sign(argv.identifier, argv.message, argv)
 
   if (argv.binary) {
