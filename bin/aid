@@ -546,6 +546,121 @@ program.command(
   , onverify
 )
 
+program.command(
+  'bind-dns [identifier]',
+  'Bind a domain name to an identity\'s DDO',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 bind-dns [-D] [options] [identifier]')
+    .group([ 'domain', 'type' ], 'Bind Options:')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
+    .option('domain', {
+      describe: 'Domain name',
+      required: true
+    })
+    .option('type', {
+      describe: 'Domain name record type',
+      default: 'TXT',
+      required: true
+    })
+
+    .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
+    .option('secret', {
+      alias: 's',
+      describe: 'Shared secret key for the associated network keys.',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.secret ||
+        rc.network.identity.secret ||
+        rc.network.secret
+    })
+    .option('network', {
+      alias: 'n',
+      describe: 'Human readable network name for keys in keyring',
+      requiresArg: true,
+      default: rc.network.identity.resolver.network,
+    })
+    .option('keyring', {
+      alias: 'k',
+      describe: 'Path to Ara network keyring file',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.keyring ||
+        rc.network.identity.keyring ||
+        rc.network.keyring,
+    })
+
+    .group([ 'cache', 'timeout' ], 'Resolution Options:')
+    .option('cache', {
+      type: 'boolean',
+      describe: 'Enable or disable cache',
+      default: true,
+    })
+    .option('timeout', {
+      describe: 'Resolution timeout',
+    })
+  , onbinddns
+)
+
+program.command(
+  'unbind-dns [identifier]',
+  'Unbind a domain name from an identity\'s DDO',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 unbind-dns [-D] [options] [identifier]')
+    .group([ 'domain', 'type' ], 'Unbind Options:')
+    .positional('identifier', {
+      default: rc.network.identity.whoami || rc.network.whoami,
+      required: true,
+      type: String
+    })
+    .option('domain', {
+      describe: 'Domain name',
+      required: true
+    })
+
+    .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
+    .option('secret', {
+      alias: 's',
+      describe: 'Shared secret key for the associated network keys.',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.secret ||
+        rc.network.identity.secret ||
+        rc.network.secret
+    })
+    .option('network', {
+      alias: 'n',
+      describe: 'Human readable network name for keys in keyring',
+      requiresArg: true,
+      default: rc.network.identity.resolver.network,
+    })
+    .option('keyring', {
+      alias: 'k',
+      describe: 'Path to Ara network keyring file',
+      requiresArg: true,
+      default:
+        rc.network.identity.resolver.keyring ||
+        rc.network.identity.keyring ||
+        rc.network.keyring,
+    })
+
+    .group([ 'cache', 'timeout' ], 'Resolution Options:')
+    .option('cache', {
+      type: 'boolean',
+      describe: 'Enable or disable cache',
+      default: true,
+    })
+    .option('timeout', {
+      describe: 'Resolution timeout',
+    })
+  , onunbinddns
+)
+
 program
   .recommendCommands()
   .completion('completion', false)
@@ -932,7 +1047,7 @@ async function onresolve(argv) {
       argv.cache = true
     }
 
-    const identity = new DIDDocument(await aid.resolve(argv.identifier, argv))
+    const identity = await aid.resolve(argv.identifier, argv)
 
     let publicKey = null
 
@@ -940,6 +1055,7 @@ async function onresolve(argv) {
       const { fragment } = did.parse(pk.id)
       if ('owner' === fragment) {
         publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+        break
       }
     }
 
@@ -1023,7 +1139,7 @@ async function onresolve(argv) {
 
       process.stdout.write(JSON.stringify(stats))
     } else {
-      process.stdout.write(JSON.stringify(identity))
+      process.stdout.write(JSON.stringify(new DIDDocument(identity)))
     }
   } catch (err) {
     return onfatal(err)
@@ -1638,6 +1754,134 @@ async function onverify(argv) {
   return exit(verified ? 0 : 1)
 }
 
+async function onbinddns(argv) {
+  const crypto = require('ara-crypto')
+  const aid = require('../')
+
+  let { password } = argv
+
+  if ('string' === typeof password) {
+    try {
+      await pify(fs.access)(password)
+      password = await pify(fs.readFile)(password, 'utf8')
+    } catch (err) {
+      void err
+    }
+  }
+
+  if (!password) {
+    ({ password } = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please provide a passphrase for your identity. This is needed to ' +
+      'sign a message with your identity.\n' +
+      'Passphrase:'
+    } ]))
+  }
+
+  if (!password) {
+    // eslint-disable-next-line function-paren-newline
+    return onfatal(
+      new TypeError('Please provide a password to sign a message with your identity.'))
+  }
+
+  argv.password = password
+
+  try {
+    const identity = await aid.resolve(argv.identifier)
+    argv.ddo = identity
+
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if ('owner' === fragment) {
+        argv.publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+        break
+      }
+    }
+
+    const keystore = JSON.parse(await aid.fs.readFile(identity.id, 'keystore/ara'))
+    argv.secretKey = ss.decrypt(keystore, {
+      key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
+    })
+  } catch (err) {
+    return onfatal(err)
+  }
+
+  try {
+    const identity = await aid.dns.bind(argv.identifier, argv.domain, argv)
+    await aid.save(identity)
+  } catch (err) {
+    return onfatal(err)
+  }
+
+  return exit(0)
+}
+
+async function onunbinddns(argv) {
+  const crypto = require('ara-crypto')
+  const aid = require('../')
+
+  let { password } = argv
+
+  if ('string' === typeof password) {
+    try {
+      await pify(fs.access)(password)
+      password = await pify(fs.readFile)(password, 'utf8')
+    } catch (err) {
+      void err
+    }
+  }
+
+  if (!password) {
+    ({ password } = await inquirer.prompt([ {
+      type: 'password',
+      name: 'password',
+      message:
+      'Please provide a passphrase for your identity. This is needed to ' +
+      'sign a message with your identity.\n' +
+      'Passphrase:'
+    } ]))
+  }
+
+  if (!password) {
+    // eslint-disable-next-line function-paren-newline
+    return onfatal(
+      new TypeError('Please provide a password to sign a message with your identity.'))
+  }
+
+  argv.password = password
+
+  try {
+    const identity = await aid.resolve(argv.identifier)
+    argv.ddo = identity
+
+    for (const pk of identity.publicKey) {
+      const { fragment } = did.parse(pk.id)
+      if ('owner' === fragment) {
+        argv.publicKey = Buffer.from(pk.publicKeyHex, 'hex')
+        break
+      }
+    }
+
+    const keystore = JSON.parse(await aid.fs.readFile(identity.id, 'keystore/ara'))
+    argv.secretKey = ss.decrypt(keystore, {
+      key: crypto.blake2b(Buffer.from(password)).slice(0, 16)
+    })
+  } catch (err) {
+    return onfatal(err)
+  }
+
+  try {
+    const identity = await aid.dns.unbind(argv.identifier, argv.domain, argv)
+    await aid.save(identity)
+  } catch (err) {
+    return onfatal(err)
+  }
+
+  return exit(0)
+}
+
 function onfatal(err) {
   debug(err)
   error('fatal:', err.message)
@@ -1645,5 +1889,5 @@ function onfatal(err) {
 }
 
 function exit(code) {
-  process.nextTick(process.exit, code || 0)
+  process.nextTick(process.exit, code)
 }
