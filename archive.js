@@ -1,3 +1,4 @@
+const { createIdentityKeyPath } = require('./key-path')
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
 const { createCFS } = require('cfsnet/create')
@@ -5,8 +6,9 @@ const { Handshake } = require('ara-network/handshake')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
 const debug = require('debug')('ara:identity:archive')
+const path = require('path')
 const pump = require('pump')
-const ram = require('random-access-memory')
+const raf = require('random-access-file')
 const net = require('net')
 const rc = require('./rc')()
 
@@ -187,22 +189,45 @@ async function archive(identity, opts = {}) {
 
       const cfs = await createCFS({
         secretKey,
-        storage: ram,
+        storeSecretKey: false,
         shallow: true,
         key: publicKey,
         id: toHex(publicKey),
+
+        storage(filename, drive) {
+          const root = createIdentityKeyPath({ publicKey })
+          if ('function' === typeof opts.storage) {
+            return opts.storage(filename, drive, root)
+          }
+
+          return raf(path.resolve(root, filename))
+        }
       })
 
       const shallow = opts.shallow || false
       let writes = 0
 
-      await Promise.all(files.map((file) => {
+      await Promise.all(files.map(async (file) => {
         if (!shallow || 'ddo.json' === file.path) {
-          writes++
-          return cfs.writeFile(file.path, file.buffer)
+          let doWrite = true
+
+          try {
+            await cfs.access(file.path)
+            const buf = await cfs.readFile(file.path)
+            if (0 === Buffer.compare(buf, file.buffer)) {
+              doWrite = false
+            }
+          } catch (err) {
+            debug(err)
+          }
+
+          if (doWrite) {
+            writes++
+            return cfs.writeFile(file.path, file.buffer)
+          }
         }
 
-        return {}
+        return null
       }))
 
       timeout()
@@ -227,6 +252,7 @@ async function archive(identity, opts = {}) {
           opts.onupload({
             peerIndex,
             blocks,
+            writes,
             peer,
           })
         }
