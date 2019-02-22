@@ -241,6 +241,10 @@ async function archive(identity, opts = {}) {
         cfs.partitions.home.once('content', oncontent)
       }
 
+      if (0 === writes) {
+        process.nextTick(() => stream.end())
+      }
+
       function oncontent() {
         cfs.partitions.home.content.on('upload', onupload)
       }
