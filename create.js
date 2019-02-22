@@ -75,6 +75,7 @@ async function create(opts) {
   const { context = createContext({ provider: false }) } = opts
   const password = crypto.blake2b(Buffer.from(opts.password))
 
+  let encryptedAraKeystore = null
   let encryptedEthKeystore = null
   let encryptionKey = null
   let didDocument = null
@@ -89,6 +90,40 @@ async function create(opts) {
     await modifyIdentity()
   } else {
     await createNewIdentity()
+  }
+
+  if (opts.files && Array.isArray(opts.files)) {
+    encryptedEthKeystore = opts.files.find(f => 'keystore/eth' === f.path)
+    encryptedAraKeystore = opts.files.find(f => 'keystore/ara' === f.path)
+  }
+
+  if (opts.keystore && opts.keystore.eth) {
+    encryptedEthKeystore = opts.keystore.eth
+
+    if ('buffer' in encryptedEthKeystore) {
+      encryptedEthKeystore = encryptedEthKeystore.buffer
+    }
+
+    if (isBuffer(encryptedEthKeystore)) {
+      encryptedEthKeystore = JSON.parse(encryptedEthKeystore)
+    }
+  }
+
+  if (opts.keystore && opts.keystore.ara) {
+    encryptedAraKeystore = opts.keystore.ara
+
+    if ('buffer' in encryptedAraKeystore) {
+      encryptedAraKeystore = encryptedAraKeystore.buffer
+    }
+
+    if (isBuffer(encryptedAraKeystore)) {
+      encryptedAraKeystore = JSON.parse(encryptedAraKeystore)
+    }
+  } else {
+    encryptedAraKeystore = ss.encrypt(secretKey, {
+      iv: crypto.randomBytes(16),
+      key: password.slice(0, 16)
+    })
   }
 
   if (opts.ddo) {
@@ -176,18 +211,20 @@ async function create(opts) {
     signatureValue: toHex(crypto.sign(digest, secretKey))
   })
 
+  if (!encryptedEthKeystore) {
+    throw new TypeError("Unable to determine file: 'keystore/eth'")
+  }
+
   const files = [ {
     path: 'ddo.json',
     buffer: Buffer.from(JSON.stringify(didDocument))
   }, {
     path: 'keystore/eth',
-    buffer: Buffer.from(JSON.stringify(encryptedEthKeystore))
+    buffer:
+      Buffer.from(JSON.stringify(encryptedEthKeystore))
   }, {
     path: 'keystore/ara',
-    buffer: Buffer.from(JSON.stringify(ss.encrypt(secretKey, {
-      iv: crypto.randomBytes(16),
-      key: password.slice(0, 16)
-    })))
+    buffer: Buffer.from(JSON.stringify(encryptedAraKeystore))
   }, {
     path: 'schema.proto',
     buffer: protobuf.kProtocolBufferSchema,
