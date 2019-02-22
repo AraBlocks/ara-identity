@@ -663,7 +663,8 @@ program.command(
 
 program
   .recommendCommands()
-  .completion('completion', false)
+  .demandCommand()
+  .completion('__completions', false)
 
 void program.getOptions().boolean.splice(-2)
 
