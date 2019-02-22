@@ -1,3 +1,12 @@
+## [0.52.1](https://github.com/AraBlocks/ara-identity/compare/0.52.0...0.52.1) (2019-02-22)
+
+
+### Bug Fixes
+
+* **archive.js:** Exit stream when '0 === writes' ([7d27831](https://github.com/AraBlocks/ara-identity/commit/7d27831))
+
+
+
 # [0.52.0](https://github.com/AraBlocks/ara-identity/compare/0.51.2...0.52.0) (2019-02-22)
 
 
