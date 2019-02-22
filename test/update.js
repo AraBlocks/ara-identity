@@ -26,7 +26,11 @@ test('update() valid ARA id', async (t) => {
     password,
     publicKey: identity.publicKey,
     secretKey: identity.secretKey,
-    ddo: identity.ddo
+    ddo: identity.ddo,
+    keystore: {
+      ara: identity.files.find(({ path }) => 'keystore/ara' === path),
+      eth: identity.files.find(({ path }) => 'keystore/eth' === path),
+    }
   })
 
   let added = false
