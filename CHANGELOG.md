@@ -1,3 +1,19 @@
+# [0.52.0](https://github.com/AraBlocks/ara-identity/compare/0.51.2...0.52.0) (2019-02-22)
+
+
+### Bug Fixes
+
+* **update.js:** Load keystores before calling 'create()' ([4ceecfb](https://github.com/AraBlocks/ara-identity/commit/4ceecfb))
+* **util.js:** Check identity file path and buffer before writing ([5bb2146](https://github.com/AraBlocks/ara-identity/commit/5bb2146))
+
+
+### Features
+
+* **bin/aid:** Show ttal file writes in 'aid archive' ([368f202](https://github.com/AraBlocks/ara-identity/commit/368f202))
+* **create.js:** Allow identity keystores to be passed in ([57816ef](https://github.com/AraBlocks/ara-identity/commit/57816ef))
+
+
+
 ## [0.51.2](https://github.com/AraBlocks/ara-identity/compare/0.51.1...0.51.2) (2019-02-22)
 
 
