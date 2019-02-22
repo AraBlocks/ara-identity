@@ -78,12 +78,18 @@ async function writeIdentity(identity) {
   await pify(mkdirp)(output)
 
   for (let i = 0; i < identity.files.length; ++i) {
-    const dir = dirname(resolve(output, identity.files[i].path))
-    await pify(mkdirp)(dir)
-    await pify(fs.writeFile)(
-      resolve(output, identity.files[i].path),
+    if (
+      identity.files[i] &&
+      identity.files[i].path &&
       identity.files[i].buffer
-    )
+    ) {
+      const dir = dirname(resolve(output, identity.files[i].path))
+      await pify(mkdirp)(dir)
+      await pify(fs.writeFile)(
+        resolve(output, identity.files[i].path),
+        identity.files[i].buffer
+      )
+    }
   }
 }
 
