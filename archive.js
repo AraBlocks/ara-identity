@@ -105,6 +105,54 @@ async function archive(identity, opts = {}) {
 
   let channel = createChannel()
 
+  const cfs = await createCFS({
+    secretKey,
+    storeSecretKey: false,
+    shallow: true,
+    key: publicKey,
+    id: toHex(publicKey),
+
+    storage(filename, drive, dir) {
+      const root = createIdentityKeyPath({ publicKey })
+      if ('function' === typeof opts.storage) {
+        return opts.storage(filename, drive, root)
+      }
+
+      if ('home' === path.basename(dir)) {
+        return raf(path.resolve(root, 'home', filename))
+      }
+
+      return raf(path.resolve(root, filename))
+    }
+  })
+
+  const shallow = opts.shallow || false
+
+  let writes = 0
+  let blocks = 0
+
+  await Promise.all(files.map(async (file) => {
+    if (!shallow || 'ddo.json' === file.path) {
+      let doWrite = true
+
+      try {
+        await cfs.access(file.path)
+        const buf = await cfs.readFile(file.path)
+        if (0 === Buffer.compare(buf, file.buffer)) {
+          doWrite = false
+        }
+      } catch (err) {
+        debug(err)
+      }
+
+      if (doWrite) {
+        return cfs.writeFile(file.path, file.buffer)
+      }
+    }
+
+    return null
+  }))
+
   channel.join(discoveryKey)
   channel.on('peer', onpeer)
   channel.on('error', onerror)
@@ -187,53 +235,21 @@ async function archive(identity, opts = {}) {
       socket.pause()
       socket.unpipe(handshake).unpipe(socket)
 
-      const cfs = await createCFS({
-        secretKey,
-        storeSecretKey: false,
-        shallow: true,
-        key: publicKey,
-        id: toHex(publicKey),
+      timeout()
+      const stream = cfs.replicate()
+      let pending = 0
+      let timer = setTimeout(() => stream.end(), 1000)
 
-        storage(filename, drive) {
-          const root = createIdentityKeyPath({ publicKey })
-          if ('function' === typeof opts.storage) {
-            return opts.storage(filename, drive, root)
-          }
-
-          return raf(path.resolve(root, filename))
-        }
+      cfs.partitions.home.content.on('peer-add', () => {
+        clearTimeout(timer)
+        pending++
       })
 
-      const shallow = opts.shallow || false
-      let writes = 0
-
-      await Promise.all(files.map(async (file) => {
-        if (!shallow || 'ddo.json' === file.path) {
-          let doWrite = true
-
-          try {
-            await cfs.access(file.path)
-            const buf = await cfs.readFile(file.path)
-            if (0 === Buffer.compare(buf, file.buffer)) {
-              doWrite = false
-            }
-          } catch (err) {
-            debug(err)
-          }
-
-          if (doWrite) {
-            writes++
-            return cfs.writeFile(file.path, file.buffer)
-          }
+      cfs.partitions.home.content.on('peer-remove', () => {
+        if (0 === --pending) {
+          process.nextTick(() => stream.end())
         }
-
-        return null
-      }))
-
-      timeout()
-
-      const stream = cfs.replicate()
-      let blocks = 0
+      })
 
       if (cfs.partitions.home.content) {
         oncontent()
@@ -241,29 +257,26 @@ async function archive(identity, opts = {}) {
         cfs.partitions.home.once('content', oncontent)
       }
 
-      if (0 === writes) {
-        process.nextTick(() => stream.end())
-      }
-
       function oncontent() {
         cfs.partitions.home.content.on('upload', onupload)
       }
 
+      cfs.partitions.home.metadata.on('upload', () => {
+        clearTimeout(timer)
+        writes++
+      })
+
       function onupload() {
+        clearTimeout(timer)
         blocks++
 
         if ('function' === typeof opts.onupload) {
           opts.onupload({
             peerIndex,
             blocks,
-            writes,
+            writes: blocks / writes,
             peer,
           })
-        }
-
-        // each "upload" tick could be a "progress" event/callback :shrug:
-        if (blocks === writes) {
-          process.nextTick(() => stream.end())
         }
       }
 
