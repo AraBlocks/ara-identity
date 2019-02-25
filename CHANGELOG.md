@@ -1,3 +1,12 @@
+## [0.53.1](https://github.com/AraBlocks/ara-identity/compare/0.53.0...0.53.1) (2019-02-25)
+
+
+### Bug Fixes
+
+* **archive.js:** Fix eslint issue ([2475998](https://github.com/AraBlocks/ara-identity/commit/2475998))
+
+
+
 # [0.53.0](https://github.com/AraBlocks/ara-identity/compare/0.52.1...0.53.0) (2019-02-22)
 
 
