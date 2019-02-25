@@ -1,3 +1,12 @@
+## [0.53.2](https://github.com/AraBlocks/ara-identity/compare/0.53.1...0.53.2) (2019-02-25)
+
+
+### Bug Fixes
+
+* **bin/aid:** Check encoding, when given. Clean up commands ([ddc24b8](https://github.com/AraBlocks/ara-identity/commit/ddc24b8))
+
+
+
 ## [0.53.1](https://github.com/AraBlocks/ara-identity/compare/0.53.0...0.53.1) (2019-02-25)
 
 
