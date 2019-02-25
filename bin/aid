@@ -44,6 +44,17 @@ program
     describe: 'Show program version'
   })
 
+// global checks
+program.check((argv) => {
+  if (undefined !== argv.encoding) {
+    if (false === Buffer.isEncoding(argv.encoding)) {
+      throw new TypeError(`${argv.encoding} is not a valid encoding type.`)
+    }
+  }
+
+  return true
+})
+
 program.command(
   'create',
   'Create an identity',
@@ -54,7 +65,7 @@ program.command(
 )
 
 program.command(
-  'archive [identifier]',
+  'archive',
   'Archive identity in network',
   // eslint-disable-next-line no-shadow
   program => program
@@ -109,8 +120,8 @@ program.command(
 )
 
 program.command(
-  'resolve [identifier]',
-  'Resolve an identity',
+  'resolve',
+  'Resolve an identity from the network, disk, or cache',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 resolve [-D] [options] [identifier]')
@@ -183,7 +194,7 @@ program.command(
 
 program.command(
   'list',
-  'Output local identities',
+  'Output local identity identifiers',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 list [-D] [options]')
@@ -245,7 +256,7 @@ program.command(
 
 program.command(
   'recover',
-  'Recover an Ara identity using a mnemonic',
+  'Recover an identity using a mnemonic phrase',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 [-D] recover [options]')
@@ -261,7 +272,7 @@ program.command(
 
 program.command(
   'revoke',
-  'Revoke an Ara identity using a mnemonic',
+  'Revoke an identity using a mnemonic phrase',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 [-D] revoke [options]')
@@ -276,18 +287,16 @@ program.command(
 )
 
 program.command(
-  'keystore-dump [identifier] [type]',
-  'Recover secret keys and secret storages for Ara and Web3',
+  'keystore-dump',
+  'Dump secret keys and secret storages to stdout',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 keystore-dump [-D] [options] [identifier]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
     })
-    .positional('type', {
-      default: 'eth',
-    })
-    .group([ 'secret-storage', 'path' ], 'Options:')
+
+    .group([ 'secret-storage', 'path', 'type' ], 'Options:')
     .option('secret-storage', {
       alias: 'S',
       type: 'boolean',
@@ -300,12 +309,16 @@ program.command(
       optional: true,
       describe: 'Path to look for did directory'
     })
+    .option('type', {
+      alias: 't',
+      default: 'eth',
+    })
   , onkeystoredump
 )
 
 program.command(
-  'add-public-key [identifier]',
-  'Add a public key to an identity\'s DDO',
+  'add-public-key',
+  'Add a public key to an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 add-public-key [-D] [options] [identifier]')
@@ -323,8 +336,8 @@ program.command(
 )
 
 program.command(
-  'remove-public-key [identifier]',
-  'Remove a public key to an identity\'s DDO',
+  'remove-public-key',
+  'Remove a public key from an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 remove-public-key [-D] [options] [identifier]')
@@ -342,8 +355,8 @@ program.command(
 )
 
 program.command(
-  'export-public-key [identifier]',
-  'Export a public key from an identity\'s DDO',
+  'export-public-key',
+  'Export a public key from an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 remove-public-key [-D] [options] [identifier]')
@@ -361,8 +374,8 @@ program.command(
 )
 
 program.command(
-  'add-service [identifier]',
-  'Add a service endpoint to an identity\'s DDO',
+  'add-service',
+  'Add a service endpoint to an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 add-service [-D] [options] [identifier]')
@@ -391,8 +404,8 @@ program.command(
 )
 
 program.command(
-  'remove-service [identifier]',
-  'Remove a service endpoint to an identity\'s DDO',
+  'remove-service',
+  'Remove a service endpoint to an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 remove-service [-D] [options] [identifier]')
@@ -410,8 +423,8 @@ program.command(
 )
 
 program.command(
-  'export-service [identifier]',
-  'Export a service endpoint from an identity\'s DDO',
+  'export-service',
+  'Export a service endpoint from an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 export-service [-D] [options] [identifier]')
@@ -429,25 +442,34 @@ program.command(
 )
 
 program.command(
-  'sign [identifier] [message]',
-  'Sign a message for an identity',
+  'sign',
+  'Sign a message using the secret key for an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 sign [-D] [options] [identifier] [message]')
+    .usage('usage: $0 sign [-D] [options] [identifier]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
       required: true,
       type: String
     })
-    .positional('message', {
+
+    .group([ 'message' ], 'Signature Options:')
+    .option('message', {
+      type: String,
       required: true,
-      type: String
+      requiresArg: true,
     })
 
-    .group([ 'binary' ], 'Output Options:')
+    .group([ 'binary', 'encoding' ], 'Output Options:')
     .option('binary', {
       describe: 'Write signature as binary to stdout.',
       type: 'boolean'
+    })
+    .option('encoding', {
+      alias: 'e',
+      default: 'hex',
+      describe: 'Signature encoding output format',
+      requiresArg: true,
     })
 
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
@@ -489,23 +511,33 @@ program.command(
 )
 
 program.command(
-  'verify [identifier] [message]',
-  'verify a message for an identity',
+  'verify',
+  'Verify a message using the public key for an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 verify [-D] [options] [identifier] [message] [signature]')
+    .usage('usage: $0 verify [-D] [options] [identifier]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
       required: true,
       type: String
     })
-    .positional('message', {
+
+    .group([ 'message', 'signature', 'encoding' ], 'Verification Options:')
+    .option('message', {
+      type: String,
       required: true,
-      type: String
+      requiresArg: true,
     })
-    .positional('signature', {
+    .option('signature', {
+      type: String,
       required: true,
-      type: String
+      requiresArg: true,
+    })
+    .option('encoding', {
+      alias: 'e',
+      default: 'hex',
+      describe: 'Signature encoding input format',
+      requiresArg: true,
     })
 
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
@@ -547,8 +579,8 @@ program.command(
 )
 
 program.command(
-  'bind-dns [identifier]',
-  'Bind a domain name to an identity\'s DDO',
+  'bind-dns',
+  'Bind a domain name to an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 bind-dns [-D] [options] [identifier]')
@@ -607,8 +639,8 @@ program.command(
 )
 
 program.command(
-  'unbind-dns [identifier]',
-  'Unbind a domain name from an identity\'s DDO',
+  'unbind-dns',
+  'Unbind a domain name from an identity',
   // eslint-disable-next-line no-shadow
   program => program
     .usage('usage: $0 unbind-dns [-D] [options] [identifier]')
@@ -1732,7 +1764,7 @@ async function onsign(argv) {
   if (argv.binary) {
     process.stdout.write(signature)
   } else {
-    process.stdout.write(signature.toString('hex'))
+    process.stdout.write(signature.toString(argv.encoding || 'hex'))
   }
 
   return exit(0)
@@ -1753,7 +1785,7 @@ async function onverify(argv) {
   }
 
   if (null === signature) {
-    signature = Buffer.from(argv.signature, 'hex')
+    signature = Buffer.from(argv.signature, argv.encoding || 'hex')
   }
 
   try {
