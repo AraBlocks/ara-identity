@@ -188,6 +188,7 @@ async function readFile(identifier, filename, opts) {
   if (opts && false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
+
   throw new NoEntityError(filename, 'open')
 }
 
