@@ -232,13 +232,13 @@ async function archive(identity, opts = {}) {
         opts.onokay(okay)
       }
 
+      timeout()
       socket.pause()
       socket.unpipe(handshake).unpipe(socket)
 
-      timeout()
       const stream = cfs.replicate()
+      const timer = setTimeout(() => stream.end(), 1000)
       let pending = 0
-      let timer = setTimeout(() => stream.end(), 1000)
 
       cfs.partitions.home.content.on('peer-add', () => {
         clearTimeout(timer)
