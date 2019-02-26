@@ -237,15 +237,26 @@ async function archive(identity, opts = {}) {
       socket.unpipe(handshake).unpipe(socket)
 
       const stream = cfs.replicate()
-      const timer = setTimeout(() => stream.end(), 1000)
       let pending = 0
 
+      timeoutLiveConnection()
+
+      function timeoutLiveConnection(again) {
+        clearTimeout(timeoutLiveConnection.timer)
+        if (false !== again) {
+          timeoutLiveConnection.timer = setTimeout(() => stream.end(), 500)
+        } else {
+          timeoutLiveConnection.timer = false
+        }
+      }
+
       cfs.partitions.home.content.on('peer-add', () => {
-        clearTimeout(timer)
+        timeoutLiveConnection(false)
         pending++
       })
 
       cfs.partitions.home.content.on('peer-remove', () => {
+        timeoutLiveConnection(false)
         if (0 === --pending) {
           process.nextTick(() => stream.end())
         }
@@ -262,19 +273,19 @@ async function archive(identity, opts = {}) {
       }
 
       cfs.partitions.home.metadata.on('upload', () => {
-        clearTimeout(timer)
         writes++
+        timeoutLiveConnection(false)
       })
 
       function onupload() {
-        clearTimeout(timer)
+        timeoutLiveConnection()
         blocks++
 
         if ('function' === typeof opts.onupload) {
           opts.onupload({
             peerIndex,
             blocks,
-            writes: blocks / writes,
+            writes,
             peer,
           })
         }
@@ -302,6 +313,7 @@ async function archive(identity, opts = {}) {
 
       if ('function' === typeof opts.onclose) {
         opts.onclose({
+          activeConnections,
           totalConnections,
           discoveryKey,
           peerIndex,
