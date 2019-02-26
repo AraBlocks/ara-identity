@@ -1,3 +1,13 @@
+## [0.53.3](https://github.com/AraBlocks/ara-identity/compare/0.53.2...0.53.3) (2019-02-26)
+
+
+### Bug Fixes
+
+* **archive.js:** Handle live connections that do not end ([9f3efdb](https://github.com/AraBlocks/ara-identity/commit/9f3efdb))
+* **bin/aid:** Correctly report uploaded files ([694e2a3](https://github.com/AraBlocks/ara-identity/commit/694e2a3))
+
+
+
 ## [0.53.2](https://github.com/AraBlocks/ara-identity/compare/0.53.1...0.53.2) (2019-02-25)
 
 
