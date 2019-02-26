@@ -65,7 +65,7 @@ program.command(
 )
 
 program.command(
-  'archive',
+  'archive [identifier]',
   'Archive identity in network',
   // eslint-disable-next-line no-shadow
   program => program
@@ -120,7 +120,7 @@ program.command(
 )
 
 program.command(
-  'resolve',
+  'resolve [identifier]',
   'Resolve an identity from the network, disk, or cache',
   // eslint-disable-next-line no-shadow
   program => program
@@ -287,22 +287,31 @@ program.command(
 )
 
 program.command(
-  'keystore-dump',
+  'keystore-dump [identifier] [type]',
   'Dump secret keys and secret storages to stdout',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 keystore-dump [-D] [options] [identifier]')
+    .usage('usage: $0 keystore-dump [-D] [options] [identifier] [type]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
     })
+    .positional('type', {
+      default: 'eth',
+    })
 
-    .group([ 'secret-storage', 'path', 'type' ], 'Options:')
+    .group([ 'secret-storage', 'encoding', 'path', 'type' ], 'Options:')
     .option('secret-storage', {
       alias: 'S',
       type: 'boolean',
       default: false,
       optional: true,
       describe: 'Set true if secret storage needs to be retrieved'
+    })
+    .option('encoding', {
+      alias: 'e',
+      default: 'hex',
+      describe: 'Encoding output format',
+      requiresArg: true,
     })
     .option('path', {
       alias: 'p',
@@ -317,7 +326,7 @@ program.command(
 )
 
 program.command(
-  'add-public-key',
+  'add-public-key [identifier]',
   'Add a public key to an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -336,7 +345,7 @@ program.command(
 )
 
 program.command(
-  'remove-public-key',
+  'remove-public-key [identifier]',
   'Remove a public key from an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -355,7 +364,7 @@ program.command(
 )
 
 program.command(
-  'export-public-key',
+  'export-public-key [identifier]',
   'Export a public key from an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -374,7 +383,7 @@ program.command(
 )
 
 program.command(
-  'add-service',
+  'add-service [identifier]',
   'Add a service endpoint to an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -404,7 +413,7 @@ program.command(
 )
 
 program.command(
-  'remove-service',
+  'remove-service [identifier]',
   'Remove a service endpoint to an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -423,7 +432,7 @@ program.command(
 )
 
 program.command(
-  'export-service',
+  'export-service [identifier]',
   'Export a service endpoint from an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -442,11 +451,11 @@ program.command(
 )
 
 program.command(
-  'sign',
+  'sign [identifier] [message]',
   'Sign a message using the secret key for an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 sign [-D] [options] [identifier]')
+    .usage('usage: $0 sign [-D] [options] [identifier] [message]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
       required: true,
@@ -511,11 +520,11 @@ program.command(
 )
 
 program.command(
-  'verify',
+  'verify [identifier] [signature] [message]',
   'Verify a message using the public key for an identity',
   // eslint-disable-next-line no-shadow
   program => program
-    .usage('usage: $0 verify [-D] [options] [identifier]')
+    .usage('usage: $0 verify [-D] [options] [identifier] [signature] [message]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
       required: true,
@@ -579,7 +588,7 @@ program.command(
 )
 
 program.command(
-  'bind-dns',
+  'bind-dns [identifier]',
   'Bind a domain name to an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -639,7 +648,7 @@ program.command(
 )
 
 program.command(
-  'unbind-dns',
+  'unbind-dns [identifier]',
   'Unbind a domain name from an identity',
   // eslint-disable-next-line no-shadow
   program => program
@@ -847,7 +856,7 @@ async function onarchive(argv) {
   const stats = {
     totalConnections: 0,
     totalBlocks: 0,
-    totalFiles: 0,
+    totalWrites: 0,
   }
 
   const maxConnections = argv['max-connections']
@@ -933,8 +942,8 @@ async function onarchive(argv) {
 
     info(
       '%d file%s uploaded',
-      stats.totalFiles,
-      1 === stats.totalFiles ? '' : 's',
+      (stats.totalBlocks / stats.activeConnections),
+      1 === (stats.totalBlocks / stats.activeConnections) ? '' : 's',
     )
   } catch (err) {
     error('Failed to archive identity.')
@@ -974,6 +983,7 @@ async function onarchive(argv) {
 
   function onclose(rinfo) {
     stats.totalConnections = rinfo.totalConnections
+    stats.activeConnections = rinfo.activeConnections
     debug(
       'Connection #%d to %s:%s@%s closed.',
       rinfo.peerIndex,
@@ -985,7 +995,7 @@ async function onarchive(argv) {
 
   function onupload(rinfo) {
     stats.totalBlocks = rinfo.blocks
-    stats.totalFiles = rinfo.writes
+    stats.totalWrites = rinfo.writes
   }
 
   function onerror(err) {
