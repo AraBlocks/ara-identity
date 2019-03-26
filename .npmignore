@@ -1,3 +1,8 @@
 .ararc
+.github/
 build/
 scripts/
+docs/
+test/
+*.tgz
+.nyc_output/
