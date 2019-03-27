@@ -32,7 +32,7 @@
   "dependencies": {
     "ara-console": "^0.2.1",
     "ara-context": "^0.5.4",
-    "ara-crypto": "^0.8.3",
+    "ara-crypto": "^0.8.4",
     "ara-identity-dns": "^0.3.0",
     "ara-network": "^1.3.7",
     "ara-runtime-configuration": "^1.3.2",
