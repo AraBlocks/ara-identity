@@ -12,7 +12,7 @@ const raf = require('random-access-file')
 const net = require('net')
 const rc = require('./rc')()
 
-const DEFAULT_ARCHIVER_CONNECTION_TIMEOUT = 5000
+const DEFAULT_ARCHIVER_CONNECTION_TIMEOUT = 10000
 const DEFAULT_ARCHIVER_MAX_CONNECTIONS = 32
 
 /**
