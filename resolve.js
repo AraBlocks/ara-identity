@@ -195,6 +195,7 @@ async function findResolution(did, opts, state) {
 
   let discoveryKey = null
   let didResolve = false
+  let pending = 0
   let channel = null
   let timeout = null
   let result = null
@@ -241,10 +242,8 @@ async function findResolution(did, opts, state) {
       channel.join(discoveryKey)
     }
 
-    if (resolvers.length) {
+    for (let i = 0; i < resolvers.length; ++i) {
       process.nextTick(doResolution)
-    } else {
-      timeout = setTimeout(doResolution, opts.timeout)
     }
 
     function onpeer(id, peer, type) {
@@ -267,10 +266,10 @@ async function findResolution(did, opts, state) {
         return
       }
 
-      if (!didResolve && 0 === resolvers.length && !state.aborted) {
+      if (0 === pending && !didResolve && 0 === resolvers.length && !state.aborted) {
         cleanup()
         done(null, result)
-      } else if (!state.aborted && !didResolve) {
+      } else if (resolvers.length && !state.aborted && !didResolve) {
         const { peer, type } = resolvers.shift()
         const { host, port } = peer
         let uri = ''
@@ -285,6 +284,7 @@ async function findResolution(did, opts, state) {
         timeout = setTimeout(doResolution, opts.timeout)
 
         try {
+          pending++
           const res = await fetch(uri, { mode: 'cors' })
           const json = await res.json()
           result = json.didDocument
@@ -296,6 +296,8 @@ async function findResolution(did, opts, state) {
           process.nextTick(doResolution)
           debug(err)
         }
+
+        pending--
       }
     }
 
