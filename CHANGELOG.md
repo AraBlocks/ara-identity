@@ -1,3 +1,12 @@
+## [0.55.1](https://github.com/AraBlocks/ara-identity/compare/0.55.0...0.55.1) (2019-03-27)
+
+
+### Bug Fixes
+
+* **resolve.js:** Batch requests instead of waterfall ([3623543](https://github.com/AraBlocks/ara-identity/commit/3623543))
+
+
+
 # [0.55.0](https://github.com/AraBlocks/ara-identity/compare/0.54.1...0.55.0) (2019-03-27)
 
 
