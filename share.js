@@ -4,9 +4,17 @@ const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
 const path = require('path')
 const pump = require('pump')
+const did = require('./did')
 const raf = require('random-access-file')
 
 async function share(identity, opts = {}) {
+  // DID?
+  if ('string' === typeof identity) {
+    const ddo = did.parse(did.normalize(identity))
+    const publicKey = Buffer.from(ddo.identifier, 'hex')
+    identity = { publicKey }
+  }
+
   const { publicKey } = identity
   const cfs = await createCFS({
     shallow: true,
