@@ -1,3 +1,12 @@
+## [0.56.1](https://github.com/AraBlocks/ara-identity/compare/0.56.0...0.56.1) (2019-03-28)
+
+
+### Bug Fixes
+
+* **scripts/install.sh:** Make completions installation opt-in ([1585b30](https://github.com/AraBlocks/ara-identity/commit/1585b30))
+
+
+
 # [0.56.0](https://github.com/AraBlocks/ara-identity/compare/0.55.3...0.56.0) (2019-03-28)
 
 
