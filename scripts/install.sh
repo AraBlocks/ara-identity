@@ -1,7 +1,8 @@
 #!/bin/bash
 
-PREFIX="${PREFIX-$HOME/.ara}"
-BIN="$PREFIX/bin"
+PREFIX="${PREFIX-/usr/local}"
+ARA_DIR="${ARA_DIR-$HOME/.ara}"
+BIN="$ARA_DIR/bin"
 AID="${AID:-$BIN/ara-identity}"
 OS=$(uname)
 
@@ -13,8 +14,8 @@ function ontrap {
 
 trap ontrap EXIT
 
-echo "  mkdirp: $PREFIX"
-mkdir -p $PREFIX
+echo "  mkdirp: $ARA_DIR"
+mkdir -p $ARA_DIR
 
 echo "  mkdirp: $BIN"
 mkdir -p $BIN
@@ -33,6 +34,10 @@ if test -f aid.exe; then
   exit 1
 else
   ln -sf $AID/aid $BIN/aid
+  if ! test -f $PREFIX/bin/aid; then
+    ln -sf $AID/aid $PREFIX/bin/aid
+    echo "  install: $PREFIX/bin/aid"
+  fi
 fi
 
 if [ "--completions" = "$1" ]; then
