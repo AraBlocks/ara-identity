@@ -116,6 +116,13 @@ program.command(
       describe: 'Only archive the ddo',
       requiresArg: false,
     })
+    .option('local', {
+      type: 'boolean',
+      alias: 'only-local',
+      default: false,
+      describe: 'Archive identity locally only',
+      requiresArg: false,
+    })
   , onarchive
 )
 
@@ -190,6 +197,20 @@ program.command(
       describe: 'Resolution timeout',
     })
   , onresolve
+)
+
+program.command(
+  'share [identifier]',
+  'Share identity in network',
+  // eslint-disable-next-line no-shadow
+  program => program
+    .usage('usage: $0 share [-D] [options] [identifier]')
+    .positional('identifier', {
+      default:
+        rc.network.identity.whoami ||
+        rc.network.whoami,
+    })
+  , onshare
 )
 
 program.command(
@@ -860,11 +881,13 @@ async function onarchive(argv) {
   }
 
   const maxConnections = argv['max-connections']
+
   const {
     keyring,
     network,
     secret,
-    shallow
+    shallow,
+    local
   } = argv
 
   let identityBuffer = null
@@ -918,6 +941,7 @@ async function onarchive(argv) {
       keyring,
       maxConnections,
       shallow,
+      local,
 
       onhello,
       onauth,
@@ -928,30 +952,36 @@ async function onarchive(argv) {
       onerror,
     })
 
-    info(
-      '%d connection%s made',
-      stats.totalConnections,
-      1 === stats.totalConnections ? '' : 's',
-    )
+    if (true !== local) {
+      info(
+        '%d connection%s made',
+        stats.totalConnections,
+        1 === stats.totalConnections ? '' : 's',
+      )
 
-    info(
-      '%d block%s uploaded',
-      stats.totalBlocks,
-      1 === stats.totalBlocks ? '' : 's',
-    )
+      info(
+        '%d block%s uploaded',
+        stats.totalBlocks,
+        1 === stats.totalBlocks ? '' : 's',
+      )
 
-    info(
-      '%d file%s uploaded',
-      (stats.totalBlocks / stats.activeConnections),
-      1 === (stats.totalBlocks / stats.activeConnections) ? '' : 's',
-    )
+      info(
+        '%d file%s uploaded',
+        (stats.totalBlocks / stats.activeConnections) || 0,
+        1 === (stats.totalBlocks / stats.activeConnections) ? '' : 's',
+      )
+    }
   } catch (err) {
     error('Failed to archive identity.')
     return onfatal(err)
   }
 
   if (didArchive) {
-    info('Successfully archived identity to network "%s"', network)
+    if (local) {
+      info('Successfully archived identity to local system')
+    } else {
+      info('Successfully archived identity to network "%s"', network)
+    }
     return exit(0)
   }
 
@@ -1200,6 +1230,32 @@ async function onresolve(argv) {
   }
 
   return exit(0)
+}
+
+async function onshare(argv) {
+  if (
+    0 === argv.identifier.indexOf('did:') &&
+    0 !== argv.identifier.indexOf('did:ara:')
+  ) {
+    return onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
+  }
+
+  const onexit = require('async-exit-hook')
+  const aid = require('../')
+
+
+  const ddo = await aid.resolve(argv.identifier)
+  const owner = ddo.publicKey.find(pk => 'owner' === did.parse(pk.id).fragment)
+  const publicKey = Buffer.from(owner.publicKeyHex, 'hex')
+  const network = await aid.share({ publicKey })
+
+  info('Broadcasting and sharing %s', ddo.id)
+  return onexit((done) => {
+    warn('Closing network...')
+    network.close()
+    process.nextTick(exit, 0)
+    process.nextTick(done)
+  })
 }
 
 async function onlist(argv) {
