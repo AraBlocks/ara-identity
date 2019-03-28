@@ -35,7 +35,7 @@ else
   ln -sf $AID/aid $BIN/aid
 fi
 
-if [ "--completions" = $1 ]; then
+if [ "--completions" = "$1" ]; then
   if [ -z "$BASHRC" ]; then
     if [[ "Darwin" == "$OS" ]] || ! [ -f "$HOME/.bashrc" ]; then
       BASHRC="$HOME/.bash_profile"
@@ -83,4 +83,4 @@ if [ "--completions" = $1 ]; then
 fi
 
 echo
-echo "   ok!"
+echo "  ok!"
