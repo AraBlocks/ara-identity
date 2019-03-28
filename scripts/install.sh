@@ -13,22 +13,6 @@ function ontrap {
 
 trap ontrap EXIT
 
-if [ -z "$BASHRC" ]; then
-  if [[ "Darwin" == "$OS" ]] || ! [ -f "$HOME/.bashrc" ]; then
-    BASHRC="$HOME/.bash_profile"
-  else
-    BASHRC="$HOME/.bashrc"
-  fi
-fi
-
-if ! [ -f "$BASHRC" ] || [ -z "$BASHRC" ]; then
-  echo >&2 "  error: Unable to determine .bashrc or .bash_profile"
-  exit 1
-fi
-
-TMPBASHRC="$BASHRC.tmp"
-PATTERN='s/###\-begin\-aid\-completions\-###.*###-end-aid-completions-###//'
-
 echo "  mkdirp: $PREFIX"
 mkdir -p $PREFIX
 
@@ -51,32 +35,52 @@ else
   ln -sf $AID/aid $BIN/aid
 fi
 
-rm -f $TMPBASHRC
-echo "  backup: $BASHRC"
-cp -f $BASHRC $BASHRC.bak
+if [ "--completions" = $1 ]; then
+  if [ -z "$BASHRC" ]; then
+    if [[ "Darwin" == "$OS" ]] || ! [ -f "$HOME/.bashrc" ]; then
+      BASHRC="$HOME/.bash_profile"
+    else
+      BASHRC="$HOME/.bashrc"
+    fi
+  fi
 
-cat $BASHRC | \
-  tr '\n' '\r' | \
-  sed $PATTERN | \
-  tr '\r' '\n' > $TMPBASHRC
+  if ! [ -f "$BASHRC" ] || [ -z "$BASHRC" ]; then
+    echo >&2 "  error: Unable to determine .bashrc or .bash_profile"
+    exit 1
+  fi
 
-echo "  diff: (before) $BASHRC <> $TMPBASHRC"
-diff $BASHRC $TMPBASHRC
+  TMPBASHRC="$BASHRC.tmp"
+  PATTERN='s/###\-begin\-aid\-completions\-###.*###-end-aid-completions-###//'
 
-echo " install: aid completions "
-$BIN/aid __completions | \
-  sed 's/_yargs/_aid/g' | \
-  sed 's/begin-yargs/begin-aid/g' | \
-  sed 's/end-yargs/end-aid/g' >> $TMPBASHRC
+  rm -f $TMPBASHRC
 
-echo "  diff: (after) $BASHRC <> $TMPBASHRC"
-diff $BASHRC $TMPBASHRC
+  echo "  backup: $BASHRC"
+  cp -f $BASHRC $BASHRC.bak
 
-echo "  install: $BASHRC (aid completions)"
-mv -f $TMPBASHRC $BASHRC
+  cat $BASHRC | \
+    tr '\n' '\r' | \
+    sed $PATTERN | \
+    tr '\r' '\n' > $TMPBASHRC
 
-echo "  cleanup:  $TMPBASHRC $BASHRC.bak"
-rm -f $TMPBASHRC $BASHRC.bak
+  echo "  diff: (before) $BASHRC <> $TMPBASHRC"
+  diff $BASHRC $TMPBASHRC
+
+  echo " install: aid completions "
+  $BIN/aid __completions | \
+    sed 's/_yargs/_aid/g' | \
+    sed 's/begin-yargs/begin-aid/g' | \
+    sed 's/end-yargs/end-aid/g' >> $TMPBASHRC
+
+  echo "  diff: (after) $BASHRC <> $TMPBASHRC"
+  diff $BASHRC $TMPBASHRC
+
+  echo "  install: $BASHRC (aid completions)"
+  mv -f $TMPBASHRC $BASHRC
+
+  echo "  cleanup:  $TMPBASHRC $BASHRC.bak"
+  rm -f $TMPBASHRC $BASHRC.bak
+
+fi
 
 echo
 echo "   ok!"
