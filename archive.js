@@ -89,21 +89,16 @@ async function archive(identity, opts = {}) {
   const { maxConnections = DEFAULT_ARCHIVER_MAX_CONNECTIONS } = opts
   const { publicKey, secretKey, files } = identity
 
-  const secret = Buffer.from(opts.secret)
-  const keyring = keyRing(opts.keyring, { secret })
-
-  await keyring.ready()
-
-  const buffer = await keyring.get(opts.network)
-  const unpacked = unpack({ buffer })
-  const { discoveryKey } = unpacked
+  let keys = null
+  let secret = null
+  let channel = null
+  let keyring = null
+  let discoveryKey = null
 
   let peerCount = 0
   let didArchive = false
   let totalConnections = 0
   let activeConnections = 0
-
-  let channel = createChannel()
 
   const cfs = await createCFS({
     secretKey,
@@ -153,16 +148,32 @@ async function archive(identity, opts = {}) {
     return null
   }))
 
-  channel.join(discoveryKey)
-  channel.on('peer', onpeer)
-  channel.on('error', onerror)
+  if (true !== opts.local) {
+    secret = Buffer.from(opts.secret)
+    keyring = keyRing(opts.keyring, { secret })
+    channel = createChannel()
 
-  timeout()
+    await keyring.ready()
 
-  await new Promise((resolve, reject) => {
-    channel.once('error', reject)
-    channel.once('close', resolve)
-  })
+    const buffer = await keyring.get(opts.network)
+    keys = unpack({ buffer })
+    // eslint-disable-next-line prefer-destructuring
+    discoveryKey = keys.discoveryKey
+
+    channel.join(discoveryKey)
+    channel.on('peer', onpeer)
+    channel.on('error', onerror)
+
+    timeout()
+
+    await new Promise((resolve, reject) => {
+      channel.once('error', reject)
+      channel.once('close', resolve)
+    })
+  } else {
+    await cfs.close()
+    didArchive = true
+  }
 
   return didArchive
 
@@ -188,8 +199,8 @@ async function archive(identity, opts = {}) {
       publicKey,
       secretKey,
       secret,
-      remote: { publicKey: unpacked.publicKey },
-      domain: { publicKey: unpacked.domain.publicKey }
+      remote: { publicKey: keys.publicKey },
+      domain: { publicKey: keys.domain.publicKey }
     })
 
     activeConnections++
