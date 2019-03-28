@@ -7,6 +7,7 @@ const { revoke } = require('./revoke')
 const { update } = require('./update')
 const { verify } = require('./verify')
 const { whoami } = require('./whoami')
+const { share } = require('./share')
 const { save } = require('./save')
 const { sign } = require('./sign')
 const ethereum = require('./ethereum')
@@ -28,6 +29,7 @@ module.exports = {
   update,
   verify,
   whoami,
+  share,
   save,
   sign,
   list,
