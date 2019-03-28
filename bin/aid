@@ -930,7 +930,10 @@ async function onarchive(argv) {
       buffer: identityBuffer
     })
 
-    warn('Archiving new identity for network \'%s\'.', keyring)
+    if (true !== local) {
+      warn('Archiving identity for network \'%s\'.', keyring)
+    }
+
     didArchive = await aid.archive({
       publicKey,
       secretKey,
