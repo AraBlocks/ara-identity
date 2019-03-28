@@ -1,7 +1,7 @@
+const { DID, parse } = require('did-uri')
 const isDomainName = require('is-domain-name')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
-const { DID } = require('did-uri')
 
 const DID_ARA_METHOD = 'ara'
 const IDENTIFIER_LENGTH = 64
@@ -73,4 +73,6 @@ function normalize(uri, method) {
 module.exports = {
   normalize,
   create,
+  parse,
+  DID,
 }
