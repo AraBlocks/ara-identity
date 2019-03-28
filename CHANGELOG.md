@@ -1,3 +1,12 @@
+## [0.56.2](https://github.com/AraBlocks/ara-identity/compare/0.56.1...0.56.2) (2019-03-28)
+
+
+### Bug Fixes
+
+* **scripts/install.sh:** Fix typo ([e7bb544](https://github.com/AraBlocks/ara-identity/commit/e7bb544))
+
+
+
 ## [0.56.1](https://github.com/AraBlocks/ara-identity/compare/0.56.0...0.56.1) (2019-03-28)
 
 
