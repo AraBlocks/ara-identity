@@ -1,3 +1,17 @@
+# [0.58.0](https://github.com/AraBlocks/ara-identity/compare/0.57.0...0.58.0) (2019-03-29)
+
+
+### Bug Fixes
+
+* **share.js:** Use replication stream factory ([410f0ba](https://github.com/AraBlocks/ara-identity/commit/410f0ba))
+
+
+### Features
+
+* **fs.js:** Support reads from DAT network ([f30f646](https://github.com/AraBlocks/ara-identity/commit/f30f646))
+
+
+
 # [0.57.0](https://github.com/AraBlocks/ara-identity/compare/0.56.4...0.57.0) (2019-03-29)
 
 
