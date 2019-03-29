@@ -75,6 +75,14 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     swarm.on('connection', onconnection)
     swarm.on('error', onerror)
 
+    let dat = null
+    try {
+      dat = createSwarm({ stream: () => cfs.replicate({ live: false }) })
+      dat.join(cfs.discoveryKey)
+    } catch (err) {
+      debug(err)
+    }
+
     try {
       debug('network: access: %s: %s', did.identifier, filename)
       await cfs.access(filename)
@@ -107,6 +115,10 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
 
         if (null !== swarm) {
           swarm.close()
+        }
+
+        if (null != dat) {
+          dat.close()
         }
 
         done(err, result)
