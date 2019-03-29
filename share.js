@@ -55,7 +55,7 @@ async function share(identity, opts = {}) {
   proxyEvents(swarms.stream)
   proxyEvents(swarms.connection)
 
-  swarms.stream.join(cfs.discoveryKey)
+  swarms.stream.join(cfs.discoveryKey, { announce: true })
   swarms.connection.join(cfs.discoveryKey, { announce: true })
 
   return swarms
@@ -65,16 +65,20 @@ async function share(identity, opts = {}) {
     src.on('error', (...args) => swarms.emit('error', ...args))
   }
 
-  function onstream() {
-    return cfs.replicate()
-  }
-
-  function onconnection(connection) {
-    const stream = cfs.replicate({
+  function createStream() {
+    return cfs.replicate({
       download: false,
       upload: true,
       live: true
     })
+  }
+
+  function onstream() {
+    return createStream()
+  }
+
+  function onconnection(connection) {
+    const stream = createStream()
 
     pump(stream, connection, stream, (err) => {
       if (err) {
