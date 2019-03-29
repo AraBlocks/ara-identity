@@ -1,7 +1,9 @@
 const { createIdentityKeyPath } = require('./key-path')
+const { EventEmitter } = require('events')
 const { createSwarm } = require('ara-network/discovery/swarm')
 const { createCFS } = require('cfsnet/create')
 const { toHex } = require('./util')
+const debug = require('debug')('ara:identity:share')
 const path = require('path')
 const pump = require('pump')
 const did = require('./did')
@@ -35,17 +37,48 @@ async function share(identity, opts = {}) {
     }
   })
 
-  const swarm = createSwarm({ }).on('connection', onconnection)
+  const swarms = Object.assign(new EventEmitter(), {
+    stream: createSwarm({ stream: onstream }),
+    connection: createSwarm({ }).on('connection', onconnection),
 
-  swarm.join(cfs.discoveryKey, { announce: true })
+    close() {
+      try { swarms.stream.close() } catch (err) {
+        swarms.stream.destroy()
+      }
 
-  return swarm
+      try { swarms.connection.close() } catch (err) {
+        swarms.connection.destroy()
+      }
+    }
+  })
+
+  proxyEvents(swarms.stream)
+  proxyEvents(swarms.connection)
+
+  swarms.stream.join(cfs.discoveryKey)
+  swarms.connection.join(cfs.discoveryKey, { announce: true })
+
+  return swarms
+
+  function proxyEvents(src) {
+    src.on('peer', (...args) => swarms.emit('peer', ...args))
+    src.on('error', (...args) => swarms.emit('error', ...args))
+  }
+
+  function onstream() {
+    return cfs.replicate()
+  }
 
   function onconnection(connection) {
-    const stream = cfs.replicate({ download: false, upload: true, live: true })
+    const stream = cfs.replicate({
+      download: false,
+      upload: true,
+      live: true
+    })
+
     pump(stream, connection, stream, (err) => {
       if (err) {
-        swarm.emit('error', err)
+        debug(err)
       }
     })
   }
