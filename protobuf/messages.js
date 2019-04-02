@@ -24,6 +24,13 @@ var Identity = exports.Identity = {
   decode: null
 }
 
+var Archive = exports.Archive = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
 var Keys = exports.Keys = {
   buffer: true,
   encodingLength: null,
@@ -40,6 +47,7 @@ var KeyPair = exports.KeyPair = {
 
 defineKeyStore()
 defineIdentity()
+defineArchive()
 defineKeys()
 defineKeyPair()
 
@@ -312,6 +320,10 @@ function defineKeyStore () {
         length += varint.encodingLength(len)
         length += 1 + len
       }
+      if (defined(obj.digest)) {
+        var len = enc[0].encodingLength(obj.digest)
+        length += 1 + len
+      }
       return length
     }
 
@@ -353,6 +365,11 @@ function defineKeyStore () {
         enc[2].encode(obj.kdfparams, buf, offset)
         offset += enc[2].encode.bytes
       }
+      if (defined(obj.digest)) {
+        buf[offset++] = 58
+        enc[0].encode(obj.digest, buf, offset)
+        offset += enc[0].encode.bytes
+      }
       encode.bytes = offset - oldOffset
       return buf
     }
@@ -368,7 +385,8 @@ function defineKeyStore () {
         cipherparams: null,
         mac: "",
         kdf: "",
-        kdfparams: null
+        kdfparams: null,
+        digest: ""
       }
       while (true) {
         if (end <= offset) {
@@ -406,6 +424,10 @@ function defineKeyStore () {
           offset += varint.decode.bytes
           obj.kdfparams = enc[2].decode(buf, offset, offset + len)
           offset += enc[2].decode.bytes
+          break
+          case 7:
+          obj.digest = enc[0].decode(buf, offset)
+          offset += enc[0].decode.bytes
           break
           default:
           offset = skip(prefix & 7, buf, offset)
@@ -783,6 +805,65 @@ function defineIdentity () {
         offset += varint.decode.bytes
         obj.files.push(enc[3].decode(buf, offset, offset + len))
         offset += enc[3].decode.bytes
+        break
+        default:
+        offset = skip(prefix & 7, buf, offset)
+      }
+    }
+  }
+}
+
+function defineArchive () {
+  var enc = [
+    encodings.bool
+  ]
+
+  Archive.encodingLength = encodingLength
+  Archive.encode = encode
+  Archive.decode = decode
+
+  function encodingLength (obj) {
+    var length = 0
+    if (defined(obj.shallow)) {
+      var len = enc[0].encodingLength(obj.shallow)
+      length += 1 + len
+    }
+    return length
+  }
+
+  function encode (obj, buf, offset) {
+    if (!offset) offset = 0
+    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+    var oldOffset = offset
+    if (defined(obj.shallow)) {
+      buf[offset++] = 8
+      enc[0].encode(obj.shallow, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    encode.bytes = offset - oldOffset
+    return buf
+  }
+
+  function decode (buf, offset, end) {
+    if (!offset) offset = 0
+    if (!end) end = buf.length
+    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+    var oldOffset = offset
+    var obj = {
+      shallow: false
+    }
+    while (true) {
+      if (end <= offset) {
+        decode.bytes = offset - oldOffset
+        return obj
+      }
+      var prefix = varint.decode(buf, offset)
+      offset += varint.decode.bytes
+      var tag = prefix >> 3
+      switch (tag) {
+        case 1:
+        obj.shallow = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)

@@ -47,6 +47,12 @@ message Identity {
   }
 }
 
+message Archive {
+  bytes key = 1;
+  bool shallow = 2;
+  bytes signature = 10;
+}
+
 message Keys {
   bytes signature = 1;
   repeated KeyPair keys = 2;
