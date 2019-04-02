@@ -253,7 +253,7 @@ async function archive(identity, opts = {}) {
 
       const key = publicKey
       const signature = crypto.sign(
-        messages.Archive.encode({ shallow, key }),
+        crypto.blake2b(messages.Archive.encode({ shallow, key })),
         secretKey
       )
 
