@@ -971,7 +971,7 @@ async function onarchive(argv) {
       info(
         '%d file%s uploaded',
         (stats.totalBlocks / stats.activeConnections) || 0,
-        1 === (stats.totalBlocks / stats.activeConnections) ? '' : 's',
+        1 === Math.ceil(stats.totalBlocks / stats.activeConnections) ? '' : 's',
       )
     }
   } catch (err) {
@@ -1245,7 +1245,6 @@ async function onshare(argv) {
 
   const onexit = require('async-exit-hook')
   const aid = require('../')
-
 
   const ddo = await aid.resolve(argv.identifier)
   const owner = ddo.publicKey.find(pk => 'owner' === did.parse(pk.id).fragment)
