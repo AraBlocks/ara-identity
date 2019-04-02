@@ -5,6 +5,8 @@ const { createCFS } = require('cfsnet/create')
 const { Handshake } = require('ara-network/handshake')
 const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
+const messages = require('./protobuf/messages')
+const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:archive')
 const path = require('path')
 const pump = require('pump')
@@ -247,7 +249,24 @@ async function archive(identity, opts = {}) {
       socket.pause()
       socket.unpipe(handshake).unpipe(socket)
 
-      const stream = cfs.replicate()
+      const key = publicKey
+      const signature = crypto.sign(
+        messages.Archive.encode({ shallow, key }),
+        secretKey
+      )
+
+      const stream = cfs.replicate({
+        download: false,
+        upload: true,
+        live: true,
+
+        userData: messages.Archive.encode({
+          signature,
+          shallow,
+          key,
+        })
+      })
+
       let pending = 0
 
       timeoutLiveConnection()
