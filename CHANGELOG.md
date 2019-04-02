@@ -1,3 +1,12 @@
+## [0.59.1](https://github.com/AraBlocks/ara-identity/compare/0.59.0...0.59.1) (2019-04-02)
+
+
+### Bug Fixes
+
+* **bin/aid:** Ensure int for number of files (again) ([65d80e1](https://github.com/AraBlocks/ara-identity/commit/65d80e1))
+
+
+
 # [0.59.0](https://github.com/AraBlocks/ara-identity/compare/0.58.0...0.59.0) (2019-04-02)
 
 

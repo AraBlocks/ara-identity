@@ -1,6 +1,6 @@
 {
   "name": "ara-identity",
-  "version": "0.59.0",
+  "version": "0.59.1",
   "description": "Create and resolve decentralized identity based Ara identifiers.",
   "main": "index.js",
   "bin": {
