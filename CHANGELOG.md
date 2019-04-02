@@ -1,3 +1,18 @@
+# [0.59.0](https://github.com/AraBlocks/ara-identity/compare/0.58.0...0.59.0) (2019-04-02)
+
+
+### Bug Fixes
+
+* **bin/aid:** Ensure int for number of files ([8969854](https://github.com/AraBlocks/ara-identity/commit/8969854))
+
+
+### Features
+
+* **archive.js:** Send 'Archive' message as replication user data ([b0154c4](https://github.com/AraBlocks/ara-identity/commit/b0154c4))
+* **protobuf/schema.proto:** Add 'Archive' message type ([0881c4a](https://github.com/AraBlocks/ara-identity/commit/0881c4a))
+
+
+
 # [0.58.0](https://github.com/AraBlocks/ara-identity/compare/0.57.0...0.58.0) (2019-03-29)
 
 
