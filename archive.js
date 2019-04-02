@@ -210,7 +210,9 @@ async function archive(identity, opts = {}) {
 
     socket.on('error', onerror)
     socket.on('close', onclose)
-    socket.on('close', () => { activeConnections-- })
+    socket.on('close', () => {
+      activeConnections = Math.max(activeConnections - 1, 0)
+    })
 
     handshake.on('error', onerror)
     handshake.on('hello', onhello)
@@ -323,7 +325,8 @@ async function archive(identity, opts = {}) {
 
       pump(socket, stream, socket, (err) => {
         timeout(false)
-        if (err) {
+        if (err) { debug(err) }
+        if (err && !ignoredError(err)) {
           onerror(err)
         } else {
           didArchive = true
@@ -354,9 +357,9 @@ async function archive(identity, opts = {}) {
   }
 
   function onerror(err) {
-    totalConnections--
+    totalConnections = Math.max(totalConnections - 1, 0)
     debug(err)
-    if (err && err.code !== 'ECONNREFUSED') {
+    if (err && !ignoredError(err)) {
       if ('function' === typeof opts.onerror) {
         opts.onerror(err)
       }
@@ -365,6 +368,13 @@ async function archive(identity, opts = {}) {
 
   function ontimeout() {
     channel.emit('error', new Error('Archiver request timed out.'))
+  }
+
+  function ignoredError(err) {
+    return Boolean(err && [
+      'ECONNREFUSED',
+      'EPIPE'
+    ].includes(err.code))
   }
 }
 
