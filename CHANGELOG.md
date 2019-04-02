@@ -1,3 +1,12 @@
+# [0.60.0](https://github.com/AraBlocks/ara-identity/compare/0.59.2...0.60.0) (2019-04-02)
+
+
+### Bug Fixes
+
+* **protobuf/:** Update 'messages.js' ([c932afe](https://github.com/AraBlocks/ara-identity/commit/c932afe))
+
+
+
 ## [0.59.2](https://github.com/AraBlocks/ara-identity/compare/0.59.1...0.59.2) (2019-04-02)
 
 
