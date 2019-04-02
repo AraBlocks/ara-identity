@@ -970,7 +970,7 @@ async function onarchive(argv) {
 
       info(
         '%d file%s uploaded',
-        (stats.totalBlocks / stats.activeConnections) || 0,
+        Math.ceil(stats.totalBlocks / stats.activeConnections) || 0,
         1 === Math.ceil(stats.totalBlocks / stats.activeConnections) ? '' : 's',
       )
     }
