@@ -1,3 +1,12 @@
+## [0.59.2](https://github.com/AraBlocks/ara-identity/compare/0.59.1...0.59.2) (2019-04-02)
+
+
+### Bug Fixes
+
+* **archive.js:** Handle broken pipes on unstable connections ([bdb86a5](https://github.com/AraBlocks/ara-identity/commit/bdb86a5))
+
+
+
 ## [0.59.1](https://github.com/AraBlocks/ara-identity/compare/0.59.0...0.59.1) (2019-04-02)
 
 
