@@ -815,6 +815,7 @@ function defineIdentity () {
 
 function defineArchive () {
   var enc = [
+    encodings.bytes,
     encodings.bool
   ]
 
@@ -824,8 +825,16 @@ function defineArchive () {
 
   function encodingLength (obj) {
     var length = 0
+    if (defined(obj.key)) {
+      var len = enc[0].encodingLength(obj.key)
+      length += 1 + len
+    }
     if (defined(obj.shallow)) {
-      var len = enc[0].encodingLength(obj.shallow)
+      var len = enc[1].encodingLength(obj.shallow)
+      length += 1 + len
+    }
+    if (defined(obj.signature)) {
+      var len = enc[0].encodingLength(obj.signature)
       length += 1 + len
     }
     return length
@@ -835,9 +844,19 @@ function defineArchive () {
     if (!offset) offset = 0
     if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
     var oldOffset = offset
+    if (defined(obj.key)) {
+      buf[offset++] = 10
+      enc[0].encode(obj.key, buf, offset)
+      offset += enc[0].encode.bytes
+    }
     if (defined(obj.shallow)) {
-      buf[offset++] = 8
-      enc[0].encode(obj.shallow, buf, offset)
+      buf[offset++] = 16
+      enc[1].encode(obj.shallow, buf, offset)
+      offset += enc[1].encode.bytes
+    }
+    if (defined(obj.signature)) {
+      buf[offset++] = 82
+      enc[0].encode(obj.signature, buf, offset)
       offset += enc[0].encode.bytes
     }
     encode.bytes = offset - oldOffset
@@ -850,7 +869,9 @@ function defineArchive () {
     if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
     var oldOffset = offset
     var obj = {
-      shallow: false
+      key: null,
+      shallow: false,
+      signature: null
     }
     while (true) {
       if (end <= offset) {
@@ -862,7 +883,15 @@ function defineArchive () {
       var tag = prefix >> 3
       switch (tag) {
         case 1:
-        obj.shallow = enc[0].decode(buf, offset)
+        obj.key = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 2:
+        obj.shallow = enc[1].decode(buf, offset)
+        offset += enc[1].decode.bytes
+        break
+        case 10:
+        obj.signature = enc[0].decode(buf, offset)
         offset += enc[0].decode.bytes
         break
         default:
