@@ -9,7 +9,7 @@ const web3 = new Web3('http://127.0.0.1:9545')
 const password = 'password'
 
 test('ethereum.create({entropy})', async (t) => {
-  await t.throws(create({ web3, privateKey: 0 }), TypeError, 'ethereum.account.create: Expecting privateKey to be a buffer')
+  await t.throwsAsync(create({ web3, privateKey: 0 }), TypeError, 'ethereum.account.create: Expecting privateKey to be a buffer')
   const account = await create({ web3, privateKey: Buffer.from('b06c21d8e52ce9f89c40695ce79c3349bacf90418f84137220c503d14e2b5e36') })
   t.true(null != account)
   t.true('object' === typeof account)
@@ -18,10 +18,10 @@ test('ethereum.create({entropy})', async (t) => {
 })
 
 test('ethereum.load({opts}) invalid args', async (t) => {
-  await t.throws(load(), TypeError, 'Expecting opts object')
-  await t.throws(load({ web3: null }), TypeError, 'Expecting web3 object')
-  await t.throws(load({ web3, publicKey: 1234 }), TypeError, 'Expecting publicKey to be non-empty string')
-  await t.throws(load({
+  await t.throwsAsync(load(), TypeError, 'Expecting opts object')
+  await t.throwsAsync(load({ web3: null }), TypeError, 'Expecting web3 object')
+  await t.throwsAsync(load({ web3, publicKey: 1234 }), TypeError, 'Expecting publicKey to be non-empty string')
+  await t.throwsAsync(load({
     web3,
     publicKey: 'b06c21d8e52ce9f89c40695ce79c3349bacf90418f84137220c503d14e2b5e36',
     password: 1234

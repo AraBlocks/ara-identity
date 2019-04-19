@@ -5,31 +5,31 @@ const bip39 = require('bip39')
 const test = require('ava')
 
 test('recover() invalid opts', async (t) => {
-  await t.throws(
+  await t.throwsAsync(
     recover(),
     TypeError,
     'Expecting opts to be an object.'
   )
 
-  await t.throws(
+  await t.throwsAsync(
     recover({ context }),
     TypeError,
     'Expecting password for recovery.'
   )
 
-  await t.throws(
+  await t.throwsAsync(
     recover({ context, password: 123 }),
     TypeError,
     'Expecting mnemonic for recovery.'
   )
 
-  await t.throws(
+  await t.throwsAsync(
     recover({ context, password: 123, mnemonic: 1234 }),
     TypeError,
     'Expecting mnemonic to be a string.'
   )
 
-  await t.throws(
+  await t.throwsAsync(
     recover({ context, password: 123, mnemonic: 'hello how' }),
     TypeError,
     'Expecting a valid bip39 mnemonic for recovery.'

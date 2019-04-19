@@ -9,7 +9,7 @@ test('create() valid ARA id', async (t) => {
 })
 
 test('create() using invalid mnemonic', async (t) => {
-  await t.throws(
+  await t.throwsAsync(
     create({ context, password: 'password', mnemonic: 'exhaust' }),
     TypeError,
     'Expecting a valid bip39 mnemonic'
