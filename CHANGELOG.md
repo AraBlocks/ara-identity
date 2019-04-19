@@ -1,3 +1,12 @@
+## [0.61.2](https://github.com/AraBlocks/ara-identity/compare/0.61.1...0.61.2) (2019-04-19)
+
+
+### Bug Fixes
+
+* **.ararc:** Set provider ([524592d](https://github.com/AraBlocks/ara-identity/commit/524592d))
+
+
+
 ## [0.61.1](https://github.com/AraBlocks/ara-identity/compare/0.61.0...0.61.1) (2019-04-19)
 
 
