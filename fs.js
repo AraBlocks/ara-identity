@@ -29,10 +29,12 @@ const CFS_UPDATE_TIMEOUT = 1 * 1000
  */
 async function joinNetwork(identifier, filename, opts, onjoin) {
   return pify(async (done) => {
+    let retries = 3
+    let timeout = null
+    let swarm = null
     let cfs = null
     let did = null
-    let swarm = null
-    let timeout = null
+    let dat = null
 
     try {
       did = new DID(normalize(identifier))
@@ -75,7 +77,6 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     swarm.on('connection', onconnection)
     swarm.on('error', onerror)
 
-    let dat = null
     try {
       dat = createSwarm({ stream: () => cfs.replicate({ live: false }) })
       dat.join(cfs.discoveryKey)
@@ -155,6 +156,10 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
             filename,
             err
           )
+
+          if (0 === --retries) {
+            close(err)
+          }
         }
       })
     }
