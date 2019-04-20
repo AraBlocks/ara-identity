@@ -1,3 +1,12 @@
+## [0.61.4](https://github.com/AraBlocks/ara-identity/compare/0.61.3...0.61.4) (2019-04-20)
+
+
+### Bug Fixes
+
+* **fs.js:** Increase retries and bad logic network exclusion logic ([5d0c638](https://github.com/AraBlocks/ara-identity/commit/5d0c638))
+
+
+
 ## [0.61.3](https://github.com/AraBlocks/ara-identity/compare/0.61.2...0.61.3) (2019-04-20)
 
 
