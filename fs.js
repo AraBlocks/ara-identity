@@ -29,7 +29,7 @@ const CFS_UPDATE_TIMEOUT = 1 * 1000
  */
 async function joinNetwork(identifier, filename, opts, onjoin) {
   return pify(async (done) => {
-    let retries = 3
+    let retries = 8
     let timeout = null
     let swarm = null
     let cfs = null
@@ -202,7 +202,7 @@ async function readFile(identifier, filename, opts) {
     }
   }
 
-  if (opts && false !== opts.network) {
+  if (!opts || false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
 
@@ -243,7 +243,7 @@ async function stat(identifier, filename, opts) {
     }
   }
 
-  if (opts && false !== opts.network) {
+  if (!opts || false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
 
@@ -293,7 +293,7 @@ async function access(identifier, filename, opts) {
     }
   }
 
-  if (opts && false !== opts.network) {
+  if (!opts || false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
 
@@ -318,7 +318,7 @@ async function readdir(identifier, filename, opts) {
     }
   }
 
-  if (opts && false !== opts.network) {
+  if (!opts || false !== opts.network) {
     return joinNetwork(identifier, filename, opts, onjoin)
   }
 
