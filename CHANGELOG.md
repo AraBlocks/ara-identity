@@ -1,3 +1,12 @@
+## [0.61.3](https://github.com/AraBlocks/ara-identity/compare/0.61.2...0.61.3) (2019-04-20)
+
+
+### Bug Fixes
+
+* **fs.js:** Prevent infinite discovery loop errors ([f98a7f0](https://github.com/AraBlocks/ara-identity/commit/f98a7f0))
+
+
+
 ## [0.61.2](https://github.com/AraBlocks/ara-identity/compare/0.61.1...0.61.2) (2019-04-19)
 
 
