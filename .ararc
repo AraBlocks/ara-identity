@@ -1,3 +1,9 @@
-;; Ethereum
+[data]
+  root = "./tmp"
+
 [web3]
-provider=https://mainnet.infura.io/v3/786ade30f36244469480aa5c2bf0743b
+  provider = "infuraRopsten"
+
+[network.dns]
+  server[] = "1.1.1.1"
+  server[] = "8.8.8.8"
