@@ -1,5 +1,5 @@
 [data]
-  root = "./tmp"
+  root = "../tmp"
 
 [web3]
   provider = "infuraRopsten"
