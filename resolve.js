@@ -64,7 +64,7 @@ async function resolve(uri, opts = {}) {
     }
   } else if ('string' === typeof uri && isDomainName(uri)) {
     try {
-      uri = await resolveDNS(uri)
+      uri = await resolveDNS(uri, rc.network.dns)
     } catch (err) {
       debug(err)
     }
@@ -190,58 +190,61 @@ async function resolve(uri, opts = {}) {
   })()
 }
 
+const keyrings = {}
+
 async function findResolution(did, opts, state) {
-  const resolvers = []
+  return pify((done) => {
+    const resolvers = []
 
-  let discoveryKey = null
-  let didResolve = false
-  let pending = 0
-  let channel = null
-  let timeout = null
-  let result = null
+    let discoveryKey = null
+    let didResolve = false
+    let pending = 0
+    let channel = null
+    let timeout = null
+    let keyring = null
+    let result = null
 
-  if (!isBrowser && opts.secret && opts.keyring && opts.network) {
-    const secret = Buffer.from(opts.secret)
-    const keyring = keyRing(opts.keyring, { secret })
-    await keyring.ready()
-    const buffer = await keyring.get(opts.network)
-    const unpacked = unpack({ buffer })
-    // eslint-disable-next-line prefer-destructuring
-    discoveryKey = unpacked.discoveryKey
-    keyring.storage.close()
-    channel = createChannel()
-  }
-
-  if (opts.servers && opts.servers.length) {
-    for (const server of opts.servers) {
-      const uri = url.parse(server)
-      const { host } = uri
-      let { port } = uri
-      // eslint-disable-next-line no-undef
-      const { protocol = isBrowser ? window.location.protocol : 'http:' } = uri
-
-      if (!port) {
-        if ('https:' === protocol) {
-          port = 443
+    if (!isBrowser && opts.secret && opts.keyring && opts.network) {
+      const secret = Buffer.from(opts.secret)
+      keyring = keyrings[opts.keyrings] || keyRing(opts.keyring, { secret })
+      keyrings[opts.keyring] = keyring
+      keyring.get(opts.network, (err, buffer) => {
+        if (err) {
+          debug(err)
         } else {
-          port = 80
+          const unpacked = unpack({ buffer })
+          // eslint-disable-next-line prefer-destructuring
+          discoveryKey = unpacked.discoveryKey
+          channel = createChannel()
+          channel.on('peer', onpeer)
+          channel.join(discoveryKey)
         }
-      }
-
-      resolvers.push({
-        id: null,
-        peer: { host, port },
-        type: protocol ? protocol.replace(':', '') : isBrowser,
       })
     }
-  }
 
-  return pify((done) => {
-    if (channel) {
-      channel.on('peer', onpeer)
-      channel.join(discoveryKey)
+    if (opts.servers && opts.servers.length) {
+      for (const server of opts.servers) {
+        const uri = url.parse(server)
+        const { host } = uri
+        let { port } = uri
+        // eslint-disable-next-line no-undef
+        const { protocol = isBrowser ? window.location.protocol : 'http:' } = uri
+
+        if (!port) {
+          if ('https:' === protocol) {
+            port = 443
+          } else {
+            port = 80
+          }
+        }
+
+        resolvers.push({
+          id: null,
+          peer: { host, port },
+          type: protocol ? protocol.replace(':', '') : isBrowser,
+        })
+      }
     }
-
     for (let i = 0; i < resolvers.length; ++i) {
       process.nextTick(doResolution)
     }
@@ -270,34 +273,38 @@ async function findResolution(did, opts, state) {
         cleanup()
         done(null, result)
       } else if (resolvers.length && !state.aborted && !didResolve) {
-        const { peer, type } = resolvers.shift()
-        const { host, port } = peer
-        let uri = ''
+        for (const { peer, type } of resolvers) {
+          resolvers.shift()
+          const { host, port } = peer
+          let uri = ''
 
-        if ('https' === type || 'http' === type) {
-          uri = `${type}://${host}`
-        } else {
-          uri = `http://${host}:${port}`
-        }
+          if ('https' === type || 'http' === type) {
+            uri = `${type}://${host}`
+          } else {
+            uri = `http://${host}:${port}`
+          }
 
-        uri += `/1.0/identifiers/${did.did}`
-        timeout = setTimeout(doResolution, opts.timeout)
+          uri += `/1.0/identifiers/${did.did}`
+          timeout = setTimeout(doResolution, opts.timeout)
 
-        try {
           pending++
-          const res = await fetch(uri, { mode: 'cors' })
-          const json = await res.json()
-          result = json.didDocument
+          fetch(uri, { mode: 'cors' })
+            .then(async (res) => {
+              const json = await res.json()
+              result = json.didDocument
 
-          didResolve = true
-          cleanup()
-          done(null, result)
-        } catch (err) {
-          process.nextTick(doResolution)
-          debug(err)
+              didResolve = true
+              cleanup()
+              pending--
+              done(null, result)
+            })
+            .catch((err) => {
+              debug(err)
+              if (0 === --pending) {
+                process.nextTick(doResolution)
+              }
+            })
         }
-
-        pending--
       }
     }
 
@@ -306,6 +313,11 @@ async function findResolution(did, opts, state) {
         clearTimeout(timeout)
         channel.removeListener('peer', onpeer)
         channel.destroy()
+      }
+
+      if (keyring) {
+        delete keyrings[opts.keyring]
+        keyring.storage.close()
       }
 
       if (!didResolve && !state.aborted) {
