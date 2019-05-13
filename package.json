@@ -8,7 +8,7 @@
   },
   "scripts": {
     "truffle": "truffle develop",
-    "test": "ava test",
+    "test": "cd test && ava .",
     "lint": "eslint .",
     "lint-fix": "eslint . --quiet --fix",
     "pkg": "./scripts/package.sh",
