@@ -287,6 +287,7 @@ async function findResolution(did, opts, state) {
           uri += `/1.0/identifiers/${did.did}`
           timeout = setTimeout(doResolution, opts.timeout)
 
+          /* eslint-disable no-loop-func */
           pending++
           fetch(uri, { mode: 'cors' })
             .then(async (res) => {
@@ -304,6 +305,7 @@ async function findResolution(did, opts, state) {
                 process.nextTick(doResolution)
               }
             })
+          /* eslint-enable no-loop-func */
         }
       }
     }
