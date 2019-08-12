@@ -106,7 +106,7 @@ async function resolve(uri, opts = {}) {
   })
 
   resolutions.push(async () => {
-    if (isBrowser) { return null }
+    if (isBrowser || !opts.cache) { return null }
     try {
       const cachePath = path.join(os.tmpdir(), 'aid', did.identifier, 'ddo.json')
       const stats = await pify(stat)(cachePath)
