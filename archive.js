@@ -333,6 +333,8 @@ async function archive(identity, opts = {}) {
         }
       })
 
+      stream.on('handshake', ()=> {didArchive = true})
+
       socket.resume()
     }
 
