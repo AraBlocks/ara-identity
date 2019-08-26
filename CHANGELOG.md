@@ -1,4 +1,9 @@
-## [0.62.1](https://github.com/AraBlocks/ara-identity/compare/0.62.0...0.62.1) (2019-08-12)
+## [0.62.2](https://github.com/AraBlocks/ara-identity/compare/0.62.0...0.62.2) (2019-08-26)
+
+
+### Bug Fixes
+
+* **archive.js:** Fix timeout bug in archive ([b35d875](https://github.com/AraBlocks/ara-identity/commit/b35d875))
 
 
 
@@ -1218,3 +1223,6 @@
 * remove extra line ([6860d37](https://github.com/AraBlocks/ara-identity/commit/6860d37))
 * Remove unwanted key file ([3875370](https://github.com/AraBlocks/ara-identity/commit/3875370))
 * update account load to use wallet privateKey, load testing ([43dd1fa](https://github.com/AraBlocks/ara-identity/commit/43dd1fa))
+
+
+
