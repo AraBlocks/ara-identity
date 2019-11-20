@@ -3,6 +3,7 @@ const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
 const isDomainName = require('is-domain-name')
+const isBrowser = require('is-browser')
 const { toHex } = require('./util')
 const { DID } = require('did-uri')
 const mkdirp = require('mkdirp')
@@ -196,7 +197,11 @@ async function readFile(identifier, filename, opts) {
 
   async function onjoin(cfs, did, done) {
     try {
-      done(null, await cfs.readFile(filename))
+      const buffer = await cfs.readFile(filename)
+      if (false === isBrowser) {
+        await writeFile(identifier, filename, buffer, opts)
+      }
+      done(null, buffer)
     } catch (err) {
       done(new NoEntityError(filename, 'open'))
     }
