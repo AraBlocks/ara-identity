@@ -1,7 +1,7 @@
+const { resolveDNS, writeCache } = require('./util')
 const { unpack, keyRing } = require('ara-network/keys')
 const { readFile, stat } = require('fs')
 const { createChannel } = require('ara-network/discovery/channel')
-const { resolveDNS } = require('./util')
 const isDomainName = require('is-domain-name')
 const isBrowser = require('is-browser')
 const isBuffer = require('is-buffer')
@@ -294,6 +294,10 @@ async function findResolution(did, opts, state) {
               const json = await res.json()
               result = json.didDocument
 
+              // Write DDO to temp cache folder
+              if (false === isBrowser) {
+                await writeCache(did.identifier, JSON.stringify(result))
+              }
               didResolve = true
               cleanup()
               pending--
