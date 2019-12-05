@@ -1,5 +1,5 @@
-const { dirname, resolve, join } = require('path')
 const { toHex, writeCache } = require('./util')
+const { dirname, resolve } = require('path')
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
