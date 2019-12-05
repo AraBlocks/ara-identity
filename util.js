@@ -1,10 +1,12 @@
 const { createIdentityKeyPath } = require('./key-path')
-const { dirname, resolve } = require('path')
+const { dirname, resolve, join } = require('path')
 const isBuffer = require('is-buffer')
 const mkdirp = require('mkdirp')
+const debug = require('debug')('ara:identity:util')
 const pify = require('pify')
 const dns = require('ara-identity-dns')
 const fs = require('fs')
+const os = require('os')
 /* eslint-disable no-await-in-loop */
 
 /**
@@ -104,9 +106,21 @@ async function resolveDNS(uri) {
   return null
 }
 
+async function writeCache(identifier, buffer) {
+  try {
+    const cachePath = join(os.tmpdir(), 'aid', identifier, 'ddo.json')
+    await pify(mkdirp)(dirname(cachePath))
+    await pify(fs.writeFile)(cachePath, buffer)
+  } catch (err) {
+    debug(err)
+  }
+  return true
+}
+
 module.exports = {
   ethHexToBuffer,
   writeIdentity,
+  writeCache,
   resolveDNS,
   toBuffer,
   toHex,
