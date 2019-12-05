@@ -1,10 +1,10 @@
+const { toHex, writeCache } = require('./util')
 const { dirname, resolve } = require('path')
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
 const isDomainName = require('is-domain-name')
 const isBrowser = require('is-browser')
-const { toHex } = require('./util')
 const { DID } = require('did-uri')
 const mkdirp = require('mkdirp')
 const crypto = require('ara-crypto')
@@ -199,7 +199,7 @@ async function readFile(identifier, filename, opts) {
     try {
       const buffer = await cfs.readFile(filename)
       if (false === isBrowser) {
-        await writeFile(identifier, filename, buffer, opts)
+        await writeCache(did.identifier, buffer)
       }
       done(null, buffer)
     } catch (err) {
