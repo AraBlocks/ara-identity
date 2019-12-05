@@ -270,6 +270,19 @@ async function findResolution(did, opts, state) {
       }
 
       if (0 === pending && !didResolve && 0 === resolvers.length && !state.aborted) {
+
+        // Revert to expired cache copy if present
+        if (!isBrowser) {
+          try {
+            const cachePath = path.join(os.tmpdir(), 'aid', did.identifier, 'ddo.json')
+            const json = await pify(readFile)(cachePath, 'utf8')
+            done(null, (opts.parse || JSON.parse)(String(json)))
+          } catch (err) {
+            console.log(err)
+            debug(err)
+          }
+        }
+
         cleanup()
         done(null, result)
       } else if (resolvers.length && !state.aborted && !didResolve) {
@@ -296,7 +309,7 @@ async function findResolution(did, opts, state) {
 
               // Write DDO to temp cache folder
               if (false === isBrowser) {
-                await writeCache(did.identifier, JSON.stringify(result))
+                await writeCache(did.identifier, 'ddo.json', JSON.stringify(result))
               }
               didResolve = true
               cleanup()
