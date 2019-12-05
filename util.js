@@ -1,5 +1,5 @@
-const { createIdentityKeyPath } = require('./key-path')
 const { dirname, resolve, join } = require('path')
+const { createIdentityKeyPath } = require('./key-path')
 const isBuffer = require('is-buffer')
 const mkdirp = require('mkdirp')
 const debug = require('debug')('ara:identity:util')
@@ -106,9 +106,9 @@ async function resolveDNS(uri) {
   return null
 }
 
-async function writeCache(identifier, buffer) {
+async function writeCache(identifier, filename, buffer) {
   try {
-    const cachePath = join(os.tmpdir(), 'aid', identifier, 'ddo.json')
+    const cachePath = join(os.tmpdir(), 'aid', identifier, filename)
     await pify(mkdirp)(dirname(cachePath))
     await pify(fs.writeFile)(cachePath, buffer)
   } catch (err) {

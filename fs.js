@@ -1,5 +1,5 @@
+const { dirname, resolve, join } = require('path')
 const { toHex, writeCache } = require('./util')
-const { dirname, resolve } = require('path')
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
 const { normalize } = require('./did')
@@ -199,7 +199,7 @@ async function readFile(identifier, filename, opts) {
     try {
       const buffer = await cfs.readFile(filename)
       if (false === isBrowser) {
-        await writeCache(did.identifier, buffer)
+        await writeCache(did.identifier, filename, buffer)
       }
       done(null, buffer)
     } catch (err) {
