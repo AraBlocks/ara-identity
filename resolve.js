@@ -271,7 +271,7 @@ async function findResolution(did, opts, state) {
 
       if (0 === pending && !didResolve && 0 === resolvers.length && !state.aborted) {
         // Revert to expired cache copy if present
-        if (!isBrowser) {
+        if (false === isBrowser) {
           try {
             const cachePath = path.join(os.tmpdir(), 'aid', did.identifier, 'ddo.json')
             const json = await pify(readFile)(cachePath, 'utf8')
