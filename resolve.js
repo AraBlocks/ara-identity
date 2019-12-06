@@ -306,7 +306,7 @@ async function findResolution(did, opts, state) {
               result = json.didDocument
 
               // Write DDO to temp cache folder
-              if (false === isBrowser) {
+              if (false === isBrowser && result) {
                 await writeCache(did.identifier, 'ddo.json', JSON.stringify(result))
               }
               didResolve = true
