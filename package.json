@@ -34,7 +34,7 @@
     "ara-context": "arablocks/ara-context#chore/bap-node-updates",
     "ara-crypto": "arablocks/ara-crypto#chore/bap-node-updates",
     "ara-identity-dns": "^0.3.0",
-    "ara-network": "^1.3.7",
+    "ara-network": "arablocks/ara-network#chore/bap-node-updates",
     "ara-runtime-configuration": "^1.3.2",
     "ara-secret-storage": "arablocks/ara-secret-storage#chore/bap-node-updates",
     "async-exit-hook": "^2.0.1",
