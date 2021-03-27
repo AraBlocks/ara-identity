@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable global-require */
-const { fromMasterSeed } = require('ethereumjs-wallet/hdkey')
+const { hdkey } = require('ethereumjs-wallet')
 const isZeroBuffer = require('is-zero-buffer')
 const isBuffer = require('is-buffer')
 
@@ -22,7 +22,7 @@ async function load(opts) {
   }
 
   const { seed } = opts
-  const hdWallet = fromMasterSeed(seed)
+  const hdWallet = hdkey.fromMasterSeed(seed)
 
   return hdWallet.derivePath(`${DERIVATION_PATH}${index}`).getWallet()
 }

@@ -10,5 +10,5 @@ test('list()', async (t) => {
   const identities = await list()
   t.true(null !== identities)
   t.true('object' === typeof identities)
-  await t.throwsAsync(list('identities'), Error, 'Cannot read directory identities')
+  await t.throwsAsync(list('identities'), {instanceOf: Error}, 'Cannot read directory identities')
 })
