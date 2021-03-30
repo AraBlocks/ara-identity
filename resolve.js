@@ -1,4 +1,3 @@
-const { resolveDNS, writeCache } = require('./util')
 const { unpack, keyRing } = require('ara-network/keys')
 const { readFile, stat } = require('fs')
 const { createChannel } = require('ara-network/discovery/channel')
@@ -11,8 +10,10 @@ const fetch = require('node-fetch')
 const path = require('path')
 const pify = require('pify')
 const url = require('url')
-const fs = require('./fs')
 const os = require('os')
+const fs = require('./fs')
+
+const { resolveDNS, writeCache } = require('./util')
 const rc = require('./rc')()
 
 const DID_IDENTIFIER_LENGTH = 64
@@ -78,8 +79,8 @@ async function resolve(uri, opts = {}) {
   const did = new DID(uri)
 
   if (DID_METHOD !== did.method) {
-    throw new TypeError(`Invalid DID method (${did.method}). ` +
-      `Expecting 'did:${DID_METHOD}:...'.`)
+    throw new TypeError(`Invalid DID method (${did.method}). `
+      + `Expecting 'did:${DID_METHOD}:...'.`)
   }
 
   if (did.identifier && -1 !== did.identifier.indexOf('.')) {
@@ -96,7 +97,7 @@ async function resolve(uri, opts = {}) {
   resolutions.push(async () => {
     if (isBrowser) { return null }
     try {
-      const ddo = await fs.readFile(did.identifier, 'ddo.json', opts)
+      const ddo = await fs.readFile(did.identifier, 'ddo.json')
       return (opts.parse || JSON.parse)(String(ddo))
     } catch (err) {
       debug(err)

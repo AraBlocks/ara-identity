@@ -1,8 +1,8 @@
+const crypto = require('ara-crypto')
+const bip39 = require('bip39')
 const { normalize } = require('./did')
 const { resolve } = require('./resolve')
 const { create } = require('./create')
-const crypto = require('ara-crypto')
-const bip39 = require('bip39')
 
 /**
  * Revoke an identity using a bip39 mnemonic

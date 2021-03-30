@@ -1,7 +1,7 @@
 const { DID, parse } = require('did-uri')
 const isDomainName = require('is-domain-name')
-const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
+const { toHex } = require('./util')
 
 const DID_ARA_METHOD = 'ara'
 const IDENTIFIER_LENGTH = 64

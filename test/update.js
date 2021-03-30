@@ -1,9 +1,9 @@
 const { Ed25519VerificationKey2018 } = require('ld-cryptosuite-registry')
 const { PublicKey } = require('did-document/public-key')
-const { update } = require('../update')
-const { create } = require('../create')
 const crypto = require('ara-crypto')
 const test = require('ava')
+const { update } = require('../update')
+const { create } = require('../create')
 
 test('update() valid ARA id', async (t) => {
   const password = 'password'

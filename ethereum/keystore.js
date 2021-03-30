@@ -1,8 +1,8 @@
-const protobuf = require('../protobuf')
 const isBuffer = require('is-buffer')
 const crypto = require('ara-crypto')
 const ss = require('ara-secret-storage')
 const ks = require('keythereum')
+const protobuf = require('../protobuf')
 
 const kKeyBytes = 32
 const kIVBytes = 16
@@ -25,7 +25,7 @@ const kKDFParameters = kScryptParameters
  */
 async function create() {
   const opts = { keyBytes: kKeyBytes, ivBytes: kIVBytes }
-  const keystore = await new Promise(resolve => ks.create(opts, resolve))
+  const keystore = await new Promise((resolve) => ks.create(opts, resolve))
   return keystore
 }
 

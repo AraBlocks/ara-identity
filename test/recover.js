@@ -1,37 +1,38 @@
 const context = require('ara-context')()
-const { create } = require('../create')
-const { recover } = require('../recover')
 const bip39 = require('bip39')
 const test = require('ava')
+
+const { recover } = require('../recover')
+const { create } = require('../create')
 
 test('recover() invalid opts', async (t) => {
   await t.throwsAsync(
     recover(),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting opts to be an object.'
   )
 
   await t.throwsAsync(
     recover({ context }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting password for recovery.'
   )
 
   await t.throwsAsync(
     recover({ context, password: 123 }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting mnemonic for recovery.'
   )
 
   await t.throwsAsync(
     recover({ context, password: 123, mnemonic: 1234 }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting mnemonic to be a string.'
   )
 
   await t.throwsAsync(
     recover({ context, password: 123, mnemonic: 'hello how' }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting a valid bip39 mnemonic for recovery.'
   )
 })

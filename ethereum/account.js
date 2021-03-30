@@ -1,6 +1,6 @@
+const isBuffer = require('is-buffer')
 const { toHex, toBuffer } = require('../util')
 const { recover } = require('./keystore')
-const isBuffer = require('is-buffer')
 const fs = require('../fs')
 
 /**

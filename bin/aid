@@ -11,10 +11,11 @@ const debug = require('debug')('ara:identity')
 const pify = require('pify')
 const did = require('did-uri')
 const ram = require('random-access-memory')
-const rc = require('../rc')()
 const ss = require('ara-secret-storage')
 const fs = require('fs')
 const ip = require('ip')
+
+const rc = require('../rc')()
 
 process.on('unhandledRejection', onfatal)
 process.on('uncaughtException', onfatal)
@@ -59,22 +60,20 @@ program.command(
   'create',
   'Create an identity',
   // eslint-disable-next-line no-shadow
-  program => program
-    .usage('usage: $0 create [-D] [options]')
-  , oncreate
+  (program) => program.usage('usage: $0 create [-D] [options]'),
+  oncreate
 )
 
 program.command(
   'archive [identifier]',
   'Archive identity in network',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 archive [-D] [options] [identifier]')
     .positional('identifier', {
-      default:
-        rc.network.identity.archiver.whoami ||
-        rc.network.identity.whoami ||
-        rc.network.whoami,
+      default: rc.network.identity.archiver.whoami
+      || rc.network.identity.whoami
+      || rc.network.whoami,
     })
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
@@ -82,10 +81,9 @@ program.command(
       describe: 'Shared secret key for the associated network keys',
       required: true,
       requiresArg: true,
-      default:
-        rc.network.identity.archiver.secret ||
-        rc.network.identity.secret ||
-        rc.network.secret
+      default: rc.network.identity.archiver.secret
+        || rc.network.identity.secret
+        || rc.network.secret
     })
     .option('keyring', {
       alias: 'k',
@@ -93,9 +91,9 @@ program.command(
       required: true,
       requiresArg: true,
       default:
-        rc.network.identity.archiver.keyring ||
-        rc.network.identity.keyring ||
-        rc.network.keyring,
+        rc.network.identity.archiver.keyring
+        || rc.network.identity.keyring
+        || rc.network.keyring,
     })
     .option('network', {
       alias: 'n',
@@ -122,21 +120,21 @@ program.command(
       default: false,
       describe: 'Archive identity locally only',
       requiresArg: false,
-    })
-  , onarchive
+    }),
+  onarchive
 )
 
 program.command(
   'resolve [identifier]',
   'Resolve an identity from the network, disk, or cache',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 resolve [-D] [options] [identifier]')
     .positional('identifier', {
       default:
-        rc.network.identity.resolver.whoami ||
-        rc.network.identity.whoami ||
-        rc.network.whoami,
+        rc.network.identity.resolver.whoami
+        || rc.network.identity.whoami
+        || rc.network.whoami,
     })
 
     .group([ 'peers', 'proof', 'short', 'stats' ], 'Output Options:')
@@ -167,9 +165,9 @@ program.command(
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.secret ||
-        rc.network.identity.secret ||
-        rc.network.secret
+        rc.network.identity.resolver.secret
+        || rc.network.identity.secret
+        || rc.network.secret
     })
     .option('network', {
       alias: 'n',
@@ -182,9 +180,9 @@ program.command(
       describe: 'Path to Ara network keyring file',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.keyring ||
-        rc.network.identity.keyring ||
-        rc.network.keyring,
+        rc.network.identity.resolver.keyring
+        || rc.network.identity.keyring
+        || rc.network.keyring,
     })
 
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
@@ -195,44 +193,44 @@ program.command(
     })
     .option('timeout', {
       describe: 'Resolution timeout',
-    })
-  , onresolve
+    }),
+  onresolve
 )
 
 program.command(
   'share [identifier]',
   'Share identity in network',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 share [-D] [options] [identifier]')
     .positional('identifier', {
       default:
-        rc.network.identity.whoami ||
-        rc.network.whoami,
-    })
-  , onshare
+        rc.network.identity.whoami
+        || rc.network.whoami,
+    }),
+  onshare
 )
 
 program.command(
   'list',
   'Output local identity identifiers',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 list [-D] [options]')
     .group([ 'path' ], 'List Options:')
     .option('path', {
       alias: 'p',
       describe: 'Path to look for identities',
       optional: true
-    })
-  , onlist
+    }),
+  onlist
 )
 
 program.command(
   'whoami',
   'Output current Ara identity in context (.ararc)',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 whoami [-D] [options]')
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
@@ -240,9 +238,9 @@ program.command(
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.secret ||
-        rc.network.identity.secret ||
-        rc.network.secret
+        rc.network.identity.resolver.secret
+        || rc.network.identity.secret
+        || rc.network.secret
     })
     .option('network', {
       alias: 'n',
@@ -255,9 +253,9 @@ program.command(
       describe: 'Path to Ara network keyring file',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.keyring ||
-        rc.network.identity.keyring ||
-        rc.network.keyring,
+        rc.network.identity.resolver.keyring
+        || rc.network.identity.keyring
+        || rc.network.keyring,
     })
     .group([ 'cache', 'fast', 'timeout' ], 'Resolution Options:')
     .option('cache', {
@@ -271,15 +269,15 @@ program.command(
     })
     .option('timeout', {
       describe: 'Resolution timeout',
-    })
-  , onwhoami
+    }),
+  onwhoami
 )
 
 program.command(
   'recover',
   'Recover an identity using a mnemonic phrase',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 [-D] recover [options]')
     .group([ 'mnemonic' ], 'Recovery Options:')
     .option('mnemonic', {
@@ -287,15 +285,15 @@ program.command(
       describe: 'Valid bip39 mnemonic',
       required: true,
       requiresArg: true,
-    })
-  , onrecover
+    }),
+  onrecover
 )
 
 program.command(
   'revoke',
   'Revoke an identity using a mnemonic phrase',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 [-D] revoke [options]')
     .group([ 'mnemonic' ], 'Revoke Options:')
     .option('mnemonic', {
@@ -303,15 +301,15 @@ program.command(
       describe: 'Valid bip39 mnemonic',
       required: true,
       requiresArg: true,
-    })
-  , onrevoke
+    }),
+  onrevoke
 )
 
 program.command(
   'keystore-dump [identifier] [type]',
   'Dump secret keys and secret storages to stdout',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 keystore-dump [-D] [options] [identifier] [type]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
@@ -342,15 +340,15 @@ program.command(
     .option('type', {
       alias: 't',
       default: 'eth',
-    })
-  , onkeystoredump
+    }),
+  onkeystoredump
 )
 
 program.command(
   'add-public-key [identifier]',
   'Add a public key to an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 add-public-key [-D] [options] [identifier]')
     .group([ 'key' ], 'Public Key Options:')
     .positional('identifier', {
@@ -361,15 +359,15 @@ program.command(
     .option('key', {
       describe: 'JSON of public key to import to the `publicKey` section of the DDO',
       required: true
-    })
-  , onaddpublickey
+    }),
+  onaddpublickey
 )
 
 program.command(
   'remove-public-key [identifier]',
   'Remove a public key from an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 remove-public-key [-D] [options] [identifier]')
     .group([ 'key' ], 'Public Key Removal Options:')
     .positional('identifier', {
@@ -380,15 +378,15 @@ program.command(
     .option('key', {
       describe: 'Fragment name of public key found in identity DDO',
       required: true
-    })
-  , onremovepublickey
+    }),
+  onremovepublickey
 )
 
 program.command(
   'export-public-key [identifier]',
   'Export a public key from an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 remove-public-key [-D] [options] [identifier]')
     .group([ 'key' ], 'Public Key Export Options:')
     .positional('identifier', {
@@ -399,15 +397,15 @@ program.command(
     .option('key', {
       describe: 'Fragment name of public key found in identity DDO',
       required: true
-    })
-  , onexportpublickey
+    }),
+  onexportpublickey
 )
 
 program.command(
   'add-service [identifier]',
   'Add a service endpoint to an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 add-service [-D] [options] [identifier]')
     .group([ 'id', 'type', 'endpoint', 'config' ], 'Service Options:')
     .positional('identifier', {
@@ -429,15 +427,15 @@ program.command(
     })
     .option('config', {
       describe: 'Path to JSON configuration for the service'
-    })
-  , onaddservice
+    }),
+  onaddservice
 )
 
 program.command(
   'remove-service [identifier]',
   'Remove a service endpoint to an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 remove-service [-D] [options] [identifier]')
     .group([ 'id' ], 'Service Removal Options:')
     .positional('identifier', {
@@ -448,15 +446,15 @@ program.command(
     .option('id', {
       describe: 'ID of service',
       required: true
-    })
-  , onremoveservice
+    }),
+  onremoveservice
 )
 
 program.command(
   'export-service [identifier]',
   'Export a service endpoint from an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 export-service [-D] [options] [identifier]')
     .group([ 'endpoint' ], 'Service Export Options:')
     .positional('identifier', {
@@ -467,15 +465,15 @@ program.command(
     .option('id', {
       describe: 'ID of service',
       required: true
-    })
-  , onexportservice
+    }),
+  onexportservice
 )
 
 program.command(
   'sign [identifier] [message]',
   'Sign a message using the secret key for an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 sign [-D] [options] [identifier] [message]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
@@ -508,9 +506,9 @@ program.command(
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.secret ||
-        rc.network.identity.secret ||
-        rc.network.secret
+        rc.network.identity.resolver.secret
+        || rc.network.identity.secret
+        || rc.network.secret
     })
     .option('network', {
       alias: 'n',
@@ -523,9 +521,9 @@ program.command(
       describe: 'Path to Ara network keyring file',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.keyring ||
-        rc.network.identity.keyring ||
-        rc.network.keyring,
+        rc.network.identity.resolver.keyring
+        || rc.network.identity.keyring
+        || rc.network.keyring,
     })
 
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
@@ -536,15 +534,15 @@ program.command(
     })
     .option('timeout', {
       describe: 'Resolution timeout',
-    })
-  , onsign
+    }),
+  onsign
 )
 
 program.command(
   'verify [identifier] [signature] [message]',
   'Verify a message using the public key for an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 verify [-D] [options] [identifier] [signature] [message]')
     .positional('identifier', {
       default: rc.network.identity.whoami || rc.network.whoami,
@@ -576,9 +574,9 @@ program.command(
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.secret ||
-        rc.network.identity.secret ||
-        rc.network.secret
+        rc.network.identity.resolver.secret
+        || rc.network.identity.secret
+        || rc.network.secret
     })
     .option('network', {
       alias: 'n',
@@ -591,9 +589,9 @@ program.command(
       describe: 'Path to Ara network keyring file',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.keyring ||
-        rc.network.identity.keyring ||
-        rc.network.keyring,
+        rc.network.identity.resolver.keyring
+        || rc.network.identity.keyring
+        || rc.network.keyring,
     })
 
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
@@ -604,15 +602,15 @@ program.command(
     })
     .option('timeout', {
       describe: 'Resolution timeout',
-    })
-  , onverify
+    }),
+  onverify
 )
 
 program.command(
   'bind-dns [identifier]',
   'Bind a domain name to an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 bind-dns [-D] [options] [identifier]')
     .group([ 'domain', 'type' ], 'Bind Options:')
     .positional('identifier', {
@@ -636,9 +634,9 @@ program.command(
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.secret ||
-        rc.network.identity.secret ||
-        rc.network.secret
+        rc.network.identity.resolver.secret
+        || rc.network.identity.secret
+        || rc.network.secret
     })
     .option('network', {
       alias: 'n',
@@ -651,9 +649,9 @@ program.command(
       describe: 'Path to Ara network keyring file',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.keyring ||
-        rc.network.identity.keyring ||
-        rc.network.keyring,
+        rc.network.identity.resolver.keyring
+        || rc.network.identity.keyring
+        || rc.network.keyring,
     })
 
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
@@ -664,15 +662,15 @@ program.command(
     })
     .option('timeout', {
       describe: 'Resolution timeout',
-    })
-  , onbinddns
+    }),
+  onbinddns
 )
 
 program.command(
   'unbind-dns [identifier]',
   'Unbind a domain name from an identity',
   // eslint-disable-next-line no-shadow
-  program => program
+  (program) => program
     .usage('usage: $0 unbind-dns [-D] [options] [identifier]')
     .group([ 'domain', 'type' ], 'Unbind Options:')
     .positional('identifier', {
@@ -691,9 +689,9 @@ program.command(
       describe: 'Shared secret key for the associated network keys.',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.secret ||
-        rc.network.identity.secret ||
-        rc.network.secret
+        rc.network.identity.resolver.secret
+        || rc.network.identity.secret
+        || rc.network.secret
     })
     .option('network', {
       alias: 'n',
@@ -706,9 +704,9 @@ program.command(
       describe: 'Path to Ara network keyring file',
       requiresArg: true,
       default:
-        rc.network.identity.resolver.keyring ||
-        rc.network.identity.keyring ||
-        rc.network.keyring,
+        rc.network.identity.resolver.keyring
+        || rc.network.identity.keyring
+        || rc.network.keyring,
     })
 
     .group([ 'cache', 'timeout' ], 'Resolution Options:')
@@ -719,8 +717,8 @@ program.command(
     })
     .option('timeout', {
       describe: 'Resolution timeout',
-    })
-  , onunbinddns
+    }),
+  onunbinddns
 )
 
 program
@@ -746,7 +744,7 @@ if (program.argv.debug) {
 }
 
 async function onrecover(argv) {
-  const aid = require('../')
+  const aid = require('..')
 
   const { mnemonic } = argv
   let { password } = argv
@@ -765,18 +763,19 @@ async function onrecover(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Your identity\'s keystore will be secured by a passphrase ' +
-      'after recovery. \n' +
-      'Please provide a passphrase. Do not forget this as it will never be ' +
-      'shown to you.\n' +
-      'Passphrase:'
+      'Your identity\'s keystore will be secured by a passphrase '
+      + 'after recovery. \n'
+      + 'Please provide a passphrase. Do not forget this as it will never be '
+      + 'shown to you.\n'
+      + 'Passphrase:'
     } ]))
   }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
     return onfatal(
-      new TypeError('A new passphrase is required to recover the identity.'))
+      new TypeError('A new passphrase is required to recover the identity.')
+    )
   }
 
   try {
@@ -797,7 +796,7 @@ async function onrecover(argv) {
 }
 
 async function onrevoke(argv) {
-  const aid = require('../')
+  const aid = require('..')
 
   const { mnemonic } = argv
   let { password } = argv
@@ -807,16 +806,17 @@ async function onrevoke(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please provide a passphrase. Do not forget this as it will never be ' +
-      'shown to you and will be required to archive your identity after revoking.\n' +
-      'Passphrase:'
+      'Please provide a passphrase. Do not forget this as it will never be '
+      + 'shown to you and will be required to archive your identity after revoking.\n'
+      + 'Passphrase:'
     } ]))
   }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
     return onfatal(
-      new TypeError('A passphrase is required to revoke your identity.'))
+      new TypeError('A passphrase is required to revoke your identity.')
+    )
   }
 
   try {
@@ -840,7 +840,7 @@ async function onarchive(argv) {
   const { toHex } = require('../util')
   const protobuf = require('../protobuf')
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   let { password } = argv
 
@@ -858,16 +858,17 @@ async function onarchive(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please provide a passphrase for your identity. This is needed to ' +
-      'archive your identity.\n' +
-      'Passphrase:'
+      'Please provide a passphrase for your identity. This is needed to '
+      + 'archive your identity.\n'
+      + 'Passphrase:'
     } ]))
   }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
     return onfatal(
-      new TypeError('Please provide a password to archive your identity.'))
+      new TypeError('Please provide a password to archive your identity.')
+    )
   }
 
   password = crypto.blake2b(Buffer.from(password))
@@ -1038,7 +1039,7 @@ async function onarchive(argv) {
 }
 
 async function oncreate(argv) {
-  const aid = require('../')
+  const aid = require('..')
 
   let { password } = argv
 
@@ -1056,17 +1057,18 @@ async function oncreate(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Your identity\'s keystore will be secured by a passphrase. \n' +
-      'Please provide a passphrase. Do not forget this as it will never be ' +
-      'shown to you.\n' +
-      'Passphrase:'
+      'Your identity\'s keystore will be secured by a passphrase. \n'
+      + 'Please provide a passphrase. Do not forget this as it will never be '
+      + 'shown to you.\n'
+      + 'Passphrase:'
     } ]))
   }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
     return onfatal(
-      new TypeError('A new passphrase is required to secure the identity.'))
+      new TypeError('A new passphrase is required to secure the identity.')
+    )
   }
 
   if (!argv.quiet) { process.stdout.write('\n') }
@@ -1102,7 +1104,7 @@ async function onresolve(argv) {
   // lazy require
   const { createChannel } = require('ara-network/discovery/channel')
   const { createCFS } = require('cfsnet/create')
-  const aid = require('../')
+  const aid = require('..')
 
   if (!argv.keyring && !argv.cache) {
     return onfatal(new TypeError('Expecting Ara network keyring file.'))
@@ -1121,8 +1123,8 @@ async function onresolve(argv) {
   }
 
   if (
-    0 === argv.identifier.indexOf('did:') &&
-    0 !== argv.identifier.indexOf('did:ara:')
+    0 === argv.identifier.indexOf('did:')
+    && 0 !== argv.identifier.indexOf('did:ara:')
   ) {
     return onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
@@ -1151,6 +1153,7 @@ async function onresolve(argv) {
     } else if (argv.peers) {
       const peers = []
       const seen = []
+      // eslint-disable-next-line
       await new Promise(async (resolve, reject) => {
         const channel = createChannel()
         const cfs = await createCFS({
@@ -1237,17 +1240,17 @@ async function onresolve(argv) {
 
 async function onshare(argv) {
   if (
-    0 === argv.identifier.indexOf('did:') &&
-    0 !== argv.identifier.indexOf('did:ara:')
+    0 === argv.identifier.indexOf('did:')
+    && 0 !== argv.identifier.indexOf('did:ara:')
   ) {
     return onfatal(new Error('Expecting a did URI with an \'ara\' method.'))
   }
 
   const onexit = require('async-exit-hook')
-  const aid = require('../')
+  const aid = require('..')
 
   const ddo = await aid.resolve(argv.identifier)
-  const owner = ddo.publicKey.find(pk => 'owner' === did.parse(pk.id).fragment)
+  const owner = ddo.publicKey.find((pk) => 'owner' === did.parse(pk.id).fragment)
   const publicKey = Buffer.from(owner.publicKeyHex, 'hex')
   const network = await aid.share({ publicKey })
 
@@ -1261,7 +1264,7 @@ async function onshare(argv) {
 }
 
 async function onlist(argv) {
-  const aid = require('../')
+  const aid = require('..')
 
   try {
     debug('aid: list: %s', argv.path)
@@ -1284,11 +1287,14 @@ async function onwhoami(argv) {
 
   try {
     const me = await whoami(argv)
-    process.stdout.write(me)
-    process.stdout.write('\n')
+    if (me) {
+      process.stdout.write(me)
+      process.stdout.write('\n')
+    } else {
+      onfatal(new Error('Could not determine "me" in `aid whoami` command.'))
+    }
   } catch (err) {
-    debug(err)
-    return onfatal(err.message)
+    return onfatal(err)
   }
 
   return exit(0)
@@ -1296,7 +1302,7 @@ async function onwhoami(argv) {
 
 async function onaddpublickey(argv) {
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   const { identifier } = argv
   let { password, key } = argv
@@ -1306,8 +1312,7 @@ async function onaddpublickey(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please enter the passphrase associated with the identity. \n' +
-      'Passphrase:'
+      'Please enter the passphrase associated with the identity.\nPassphrase:'
     } ])
 
     // eslint-disable-next-line prefer-destructuring
@@ -1381,7 +1386,7 @@ async function onaddpublickey(argv) {
 
 async function onremovepublickey(argv) {
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   const { key, identifier } = argv
   let { password } = argv
@@ -1391,8 +1396,8 @@ async function onremovepublickey(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please enter the passphrase associated with the identity. \n' +
-      'Passphrase:'
+      'Please enter the passphrase associated with the identity. \n'
+      + 'Passphrase:'
     } ])
 
     // eslint-disable-next-line prefer-destructuring
@@ -1461,7 +1466,7 @@ async function onremovepublickey(argv) {
 }
 
 async function onexportpublickey(argv) {
-  const aid = require('../')
+  const aid = require('..')
 
   const { key, identifier } = argv
 
@@ -1501,7 +1506,7 @@ async function onkeystoredump(argv) {
   const { resolveDNS, toHex } = require('../util')
   const protobuf = require('../protobuf')
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   const secretStorage = argv['secret-storage']
   let { identifier, password } = argv
@@ -1520,8 +1525,7 @@ async function onkeystoredump(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please enter the passphrase associated with the identity. \n' +
-      'Passphrase:'
+      'Please enter the passphrase associated with the identity.\nPassphrase:'
     } ])
 
     // eslint-disable-next-line prefer-destructuring
@@ -1590,7 +1594,7 @@ async function onkeystoredump(argv) {
 
 async function onaddservice(argv) {
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   const { identifier } = argv
   let { password } = argv
@@ -1600,8 +1604,7 @@ async function onaddservice(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please enter the passphrase associated with the identity. \n' +
-      'Passphrase:'
+      'Please enter the passphrase associated with the identity.\nPassphrase:'
     } ])
 
     // eslint-disable-next-line prefer-destructuring
@@ -1679,7 +1682,7 @@ async function onaddservice(argv) {
 
 async function onremoveservice(argv) {
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   const { identifier } = argv
   let { password } = argv
@@ -1689,8 +1692,8 @@ async function onremoveservice(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please enter the passphrase associated with the identity. \n' +
-      'Passphrase:'
+      'Please enter the passphrase associated with the identity. \n'
+      + 'Passphrase:'
     } ])
 
     // eslint-disable-next-line prefer-destructuring
@@ -1747,7 +1750,7 @@ async function onremoveservice(argv) {
 }
 
 async function onexportservice(argv) {
-  const aid = require('../')
+  const aid = require('..')
 
   const { identifier } = argv
 
@@ -1765,16 +1768,16 @@ async function onexportservice(argv) {
       const shortId = parts[1]
 
       if (
-        !Array.isArray(argv.id) &&
-        (argv.id === shortId || argv.id === service.id)
+        !Array.isArray(argv.id)
+        && (argv.id === shortId || argv.id === service.id)
       ) {
         process.stdout.write(JSON.stringify(service))
         break
       }
 
       if (
-        Array.isArray(argv.id) &&
-        (argv.id.includes(service.id) || argv.id.includes(shortId))
+        Array.isArray(argv.id)
+        && (argv.id.includes(service.id) || argv.id.includes(shortId))
       ) {
         if (!first) {
           process.stdout.write(',')
@@ -1796,7 +1799,7 @@ async function onexportservice(argv) {
 }
 
 async function onsign(argv) {
-  const aid = require('../')
+  const aid = require('..')
 
   let { password } = argv
 
@@ -1814,16 +1817,17 @@ async function onsign(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please provide a passphrase for your identity. This is needed to ' +
-      'sign a message with your identity.\n' +
-      'Passphrase:'
+      'Please provide a passphrase for your identity. This is needed to '
+      + 'sign a message with your identity.\n'
+      + 'Passphrase:'
     } ]))
   }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
     return onfatal(
-      new TypeError('Please provide a password to sign a message with your identity.'))
+      new TypeError('Please provide a password to sign a message with your identity.')
+    )
   }
 
   argv.password = password
@@ -1839,7 +1843,7 @@ async function onsign(argv) {
 }
 
 async function onverify(argv) {
-  const aid = require('../')
+  const aid = require('..')
   let verified = false
   let signature = null
 
@@ -1868,7 +1872,7 @@ async function onverify(argv) {
 
 async function onbinddns(argv) {
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   let { password } = argv
 
@@ -1886,16 +1890,17 @@ async function onbinddns(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please provide a passphrase for your identity. This is needed to ' +
-      'sign a message with your identity.\n' +
-      'Passphrase:'
+      'Please provide a passphrase for your identity. This is needed to '
+      + 'sign a message with your identity.\n'
+      + 'Passphrase:'
     } ]))
   }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
     return onfatal(
-      new TypeError('Please provide a password to sign a message with your identity.'))
+      new TypeError('Please provide a password to sign a message with your identity.')
+    )
   }
 
   argv.password = password
@@ -1932,7 +1937,7 @@ async function onbinddns(argv) {
 
 async function onunbinddns(argv) {
   const crypto = require('ara-crypto')
-  const aid = require('../')
+  const aid = require('..')
 
   let { password } = argv
 
@@ -1950,16 +1955,16 @@ async function onunbinddns(argv) {
       type: 'password',
       name: 'password',
       message:
-      'Please provide a passphrase for your identity. This is needed to ' +
-      'sign a message with your identity.\n' +
-      'Passphrase:'
+      'Please provide a passphrase for your identity. This is needed to '
+      + 'sign a message with your identity.\nPassphrase:'
     } ]))
   }
 
   if (!password) {
     // eslint-disable-next-line function-paren-newline
     return onfatal(
-      new TypeError('Please provide a password to sign a message with your identity.'))
+      new TypeError('Please provide a password to sign a message with your identity.')
+    )
   }
 
   argv.password = password

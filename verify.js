@@ -1,6 +1,6 @@
-const { resolve } = require('./resolve')
 const { DID } = require('did-uri')
 const crypto = require('ara-crypto')
+const { resolve } = require('./resolve')
 
 const OWNER = 'owner'
 

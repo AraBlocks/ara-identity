@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop */
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
-const { toHex } = require('./util')
 const { DID } = require('did-uri')
 const pify = require('pify')
 const pump = require('pump')
 const ram = require('random-access-memory')
+const { toHex } = require('./util')
 
 const kDIDIdentifierLength = 64
 // in milliseconds
@@ -71,8 +71,8 @@ async function findFiles(did, opts) {
     cfs.discovery.join(cfs.discoveryKey)
 
     await Promise.race([
-      new Promise(resolve => cfs.once('update', resolve)),
-      new Promise(resolve => cfs.once('sync', resolve)),
+      new Promise((resolve) => cfs.once('update', resolve)),
+      new Promise((resolve) => cfs.once('sync', resolve)),
     ])
 
     await onupdate()

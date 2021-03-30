@@ -1,7 +1,8 @@
-const { revoke } = require('../revoke')
 const context = require('ara-context')()
 const bip39 = require('bip39')
 const test = require('ava')
+
+const { revoke } = require('../revoke')
 
 test('revoke() invalid opts', async (t) => {
   t.plan(9)
@@ -9,54 +10,55 @@ test('revoke() invalid opts', async (t) => {
 
   await t.throwsAsync(
     revoke(),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting opts to be an object.'
   )
 
   await t.throwsAsync(
     revoke({ }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting web3 context object.'
   )
 
   await t.throwsAsync(
     revoke({ context: 'web3' }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting web3 context object.'
   )
 
   await t.throwsAsync(
     revoke({ context }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting mnemonic for revoking.'
   )
 
   await t.throwsAsync(
     revoke({ context, mnemonic: 1234 }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting mnemonic to be a string.'
   )
 
   await t.throwsAsync(
     revoke({ context, mnemonic }),
-    TypeError, 'Expecting password.'
+    { instanceOf: TypeError },
+    'Expecting password.'
   )
 
   await t.throwsAsync(
     revoke({ context, mnemonic: 'hello' }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting a valid bip39 mnemonic for revoking.'
   )
 
   await t.throwsAsync(
     revoke({ context, mnemonic, password: 1234 }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting password to be a string.'
   )
 
   await t.throwsAsync(
     revoke({ context, mnemonic, password: 'test' }),
-    Error,
+    { instanceOf: Error },
     'Could not resolve DID for the provided mnemonic'
   )
 })

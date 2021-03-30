@@ -1,6 +1,7 @@
 const context = require('ara-context')()
-const { create } = require('../create')
 const test = require('ava')
+
+const { create } = require('../create')
 
 test('create() valid ARA id', async (t) => {
   const identity = await create({ context, password: 'password' })
@@ -11,13 +12,18 @@ test('create() valid ARA id', async (t) => {
 test('create() using invalid mnemonic', async (t) => {
   await t.throwsAsync(
     create({ context, password: 'password', mnemonic: 'exhaust' }),
-    TypeError,
+    { instanceOf: TypeError },
     'Expecting a valid bip39 mnemonic'
   )
 })
 
 test('create() valid ARA id using mnemonic', async (t) => {
-  const identity = await create({ context, password: 'password', mnemonic: 'exhaust rescue vapor misery spot domain pink dice frown occur ice code' })
+  const identity = await create({
+    context,
+    password: 'password',
+    mnemonic: 'exhaust rescue vapor misery spot domain pink dice frown occur ice code'
+  })
+
   t.true('object' === typeof identity)
 })
 

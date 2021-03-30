@@ -1,5 +1,4 @@
 const { dirname, resolve, join } = require('path')
-const { createIdentityKeyPath } = require('./key-path')
 const isBuffer = require('is-buffer')
 const mkdirp = require('mkdirp')
 const debug = require('debug')('ara:identity:util')
@@ -7,6 +6,8 @@ const pify = require('pify')
 const dns = require('ara-identity-dns')
 const fs = require('fs')
 const os = require('os')
+
+const { createIdentityKeyPath } = require('./key-path')
 /* eslint-disable no-await-in-loop */
 
 /**
@@ -18,7 +19,7 @@ const os = require('os')
 function toHex(value) {
   if (Buffer.isBuffer(value)) {
     return value.toString('hex')
-  } else if (value) {
+  } if (value) {
     return toHex(Buffer.from(value))
   }
   return toHex(Buffer.from(0))
@@ -51,11 +52,11 @@ function ethHexToBuffer(hex) {
 function toBuffer(value) {
   if (isBuffer(value)) {
     return value
-  } else if (value && 'number' === typeof value) {
+  } if (value && 'number' === typeof value) {
     return Buffer.alloc(value)
-  } else if ('string' === typeof value) {
+  } if ('string' === typeof value) {
     return ethHexToBuffer(value)
-  } else if (value) {
+  } if (value) {
     return Buffer.from(value)
   }
   return Buffer.alloc(0)
@@ -81,9 +82,9 @@ async function writeIdentity(identity) {
 
   for (let i = 0; i < identity.files.length; ++i) {
     if (
-      identity.files[i] &&
-      identity.files[i].path &&
-      identity.files[i].buffer
+      identity.files[i]
+      && identity.files[i].path
+      && identity.files[i].buffer
     ) {
       const dir = dirname(resolve(output, identity.files[i].path))
       await pify(mkdirp)(dir)

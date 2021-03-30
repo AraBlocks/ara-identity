@@ -1,10 +1,11 @@
-const { toBuffer } = require('../../util')
 const isBuffer = require('is-buffer')
+const crypto = require('ara-crypto')
+const bip39 = require('bip39')
+const test = require('ava')
+
+const { toBuffer } = require('../../util')
 const keystore = require('../../ethereum/keystore')
 const wallet = require('../../ethereum/wallet')
-const crypto = require('ara-crypto')
-const test = require('ava')
-const bip39 = require('bip39')
 
 test('create(opts)', async (t) => {
   t.true('function' === typeof keystore.create)

@@ -1,12 +1,12 @@
-const { entropy } = require('../../ethereum/entropy')
 const test = require('ava')
+const { entropy } = require('../../ethereum/entropy')
 
 test('ethereum.entropy(size)', async (t) => {
   t.plan(6)
-  await t.throwsAsync(() => entropy(1), TypeError, 'too small')
-  await t.throwsAsync(() => entropy(1), TypeError, 'too small')
-  await t.throwsAsync(() => entropy(-1), TypeError, 'too small')
-  await t.throwsAsync(() => entropy(15), TypeError, 'too small')
+  await t.throwsAsync(() => entropy(1), { instanceOf: TypeError }, 'too small')
+  await t.throwsAsync(() => entropy(1), { instanceOf: TypeError }, 'too small')
+  await t.throwsAsync(() => entropy(-1), { instanceOf: TypeError }, 'too small')
+  await t.throwsAsync(() => entropy(15), { instanceOf: TypeError }, 'too small')
   // minimum
   await t.true(32 === (await entropy(16)).length)
   // default

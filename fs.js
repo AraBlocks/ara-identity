@@ -1,8 +1,6 @@
-const { toHex, writeCache } = require('./util')
 const { dirname, resolve } = require('path')
 const { createSwarm } = require('ara-network/discovery')
 const { createCFS } = require('cfsnet/create')
-const { normalize } = require('./did')
 const isDomainName = require('is-domain-name')
 const isBrowser = require('is-browser')
 const { DID } = require('did-uri')
@@ -12,8 +10,11 @@ const debug = require('debug')('ara:identity:fs')
 const pify = require('pify')
 const pump = require('pump')
 const ram = require('random-access-memory')
-const rc = require('./rc')()
 const fs = require('fs')
+
+const { toHex, writeCache } = require('./util')
+const { normalize } = require('./did')
+const rc = require('./rc')()
 
 const DISCOVERY_TIMEOUT = 5 * 1000
 const CFS_UPDATE_TIMEOUT = 1 * 1000
@@ -60,10 +61,11 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
     }
 
     try {
-      swarm = createSwarm(Object.assign({
+      swarm = createSwarm({
         utp: false,
-        id: cfs.discoveryKey
-      }, opts))
+        id: cfs.discoveryKey,
+        ...opts
+      })
     } catch (err) {
       return close(err)
     }
@@ -90,9 +92,9 @@ async function joinNetwork(identifier, filename, opts, onjoin) {
       await cfs.access(filename)
     } catch (err) {
       await Promise.race([
-        new Promise(cb => cfs.once('sync', cb)),
-        new Promise(cb => cfs.once('update', cb)),
-        new Promise(cb => setTimeout(cb, CFS_UPDATE_TIMEOUT))
+        new Promise((cb) => cfs.once('sync', cb)),
+        new Promise((cb) => cfs.once('update', cb)),
+        new Promise((cb) => setTimeout(cb, CFS_UPDATE_TIMEOUT))
       ])
     }
 

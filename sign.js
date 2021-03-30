@@ -1,7 +1,7 @@
-const { resolve } = require('./resolve')
 const { DID } = require('did-uri')
 const crypto = require('ara-crypto')
 const ss = require('ara-secret-storage')
+const { resolve } = require('./resolve')
 const fs = require('./fs')
 
 async function sign(uri, message, opts) {

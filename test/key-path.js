@@ -1,11 +1,12 @@
-const { createIdentityKeyPath } = require('../key-path')
-const { create } = require('../create')
 const context = require('ara-context')()
 const test = require('ava')
 
+const { createIdentityKeyPath } = require('../key-path')
+const { create } = require('../create')
+
 test('createIdentityKeyPath(identity) invalid identity', (t) => {
-  t.throws(() => createIdentityKeyPath(), TypeError)
-  t.throws(() => createIdentityKeyPath('did:ara:1234'), TypeError)
+  t.throws(() => createIdentityKeyPath(), { instanceOf: TypeError })
+  t.throws(() => createIdentityKeyPath('did:ara:1234'), { instanceOf: TypeError })
 })
 
 test('createIdentityKeyPath(identity) valid identity', async (t) => {

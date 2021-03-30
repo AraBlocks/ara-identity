@@ -1,13 +1,14 @@
-const { createIdentityKeyPath } = require('./key-path')
 const { EventEmitter } = require('events')
 const { createSwarm } = require('ara-network/discovery/swarm')
 const { createCFS } = require('cfsnet/create')
-const { toHex } = require('./util')
 const debug = require('debug')('ara:identity:share')
 const path = require('path')
 const pump = require('pump')
-const did = require('./did')
 const raf = require('random-access-file')
+
+const { createIdentityKeyPath } = require('./key-path')
+const { toHex } = require('./util')
+const did = require('./did')
 
 async function share(identity, opts = {}) {
   // DID?

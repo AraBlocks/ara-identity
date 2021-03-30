@@ -3,16 +3,10 @@ const { Authentication } = require('did-document')
 const { PublicKey } = require('did-document/public-key')
 const { Service } = require('did-document/service')
 const createContext = require('ara-context')
-const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
-const ethereum = require('./ethereum')
-const protobuf = require('./protobuf')
 const crypto = require('ara-crypto')
 const bip39 = require('bip39')
-const ddo = require('./ddo')
-const did = require('./did')
 const ss = require('ara-secret-storage')
-
 const {
   kEd25519VerificationKey2018,
   kEd25519SignatureAuthentication2018,
@@ -20,6 +14,11 @@ const {
   kSecp256k1VerificationKey2018,
   kSecp256k1SignatureAuthentication2018,
 } = require('ld-cryptosuite-registry')
+const { toHex } = require('./util')
+const ethereum = require('./ethereum')
+const protobuf = require('./protobuf')
+const ddo = require('./ddo')
+const did = require('./did')
 
 const BEGIN_PUBLIC_KEY = '-----BEGIN PUBLIC KEY-----\n'
 const END_PUBLIC_KEY = '\n-----END PUBLIC KEY-----'
@@ -93,8 +92,8 @@ async function create(opts) {
   }
 
   if (opts.files && Array.isArray(opts.files)) {
-    encryptedEthKeystore = opts.files.find(f => 'keystore/eth' === f.path)
-    encryptedAraKeystore = opts.files.find(f => 'keystore/ara' === f.path)
+    encryptedEthKeystore = opts.files.find((f) => 'keystore/eth' === f.path)
+    encryptedAraKeystore = opts.files.find((f) => 'keystore/ara' === f.path)
   }
 
   if (opts.keystore && opts.keystore.eth) {
@@ -174,8 +173,8 @@ async function create(opts) {
           publicKeyBase64,
           publicKeyPem: publicKeyPem || (
             BEGIN_PUBLIC_KEY
-            + crypto.base64.encode(pub).toString() +
-            END_PUBLIC_KEY
+            + crypto.base64.encode(pub).toString()
+            + END_PUBLIC_KEY
           )
         }))
       }
@@ -355,8 +354,8 @@ async function create(opts) {
       publicKeyBase58: crypto.base58.encode(publicKey).toString(),
       publicKeyPem: (
         BEGIN_PUBLIC_KEY
-        + crypto.base64.encode(publicKey).toString() +
-        END_PUBLIC_KEY
+        + crypto.base64.encode(publicKey).toString()
+        + END_PUBLIC_KEY
       )
     }))
 
@@ -378,8 +377,8 @@ async function create(opts) {
       publicKeyBase58: crypto.base58.encode(wallet.getPublicKey()).toString(),
       publicKeyPem: (
         BEGIN_PUBLIC_KEY
-        + crypto.base64.encode(wallet.getPublicKey()).toString() +
-        END_PUBLIC_KEY
+        + crypto.base64.encode(wallet.getPublicKey()).toString()
+        + END_PUBLIC_KEY
       )
     }))
 

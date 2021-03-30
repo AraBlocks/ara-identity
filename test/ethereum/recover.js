@@ -1,13 +1,14 @@
-const keystore = require('../../ethereum/keystore')
-const { create } = require('../../create')
 const context = require('ara-context')()
 const test = require('ava')
 
+const { create } = require('../../create')
+const keystore = require('../../ethereum/keystore')
+
 test('recover(opts)', async (t) => {
   const mnemonic1 = (
-    'delay blanket scene cactus ' +
-    'rare bicycle embark wheel ' +
-    'swallow laptop predict moral'
+    'delay blanket scene cactus '
+    + 'rare bicycle embark wheel '
+    + 'swallow laptop predict moral'
   )
 
   const password1 = 'hello123'
@@ -36,9 +37,9 @@ test('recover(opts)', async (t) => {
   t.is(identity1.account.privateKey, web3.utils.bytesToHex(privateKey1))
 
   const mnemonic2 = (
-    'delay blanket scene cactus ' +
-    'rare bicycle embark wheel ' +
-    'swallow laptop predict moral'
+    'delay blanket scene cactus '
+    + 'rare bicycle embark wheel '
+    + 'swallow laptop predict moral'
   )
 
   const password2 = 'hello23456'

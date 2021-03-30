@@ -1,5 +1,5 @@
-const { writeIdentity } = require('./util')
 const isBrowser = require('is-browser')
+const { writeIdentity } = require('./util')
 
 /**
  * High level function to save an identity to disk

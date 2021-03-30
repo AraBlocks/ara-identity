@@ -1,6 +1,7 @@
-const { create } = require('./create')
-const fs = require('./fs')
 const debug = require('debug')('ara:identity:update')
+const fs = require('./fs')
+
+const { create } = require('./create')
 
 /**
  * Updates an ARA identity.

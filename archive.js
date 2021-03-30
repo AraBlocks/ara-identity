@@ -1,17 +1,18 @@
-const { createIdentityKeyPath } = require('./key-path')
 const { unpack, keyRing } = require('ara-network/keys')
 const { createChannel } = require('ara-network/discovery/channel')
 const { createCFS } = require('cfsnet/create')
 const { Handshake } = require('ara-network/handshake')
-const { toHex } = require('./util')
 const isBuffer = require('is-buffer')
-const messages = require('./protobuf/messages')
 const crypto = require('ara-crypto')
 const debug = require('debug')('ara:identity:archive')
 const path = require('path')
 const pump = require('pump')
 const raf = require('random-access-file')
 const net = require('net')
+const messages = require('./protobuf/messages')
+const { toHex } = require('./util')
+
+const { createIdentityKeyPath } = require('./key-path')
 const rc = require('./rc')()
 
 const DEFAULT_ARCHIVER_CONNECTION_TIMEOUT = 10000

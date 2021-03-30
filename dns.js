@@ -1,8 +1,8 @@
 const isDomainName = require('is-domain-name')
-const { resolve } = require('./resolve')
-const { update } = require('./update')
 const { DID } = require('did-uri')
 const dns = require('ara-identity-dns')
+const { resolve } = require('./resolve')
+const { update } = require('./update')
 
 const RFC4501 = 'RFC4501'
 const DNS_SERVICE_TYPE = 'DNSURIRecord'
