@@ -1,17 +1,21 @@
+# [0.63.0](https://github.com/AraBlocks/ara-identity/compare/0.62.3...0.63.0) (2021-03-30)
+
+
+
 ## [0.62.3](https://github.com/AraBlocks/ara-identity/compare/0.62.2...0.62.3) (2019-12-06)
 
 
 ### Bug Fixes
 
-* **resolve:** Check result before writing to cache ([db95094](https://github.com/AraBlocks/ara-identity/commit/db9509467f7ef4f0938bbf6157f8293515c6efc6))
+* **resolve:** Check result before writing to cache ([cf6a957](https://github.com/AraBlocks/ara-identity/commit/cf6a95747bc3cfd83a39f8f9bcb618bc839666ee))
 
 
 ### Features
 
-* **fs.js:** Write DDO File to Local Identity Folder ([797090e](https://github.com/AraBlocks/ara-identity/commit/797090e574efddac1f5f2a1faa17ef5ab6a4e4b0))
-* **resolve:** Cache DDO file to OS temp folder ([5cf07e0](https://github.com/AraBlocks/ara-identity/commit/5cf07e0f683b5cc0f39ac503ed6a3f0f7ae6d552))
-* **resolve:** Fallback to expired Cache if remote resolve fails ([ed3fbfb](https://github.com/AraBlocks/ara-identity/commit/ed3fbfb6cc834a17b7d7046b0145794f70f4fffd))
-* **util:** Add method to write DDO to cache folder ([ceac574](https://github.com/AraBlocks/ara-identity/commit/ceac57423f58546a260e6bd5942ee2823c16d629))
+* **fs.js:** Write DDO File to Local Identity Folder ([a83820f](https://github.com/AraBlocks/ara-identity/commit/a83820fa87dd70c3df090be9369d91f547074994))
+* **resolve:** Cache DDO file to OS temp folder ([1a97695](https://github.com/AraBlocks/ara-identity/commit/1a976957e04e1cccc5c38c5cbfc764505cec9a3c))
+* **resolve:** Fallback to expired Cache if remote resolve fails ([e8fb764](https://github.com/AraBlocks/ara-identity/commit/e8fb76497ea5eed2a35797aec75e187335cd8d39))
+* **util:** Add method to write DDO to cache folder ([1c76717](https://github.com/AraBlocks/ara-identity/commit/1c7671794dfb133b41b004f7d52d0591d47a71a5))
 
 
 
@@ -552,13 +556,13 @@
 
 ### Bug Fixes
 
+* Fix issues when passing DNS resolvable name ([33dc88a](https://github.com/AraBlocks/ara-identity/commit/33dc88a323e616b4eca6b2a72b628088014d34ad))
 * **archive.js:** Change order of precedence ([c547033](https://github.com/AraBlocks/ara-identity/commit/c5470337ad24b1eefae8ee674ccb5b8bf462cde3))
 * **archive.js:** Refactor how config is retrieved ([8856200](https://github.com/AraBlocks/ara-identity/commit/8856200240f2bc8fe4980ba05f17063e2f8c7248))
 * **archive.js:** Update to be compatible with latest .ararc ([60dca36](https://github.com/AraBlocks/ara-identity/commit/60dca360569391fc28597510546a6345dac4a042))
 * **resolve.js:** Change order of precedence ([2aacbda](https://github.com/AraBlocks/ara-identity/commit/2aacbda196068a69721f481b4487ba55c1deb911))
 * **resolve.js:** Refactor how config is retrieved ([092502b](https://github.com/AraBlocks/ara-identity/commit/092502bfceb38bc57ec78771aa397f63d8743579))
 * **resolve.js:** Update to be compatible with the latest .ararc ([4cb58f4](https://github.com/AraBlocks/ara-identity/commit/4cb58f45ba5c78f965a121d7089fbae40a568552))
-* Fix issues when passing DNS resolvable name ([33dc88a](https://github.com/AraBlocks/ara-identity/commit/33dc88a323e616b4eca6b2a72b628088014d34ad))
 
 
 
@@ -757,10 +761,10 @@
 
 ### Bug Fixes
 
-* Change resolve cache default to true ([1a1ce9e](https://github.com/AraBlocks/ara-identity/commit/1a1ce9e4baed12f4609c128c077f7799feb697bf))
-* **archive.js:** Export default archive method options ([c846846](https://github.com/AraBlocks/ara-identity/commit/c846846dd8fe322eebc547f9ffce7d03a9fe9c07))
-* Use default options from archiver method ([fa92efb](https://github.com/AraBlocks/ara-identity/commit/fa92efb5bc035179dac720f6df2ecc13b22b399c))
 * **archive.js:** Fix how archiver default variable name ([4c886bf](https://github.com/AraBlocks/ara-identity/commit/4c886bf54699f73559c7faa7f188edcf508730f7))
+* Use default options from archiver method ([fa92efb](https://github.com/AraBlocks/ara-identity/commit/fa92efb5bc035179dac720f6df2ecc13b22b399c))
+* **archive.js:** Export default archive method options ([c846846](https://github.com/AraBlocks/ara-identity/commit/c846846dd8fe322eebc547f9ffce7d03a9fe9c07))
+* Change resolve cache default to true ([1a1ce9e](https://github.com/AraBlocks/ara-identity/commit/1a1ce9e4baed12f4609c128c077f7799feb697bf))
 * **archive.js:** Refactor archive method ([09783a4](https://github.com/AraBlocks/ara-identity/commit/09783a4a05354b744e48f6bcb6c1a17e0417b8b4))
 * **archive.js:** Track total archiver connections ([3aaae48](https://github.com/AraBlocks/ara-identity/commit/3aaae485e81c7a340cf592dc42093e70cf456a5f))
 * **bin/ara-identity:** Fix onfatal error exit statement ([e291e5e](https://github.com/AraBlocks/ara-identity/commit/e291e5e9143de9e35841b109321600cb2ce571eb))
@@ -843,11 +847,11 @@
 
 ### Bug Fixes
 
+* **archive.js:** Fix duplicate peer connections ([6e15813](https://github.com/AraBlocks/ara-identity/commit/6e15813334fd30bcb10e49dd03dc1c3214e66746))
+* **bin/ara-identity:** Fix typo ([b35b628](https://github.com/AraBlocks/ara-identity/commit/b35b6289800220494e42c7c1e392ab3a03596864))
 * check did.normalize input length ([af8c186](https://github.com/AraBlocks/ara-identity/commit/af8c186cc5d91a5e823038aed2d3ba4eb881549c))
 * check if method is ara first ([590d0b0](https://github.com/AraBlocks/ara-identity/commit/590d0b0b29d476e8b1852cc9137f4b00098036b2))
 * move inside prefix check ([789d8be](https://github.com/AraBlocks/ara-identity/commit/789d8bec06fe8a5c54aedf854b4cb03da14aa7fd))
-* **archive.js:** Fix duplicate peer connections ([6e15813](https://github.com/AraBlocks/ara-identity/commit/6e15813334fd30bcb10e49dd03dc1c3214e66746))
-* **bin/ara-identity:** Fix typo ([b35b628](https://github.com/AraBlocks/ara-identity/commit/b35b6289800220494e42c7c1e392ab3a03596864))
 
 
 ### Features
@@ -861,11 +865,11 @@
 
 ### Bug Fixes
 
-* derive wallet key ([ccd9479](https://github.com/AraBlocks/ara-identity/commit/ccd9479723900b55df162b3d76bc8567bf037e18))
 * **bin/ara-identity:** Add argument validation to keystore-dump ([d025b9d](https://github.com/AraBlocks/ara-identity/commit/d025b9d4ec4418e75d20196635db2de5c105fd2c))
 * **create.js:** remove log ([6b2a518](https://github.com/AraBlocks/ara-identity/commit/6b2a518c0a8c651a3ca19d8ebbe857367953558f))
 * **ethereum/wallet.js:** make linter happy ([4f5e206](https://github.com/AraBlocks/ara-identity/commit/4f5e206e94a52f8684abbc2f9501205b61445f5c))
 * **ethereum/wallet.js:** replace redundant index check ([16d619e](https://github.com/AraBlocks/ara-identity/commit/16d619e9b11c57e653103aad17d69b872946039f))
+* derive wallet key ([ccd9479](https://github.com/AraBlocks/ara-identity/commit/ccd9479723900b55df162b3d76bc8567bf037e18))
 
 
 ### Features
@@ -1170,12 +1174,12 @@
 
 ### Bug Fixes
 
-* rc keystore, no buffer assumption in recover ([582fc26](https://github.com/AraBlocks/ara-identity/commit/582fc269db6a427116670bf383efb2908c791200))
-* remove keys from rc, have eth resolve to keystore ([f9cfbd3](https://github.com/AraBlocks/ara-identity/commit/f9cfbd33b94a555d36b811afa055ce9717f0fcdf))
 * **create.js:** PR feedback changes ([34bcc56](https://github.com/AraBlocks/ara-identity/commit/34bcc56b0cd1e5132fbc18dbd80c3a4b8d83faac))
 * **create.js:** PR feedback changes ([bf52557](https://github.com/AraBlocks/ara-identity/commit/bf52557f44835429ccc9f2e2f05522e2a02ac1da))
 * **create.js:** remove old log ([18468b9](https://github.com/AraBlocks/ara-identity/commit/18468b9737d36a6964c4b8d082504c7bda97ee37))
 * **create.js:** remove old log ([880a750](https://github.com/AraBlocks/ara-identity/commit/880a750678d6c17af2c2682fabe8fff0a92f6702))
+* rc keystore, no buffer assumption in recover ([582fc26](https://github.com/AraBlocks/ara-identity/commit/582fc269db6a427116670bf383efb2908c791200))
+* remove keys from rc, have eth resolve to keystore ([f9cfbd3](https://github.com/AraBlocks/ara-identity/commit/f9cfbd33b94a555d36b811afa055ce9717f0fcdf))
 * **create.js:** Typo ([2caf4dc](https://github.com/AraBlocks/ara-identity/commit/2caf4dc75aa01aeae1b07d50ff99698c419aa506))
 * **ethereum/keystore.js:** fix crypto call ([e23e374](https://github.com/AraBlocks/ara-identity/commit/e23e374a697ef46f75ceebd6f032f17ccf421bdd))
 * **resolve.js:** update incorrect import ([d0dff59](https://github.com/AraBlocks/ara-identity/commit/d0dff596e3cd8c409ad2a5e9459993d63e9426e0))
@@ -1183,50 +1187,26 @@
 
 ### Features
 
-* **.ararc:** Add .ararc for tests/etc ([63cfb3e](https://github.com/AraBlocks/ara-identity/commit/63cfb3eba9cfd8ee9dbfb7d0913647da4c473c97))
-* **archiver.js:** Initial archiver implementation ([aa50af4](https://github.com/AraBlocks/ara-identity/commit/aa50af4449369b3ac9d1352a89b047eb33f12880))
-* **bin/ara-identity:** Change CLI prompt ([b189f74](https://github.com/AraBlocks/ara-identity/commit/b189f740b34d313447a92e58e5946d3f88dd2f98))
-* **bin/ara-identity:** Introduce ara-identity command ([830a82f](https://github.com/AraBlocks/ara-identity/commit/830a82f02a83e1b48f3a80a77cd03a46e0dad5c6))
-* **bin/ara-identity:** Introduce import command ([19b2df4](https://github.com/AraBlocks/ara-identity/commit/19b2df4319e0105fb6b3f627b5853a1629c63cc7))
-* **create.js:** add authentication ddo support ([d80a8ef](https://github.com/AraBlocks/ara-identity/commit/d80a8ef155748fb7e4b9058cd1620f639efbc000))
 * **create.js:** Add eth account to identity object ([a9fb322](https://github.com/AraBlocks/ara-identity/commit/a9fb322adf94ae55fa7d6aa057f06f0c3e759fdf))
-* **create.js:** Add mnemonic passphrase generation ([8b61b89](https://github.com/AraBlocks/ara-identity/commit/8b61b896579cd5f1ed4600d90bfc08071dcb8ed8))
 * **create.js:** allow for additional publicKeys in document ([e00c71e](https://github.com/AraBlocks/ara-identity/commit/e00c71e6cf1756ee2796baba8fc48899b1cfd315))
-* **ddo.js:** Add initial ddo.js implementation ([07dea5e](https://github.com/AraBlocks/ara-identity/commit/07dea5e483e5977ed37ea43316128c7fe5e69861))
 * **did.js:** Add initial did.js implementation ([649dd28](https://github.com/AraBlocks/ara-identity/commit/649dd280a8da4ce89d6bb331041a7bf27c0f63be))
 * **ethereum/entropy.js:** Initial entropy implementation ([fc4cbe8](https://github.com/AraBlocks/ara-identity/commit/fc4cbe8b3b8e7d18a56f2ee3182fe5a39a27a910))
-* **ethereum/keystore.js:** Add initial keystore implementation ([d555e1c](https://github.com/AraBlocks/ara-identity/commit/d555e1c87c95e74b739784329c91724a51550060))
 * **ethereum/wallet.js:** Add Non-zero buffer check ([60c7851](https://github.com/AraBlocks/ara-identity/commit/60c7851f7cb6dc38f63530b910c35c0f02a99b92))
 * **key-pair.js:** Add key-pair.js implementation ([1a704a4](https://github.com/AraBlocks/ara-identity/commit/1a704a4225c2c1a774d51f0323c99d69c171b396))
 * **keystore/account.js:** Changing ethereum account creation ([88fb50a](https://github.com/AraBlocks/ara-identity/commit/88fb50ae35d78ebbc2ca134a7d0b39685cffc464))
-* **list.js:** Fix error handling ([2c6980a](https://github.com/AraBlocks/ara-identity/commit/2c6980a50b812cb32437b8e4f07ef43a1e3a5713))
-* **list.js:** Make list as a separate module and add it to the CLI ([1aca918](https://github.com/AraBlocks/ara-identity/commit/1aca9181fe392ef8bc0cc38d215c7385b29bc060))
-* **list.js:** Refactor code ([d5bb112](https://github.com/AraBlocks/ara-identity/commit/d5bb11226bcc3ddfb2d6200f4b186c6b6da78a34))
-* **list.js:** Refactor code to make it asynchronous ([072122a](https://github.com/AraBlocks/ara-identity/commit/072122af1651fe39f69981a0c5b5a72f40e26764))
 * **protobuf/:** Add Identity message ([be9bb89](https://github.com/AraBlocks/ara-identity/commit/be9bb8938f7bc6052a3ce1e5a29f7b24170fe7ff))
-* **protobuf/:** Add Keys and KeyPair message types ([435d6f9](https://github.com/AraBlocks/ara-identity/commit/435d6f9b07d49fe4fc51a05bffcf9705ddc92f5e))
 * **protobuf/:** Introduce Keystore protocol buffer ([41173df](https://github.com/AraBlocks/ara-identity/commit/41173dfe54ba5d3b18e111253dcca0ebb4fa2032))
 * **rc.js:** Add runtime configuration ([168af32](https://github.com/AraBlocks/ara-identity/commit/168af32ee5b71a83a5acf9f86ac3c8d202b277a1))
 * **resolve.js:** Change Error msg ([836b134](https://github.com/AraBlocks/ara-identity/commit/836b134558b214a7805a620c6926e929697b0192))
 * **resolve.js:** change how opt checks are done ([e383aab](https://github.com/AraBlocks/ara-identity/commit/e383aab8fdd6f8330071d07eb87b4a2e07c36120))
-* **resolve.js:** fix resolve() method bug(cache=true) ([e77363b](https://github.com/AraBlocks/ara-identity/commit/e77363b978e49aefea9c5043e5d802cefcc2cd18))
 * **resolve.js:** Fix typo ([262cc3f](https://github.com/AraBlocks/ara-identity/commit/262cc3f94789b691e96daf6f216963238296b70e))
 * **resolve.js:** Fixing resolve method ([af2ebc8](https://github.com/AraBlocks/ara-identity/commit/af2ebc81c6b66fe585ccee4b08fbb2f5639f0863))
 * **resolve.js:** linting ([07b8a7e](https://github.com/AraBlocks/ara-identity/commit/07b8a7e21115d7e110d849c43d26f271c849427f))
 * **resolve.js:** lintint ([d4ee5ac](https://github.com/AraBlocks/ara-identity/commit/d4ee5acb9ae60c909a0efb60e40ebe190a4d527b))
 * **resolve.js:** Refactor resolve method to follow same standard ([93ee3dd](https://github.com/AraBlocks/ara-identity/commit/93ee3dd698ac323b28bfaf3e5cf2dcbde2272f44))
-* **resolve.js:** remove redundant console logs ([3e7914a](https://github.com/AraBlocks/ara-identity/commit/3e7914afbe69fd54341b23b3c129c8277f33474b))
 * **resolve.js:** remove redundant method ([2210609](https://github.com/AraBlocks/ara-identity/commit/221060957884181a613c2937eb11bca7aae38b34))
 * **resolve.js:** Update method for both CLI & programmatic usage ([8d4419f](https://github.com/AraBlocks/ara-identity/commit/8d4419fdaf4d4fd7cbb08928dfb2832580ed814f))
 * **resolve.js:** Use negation for opt checks ([1d6a827](https://github.com/AraBlocks/ara-identity/commit/1d6a827df22feb48814d5f777c0d46b2aad0003f))
-* **secrets.js:** Add identity secrets encryption/decryption ([9fe406e](https://github.com/AraBlocks/ara-identity/commit/9fe406eef26a69e59a7c6c02549d4859a2da08cb))
-* **test/list.js:** Fix build issue ([50953d3](https://github.com/AraBlocks/ara-identity/commit/50953d3a4a517d626cb6e8ee0a387fad386680c1))
-* **util.js:** add checks to writeIdentity method ([4e4484b](https://github.com/AraBlocks/ara-identity/commit/4e4484b5c448c87fcedacf71a9f163ea08b316a9))
-* **util.js:** add function to write ARA identity files to disc ([a560354](https://github.com/AraBlocks/ara-identity/commit/a560354b09d44c52bde8f15ebf66ab17cb35cf65))
-* **util.js:** Add list functionality of identities ([656dea4](https://github.com/AraBlocks/ara-identity/commit/656dea41b62fabcd6f2dd0c11e0e217a19dc4c0c))
-* **util.js:** Add test cases & fix error msg ([2896a37](https://github.com/AraBlocks/ara-identity/commit/2896a3751c4e3de621e3230d6996241b80e7785d))
-* **util.js:** exported identity path generation ([b4293c7](https://github.com/AraBlocks/ara-identity/commit/b4293c7b71b31cad3537ffb6805d7c1bedc3da22))
-* **util.js:** fix linting issues ([c66f13f](https://github.com/AraBlocks/ara-identity/commit/c66f13f87450af81b9b5891afe9965b49810549f))
 * Add test cases for HD wallet creation ([83b5918](https://github.com/AraBlocks/ara-identity/commit/83b5918362f9eafa9001a27a0b1774edc1897cdc))
 * add test cases for mnemonic passphrase ([e9bd450](https://github.com/AraBlocks/ara-identity/commit/e9bd45001b88bf2697dd6cf9cc5a8756222db381))
 * Fix Error message typo ([c8d11f5](https://github.com/AraBlocks/ara-identity/commit/c8d11f5787c09d18d046738d4220361a28b6b078))
@@ -1234,17 +1214,41 @@
 * Fix linting issues ([b1f32ac](https://github.com/AraBlocks/ara-identity/commit/b1f32acece35a27fdc52e933f295d3ce30755686))
 * fix typo ([05bf2d9](https://github.com/AraBlocks/ara-identity/commit/05bf2d945bd89d65ff8d74d2c93ebede4bd9e3c1))
 * fix unit test cases ([0b00107](https://github.com/AraBlocks/ara-identity/commit/0b00107d1d11e44595678967ede586ecaa21dfb1))
-* load ethereum account based on privateKey ([c5589b2](https://github.com/AraBlocks/ara-identity/commit/c5589b2f73196e1711ad2a959ce4b806e75b3b56))
 * refactor code ([2704dcc](https://github.com/AraBlocks/ara-identity/commit/2704dcc1e930523361ebe5af7c122c661d42cb62))
-* Refactor code according to PR feedback ([8fa7819](https://github.com/AraBlocks/ara-identity/commit/8fa78192b162bf81b7aeb9f30d253ac32e7e8ea6))
 * Refactor code according to PR feedback ([b618fac](https://github.com/AraBlocks/ara-identity/commit/b618fac7348ffd57806ff07b58c087c14a91c6d7))
-* Refactor code and fix console message ([4f160e4](https://github.com/AraBlocks/ara-identity/commit/4f160e4c187e7c7cee11d76db0bc8c0364a03184))
-* **util.js:** Initial utils ([9de3290](https://github.com/AraBlocks/ara-identity/commit/9de3290486ed424804673880e05ae6a99b1dff96))
-* **wallet.js:** Change Wallet implementation to use HD wallets ([8ca33cc](https://github.com/AraBlocks/ara-identity/commit/8ca33cc8f2af31b64237e9d1abd8790978773ab2))
 * Refactor list.js according to PR feedback ([88cedd6](https://github.com/AraBlocks/ara-identity/commit/88cedd674cedb563451546bf19ef0085d8c75bc1))
-* remove extra line ([6860d37](https://github.com/AraBlocks/ara-identity/commit/6860d37f5a70aa3ae05c90bed3589995451ff6f2))
 * Remove unwanted key file ([3875370](https://github.com/AraBlocks/ara-identity/commit/38753706a3fbe1513b8022540ba66b73435db29a))
+* **util.js:** Add list functionality of identities ([656dea4](https://github.com/AraBlocks/ara-identity/commit/656dea41b62fabcd6f2dd0c11e0e217a19dc4c0c))
+* **util.js:** exported identity path generation ([b4293c7](https://github.com/AraBlocks/ara-identity/commit/b4293c7b71b31cad3537ffb6805d7c1bedc3da22))
+* Refactor code according to PR feedback ([8fa7819](https://github.com/AraBlocks/ara-identity/commit/8fa78192b162bf81b7aeb9f30d253ac32e7e8ea6))
+* Refactor code and fix console message ([4f160e4](https://github.com/AraBlocks/ara-identity/commit/4f160e4c187e7c7cee11d76db0bc8c0364a03184))
 * update account load to use wallet privateKey, load testing ([43dd1fa](https://github.com/AraBlocks/ara-identity/commit/43dd1fa14065e993f7462b5c4c0fc8178eee4e29))
+* **.ararc:** Add .ararc for tests/etc ([63cfb3e](https://github.com/AraBlocks/ara-identity/commit/63cfb3eba9cfd8ee9dbfb7d0913647da4c473c97))
+* **archiver.js:** Initial archiver implementation ([aa50af4](https://github.com/AraBlocks/ara-identity/commit/aa50af4449369b3ac9d1352a89b047eb33f12880))
+* **bin/ara-identity:** Introduce ara-identity command ([830a82f](https://github.com/AraBlocks/ara-identity/commit/830a82f02a83e1b48f3a80a77cd03a46e0dad5c6))
+* **bin/ara-identity:** Introduce import command ([19b2df4](https://github.com/AraBlocks/ara-identity/commit/19b2df4319e0105fb6b3f627b5853a1629c63cc7))
+* **create.js:** add authentication ddo support ([d80a8ef](https://github.com/AraBlocks/ara-identity/commit/d80a8ef155748fb7e4b9058cd1620f639efbc000))
+* **ddo.js:** Add initial ddo.js implementation ([07dea5e](https://github.com/AraBlocks/ara-identity/commit/07dea5e483e5977ed37ea43316128c7fe5e69861))
+* **ethereum/keystore.js:** Add initial keystore implementation ([d555e1c](https://github.com/AraBlocks/ara-identity/commit/d555e1c87c95e74b739784329c91724a51550060))
+* **list.js:** Make list as a separate module and add it to the CLI ([1aca918](https://github.com/AraBlocks/ara-identity/commit/1aca9181fe392ef8bc0cc38d215c7385b29bc060))
+* **protobuf/:** Add Keys and KeyPair message types ([435d6f9](https://github.com/AraBlocks/ara-identity/commit/435d6f9b07d49fe4fc51a05bffcf9705ddc92f5e))
+* **resolve.js:** fix resolve() method bug(cache=true) ([e77363b](https://github.com/AraBlocks/ara-identity/commit/e77363b978e49aefea9c5043e5d802cefcc2cd18))
+* **resolve.js:** remove redundant console logs ([3e7914a](https://github.com/AraBlocks/ara-identity/commit/3e7914afbe69fd54341b23b3c129c8277f33474b))
+* **secrets.js:** Add identity secrets encryption/decryption ([9fe406e](https://github.com/AraBlocks/ara-identity/commit/9fe406eef26a69e59a7c6c02549d4859a2da08cb))
+* **util.js:** add checks to writeIdentity method ([4e4484b](https://github.com/AraBlocks/ara-identity/commit/4e4484b5c448c87fcedacf71a9f163ea08b316a9))
+* **util.js:** add function to write ARA identity files to disc ([a560354](https://github.com/AraBlocks/ara-identity/commit/a560354b09d44c52bde8f15ebf66ab17cb35cf65))
+* **util.js:** fix linting issues ([c66f13f](https://github.com/AraBlocks/ara-identity/commit/c66f13f87450af81b9b5891afe9965b49810549f))
+* **wallet.js:** Change Wallet implementation to use HD wallets ([8ca33cc](https://github.com/AraBlocks/ara-identity/commit/8ca33cc8f2af31b64237e9d1abd8790978773ab2))
+* remove extra line ([6860d37](https://github.com/AraBlocks/ara-identity/commit/6860d37f5a70aa3ae05c90bed3589995451ff6f2))
+* **bin/ara-identity:** Change CLI prompt ([b189f74](https://github.com/AraBlocks/ara-identity/commit/b189f740b34d313447a92e58e5946d3f88dd2f98))
+* **create.js:** Add mnemonic passphrase generation ([8b61b89](https://github.com/AraBlocks/ara-identity/commit/8b61b896579cd5f1ed4600d90bfc08071dcb8ed8))
+* load ethereum account based on privateKey ([c5589b2](https://github.com/AraBlocks/ara-identity/commit/c5589b2f73196e1711ad2a959ce4b806e75b3b56))
+* **list.js:** Fix error handling ([2c6980a](https://github.com/AraBlocks/ara-identity/commit/2c6980a50b812cb32437b8e4f07ef43a1e3a5713))
+* **list.js:** Refactor code ([d5bb112](https://github.com/AraBlocks/ara-identity/commit/d5bb11226bcc3ddfb2d6200f4b186c6b6da78a34))
+* **list.js:** Refactor code to make it asynchronous ([072122a](https://github.com/AraBlocks/ara-identity/commit/072122af1651fe39f69981a0c5b5a72f40e26764))
+* **test/list.js:** Fix build issue ([50953d3](https://github.com/AraBlocks/ara-identity/commit/50953d3a4a517d626cb6e8ee0a387fad386680c1))
+* **util.js:** Add test cases & fix error msg ([2896a37](https://github.com/AraBlocks/ara-identity/commit/2896a3751c4e3de621e3230d6996241b80e7785d))
+* **util.js:** Initial utils ([9de3290](https://github.com/AraBlocks/ara-identity/commit/9de3290486ed424804673880e05ae6a99b1dff96))
 
 
 
