@@ -292,7 +292,7 @@ async function create(opts) {
     if (isBuffer(opts.seed)) {
       seed = opts.seed
     } else {
-      seed = crypto.blake2b(bip39.mnemonicToSeed(mnemonic))
+      seed = crypto.blake2b(await bip39.mnemonicToSeed(mnemonic))
     }
 
     const kp = crypto.keyPair(seed)
@@ -305,7 +305,7 @@ async function create(opts) {
     encryptionKey = createEncryptionKey()
 
     wallet = await ethereum.wallet.load({
-      seed: bip39.mnemonicToSeed(mnemonic)
+      seed: await bip39.mnemonicToSeed(mnemonic)
     })
 
     account = await ethereum.account.create({

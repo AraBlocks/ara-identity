@@ -270,7 +270,12 @@ async function findResolution(did, opts, state) {
         return
       }
 
-      if (0 === pending && !didResolve && 0 === resolvers.length && !state.aborted) {
+      if (
+        0 === pending
+        && !didResolve
+        && 0 === resolvers.length
+        && !state.aborted
+      ) {
         // Revert to expired cache copy if present
         if (false === isBrowser) {
           try {

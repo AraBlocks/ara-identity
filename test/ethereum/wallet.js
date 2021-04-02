@@ -11,7 +11,7 @@ test('ethereum.wallet.load(opts)', async (t) => {
   await t.throwsAsync(load(NaN), { instanceOf: TypeError })
   await t.throwsAsync(load({}), { instanceOf: TypeError })
 
-  let seed = bip39.mnemonicToSeed(bip39.generateMnemonic())
+  let seed = await bip39.mnemonicToSeed(bip39.generateMnemonic())
   seed = crypto.blake2b(seed)
   t.true(null != load({ seed }))
 })

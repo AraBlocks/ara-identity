@@ -78,7 +78,7 @@ async function writeIdentity(identity) {
 
   const output = createIdentityKeyPath(identity)
 
-  await pify(mkdirp)(output)
+  await mkdirp(output)
 
   for (let i = 0; i < identity.files.length; ++i) {
     if (
@@ -87,7 +87,7 @@ async function writeIdentity(identity) {
       && identity.files[i].buffer
     ) {
       const dir = dirname(resolve(output, identity.files[i].path))
-      await pify(mkdirp)(dir)
+      await mkdirp(dir)
       await pify(fs.writeFile)(
         resolve(output, identity.files[i].path),
         identity.files[i].buffer
@@ -110,7 +110,7 @@ async function resolveDNS(uri) {
 async function writeCache(identifier, filename, buffer) {
   try {
     const cachePath = join(os.tmpdir(), 'aid', identifier, filename)
-    await pify(mkdirp)(dirname(cachePath))
+    await mkdirp(dirname(cachePath))
     await pify(fs.writeFile)(cachePath, buffer)
   } catch (err) {
     debug(err)

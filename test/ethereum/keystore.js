@@ -18,7 +18,7 @@ test('create(opts)', async (t) => {
 })
 
 test('dump(opts)', async (t) => {
-  let seed = bip39.mnemonicToSeed(bip39.generateMnemonic())
+  let seed = await bip39.mnemonicToSeed(bip39.generateMnemonic())
   seed = crypto.blake2b(seed)
   const wal = await wallet.load({ seed })
   const ks = await keystore.create()

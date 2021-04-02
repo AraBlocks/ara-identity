@@ -44,7 +44,7 @@ async function revoke(opts) {
     throw new TypeError('Expecting password to be a string.')
   }
 
-  const seed = crypto.blake2b(bip39.mnemonicToSeed(opts.mnemonic))
+  const seed = crypto.blake2b(await bip39.mnemonicToSeed(opts.mnemonic))
   const { publicKey } = crypto.keyPair(seed)
 
   let ddo

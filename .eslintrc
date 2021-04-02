@@ -1,3 +1,6 @@
 {
-  "extends": "ara"
+  "extends": "ara",
+  "rules": {
+    "no-warnings-comments": "off"
+  }
 }
