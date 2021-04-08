@@ -31,7 +31,7 @@
   "license": "LGPL-3.0",
   "dependencies": {
     "ara-console": "^0.3.0",
-    "ara-context": "^1.0.2",
+    "ara-context": "^1.0.3",
     "ara-crypto": "^0.9.4",
     "ara-identity-dns": "^0.3.0",
     "ara-network": "^1.3.7",

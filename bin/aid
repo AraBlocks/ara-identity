@@ -158,6 +158,11 @@ program.command(
       requiresArg: false,
       type: 'boolean',
     })
+    .option('address', {
+      describe: 'Output just the wallet address',
+      requiresArg: false,
+      type: 'boolean',
+    })
 
     .group([ 'secret', 'keyring', 'network' ], 'Network Options:')
     .option('secret', {
@@ -1142,7 +1147,26 @@ async function onresolve(argv) {
 
     for (const pk of identity.publicKey) {
       const { fragment } = did.parse(pk.id)
-      if ('owner' === fragment) {
+
+      if (argv.address) {
+        if ('eth' === fragment) {
+          // eslint-disable-next-line
+          const wallet = await aid.ethereum.wallet.create({
+            publicKey: Buffer.from(pk.publicKeyHex, 'hex')
+          })
+
+          const address = wallet.getAddress()
+
+          if (address) {
+            process.stdout.write(address.toString('hex'))
+            process.stdout.write('\n')
+          } else {
+            return onfatal(new Error('Could not determine ETH address for public in DID document.'))
+          }
+
+          return exit(0)
+        }
+      } else if ('owner' === fragment) {
         publicKey = Buffer.from(pk.publicKeyHex, 'hex')
         break
       }

@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
+const { hdkey, default: Wallet } = require('ethereumjs-wallet')
 const isZeroBuffer = require('is-zero-buffer')
-const { hdkey } = require('ethereumjs-wallet')
 const isBuffer = require('is-buffer')
 
 const DERIVATION_PATH = 'm/44\'/60\'/0\'/0/'
@@ -26,6 +26,19 @@ async function load(opts) {
   return hdWallet.derivePath(`${DERIVATION_PATH}${index}`).getWallet()
 }
 
+async function create(opts) {
+  if (opts && opts.publicKey && !opts.privateKey) {
+    return Wallet.fromPublicKey(opts.publicKey)
+  }
+
+  if (opts && opts.privateKey) {
+    return Wallet.fromPrivateKey(opts.privateKey)
+  }
+
+  return new Wallet(opts.privateKey, opts.publicKey)
+}
+
 module.exports = {
+  create,
   load
 }
